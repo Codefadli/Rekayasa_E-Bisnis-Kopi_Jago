@@ -1,135 +1,138 @@
-# Alur Autentikasi
+```text
 
-┌──────────────────┐
-│   HALAMAN LOGIN    │
-│  (Email + Password)│
-└──────────────────┘
-          │
+1.  frontend/login (Email + Password)
+    fetch POST /api/auth/login.php
+   
+2. backend (PHP API)      
+- Cek email/password   
+- Generate JWT          
+- Return JSON: { token, role }
+- token disimpan di localStorage (frontend)
           ▼
-┌───────────────────────┐
-│   BACKEND / AUTH        │
-│   - Cek email/password  │
-│   - Generate JWT Token  │
-│   - Token berisi: role  │
-└───────────────────────┘
-          │
-          ▼
-     ┌───────────┐
-     │ Cek Role   │
-     │ (dari JWT) │
-     └───────────┘ 
-    ┌─────┴───────┐
-    ▼              ▼
+3. cek role (dari JWT)   
+    ┌──────┴────────┐
 role: admin     role: customer
-    │              │
-    ▼              ▼
-/admin/dashboard  /home
+    │                    │
+    ▼                   ▼
+admin/dashboard.html  customer/home.html
+```
 
-
-
-# Struktur Folder
-
+```text
 frontend/
-└── src/
-    ├── pages/
-    │   ├── auth/
-    │   │   ├── Login.tsx
-    │   │   └── Register.tsx
-    │   │
-    │   ├── customer/
-    │   │   ├── Home.tsx
-    │   │   ├── Menu.tsx
-    │   │   ├── Cart.tsx
-    │   │   ├── Orders.tsx
-    │   │   │
-    │   │   ├── settings/                     # Halaman Pengaturan Pengguna
-    │   │   │   ├── ProfileSettings.tsx       # Edit profil (nama, email, no. HP, foto)
-    │   │   │   ├── Wishlist.tsx              # Daftar menu favorit / disimpan
-    │   │   │   ├── ChangePassword.tsx        # Ganti password
-    │   │   │   └── NotificationPreferences.tsx # Preferensi notifikasi (promo, order update, dll)
-    │   │   │
-    │   │   ├── shipping/                     # Halaman Pengaturan Pengiriman
-    │   │   │   ├── ShippingSettings.tsx      # Halaman induk/tab pengaturan pengiriman
-    │   │   │   ├── OrderHistory.tsx          # Riwayat/histori pesanan yang pernah dibeli
-    │   │   │   ├── ShippingAddress.tsx       # Kelola alamat pengiriman
-    │   │   │   ├── ShippingMethod.tsx        # Pilihan metode pengiriman (reguler/instan/ambil sendiri)
-    │   │   │   └── ShippingCost.tsx          # Kalkulasi & tampilan biaya pengiriman
-    │   │   │
-    │   │   └── payment/                      # Halaman Pembayaran
-    │   │       ├── PaymentMethods.tsx        # Daftar & pilih metode pembayaran digital
-    │   │       └── PaymentInfo.tsx           # Detail/konfirmasi info pembayaran (invoice, status)
-    │   │
-    │   └── admin/
-    │       ├── Dashboard.tsx
-    │       ├── Menu.tsx
-    │       ├── Pesanan.tsx
-    │       ├── Pelanggan.tsx
-    │       ├── Stok.tsx
-    │       ├── Supplier.tsx
-    │       ├── Promo.tsx
-    │       ├── Laporan.tsx
-    │       └── Pengaturan.tsx
-    │
-    ├── layouts/
-    │   ├── AdminLayout.tsx
-    │   └── CustomerLayout.tsx
-    │
-    ├── components/
-    │   ├── admin/
-    │   │   ├── Sidebar.tsx
-    │   │   ├── Header.tsx
-    │   │   ├── StatCard.tsx
-    │   │   ├── SalesChart.tsx
-    │   │   └── RecentOrders.tsx
-    │   │
-    │   └── customer/
-    │       ├── WishlistCard.tsx
-    │       ├── AddressCard.tsx
-    │       ├── PaymentMethodCard.tsx
-    │       └── OrderHistoryItem.tsx
-    │
-    ├── routes/
-    │   └── AppRoutes.tsx
-    │
-    └── context/
-        └── AuthContext.tsx
-
-
-
-
-backend/
-└── app/
-    ├── api/
-    │   └── routes/
-    │       ├── auth.py            # Login, register, refresh token
-    │       ├── users.py           # Profil, ganti password
-    │       ├── menu.py            # CRUD menu (admin) & list menu (customer)
-    │       ├── orders.py          # Buat pesanan, riwayat pesanan
-    │       ├── inventory.py       # Stok & supplier (admin)
-    │       ├── reports.py         # Laporan penjualan (admin)
-    │       ├── wishlist.py        # CRUD wishlist customer
-    │       ├── shipping.py        # Alamat, metode & biaya pengiriman
-    │       ├── payments.py        # Metode pembayaran & status pembayaran
-    │       └── notifications.py   # Preferensi & pengiriman notifikasi
-    │
-    ├── core/
-    │   ├── security.py            # Hash password, JWT, dependency cek role
-    │   └── database.py
-    │
-    ├── models/
-    │   ├── user.py
-    │   ├── order.py
-    │   ├── wishlist.py
-    │   ├── address.py
-    │   ├── shipping_method.py
-    │   ├── payment_method.py
-    │   └── notification_preference.py
-    │
-    └── schemas/
-        ├── user.py
-        ├── order.py
-        ├── wishlist.py
-        ├── address.py
-        ├── shipping.py
-        ├── payment.py
-        └── notification.py
+│   └── src/
+│       ├── index.html                     # Landing page
+│       │
+│       ├── auth/
+│       │   ├── login.html
+│       │   └── register.html
+│       │
+│       ├── customer/
+│       │   ├── home.html
+│       │   ├── menu.html
+│       │   ├── cart.html
+│       │   ├── orders.html
+│       │   │
+│       │   ├── settings/                  # Halaman Pengaturan Pengguna
+│       │   │   ├── profile.html           # Edit profil (nama, email, no. HP, foto)
+│       │   │   ├── wishlist.html          # Daftar menu favorit/disimpan
+│       │   │   ├── change-password.html   # Ganti password
+│       │   │   └── notifications.html     # Preferensi notifikasi
+│       │   │
+│       │   ├── shipping/                  # Halaman Pengaturan Pengiriman
+│       │   │   ├── index.html             # Halaman induk/tab pengaturan pengiriman
+│       │   │   ├── order-history.html     # Riwayat/histori pesanan
+│       │   │   ├── address.html           # Kelola alamat pengiriman
+│       │   │   ├── method.html            # Pilihan metode pengiriman
+│       │   │   └── cost.html              # Tampilan biaya pengiriman
+│       │   │
+│       │   └── payment/                   # Halaman Pembayaran
+│       │       ├── methods.html           # Daftar & pilih metode pembayaran digital
+│       │       └── info.html              # Detail/konfirmasi info pembayaran
+│       │
+│       ├── admin/
+│       │   ├── dashboard.html
+│       │   ├── pesanan.html
+│       │   ├── pelanggan.html
+│       │   ├── stok.html
+│       │   ├── supplier.html
+│       │   ├── promo.html
+│       │   ├── laporan.html
+│       │   └── pengaturan.html
+│       │
+│       ├── css/
+│       │   ├── style.css                  # Style untuk customer
+│       │   └── admin.css                  # Style khusus admin
+│       │
+│       ├── js/
+│       │   ├── api.js                     # Wrapper fetch + auto-attach JWT token
+│       │   ├── auth.js                    # Login, register, simpan/hapus token
+│       │   ├── auth-guard.js              # Cek token & role sebelum render halaman
+│       │   ├── cart.js
+│       │   ├── wishlist.js
+│       │   ├── shipping.js
+│       │   ├── payment.js
+│       │   └── admin/
+│       │       ├── dashboard.js           # Chart & statistik admin
+│       │       └── table.js               # Filter/sort tabel 
+│       │
+│       ├── components/                    # HTML yang di-inject via JS (navbar, sidebar, footer)
+│       │   ├── navbar-customer.html
+│       │   ├── sidebar-admin.html
+│       │   └── footer.html
+│       │
+│       └── assets/
+│           └── images/
+│
+└── backend/
+    └── api/
+        ├── auth/
+        │   ├── login.php
+        │   ├── register.php
+        │   └── logout.php
+        │
+        ├── users/
+        │   ├── profile.php                # GET/PUT profil
+        │   └── change-password.php
+        │
+        ├── wishlist/
+        │   └── index.php                  # GET/POST/DELETE wishlist
+        │
+        ├── notifications/
+        │   └── preferences.php            # GET/PUT preferensi notifikasi
+        │
+        ├── orders/
+        │   ├── index.php                  # POST buat pesanan
+        │   └── history.php                # GET riwayat pesanan
+        │
+        ├── shipping/
+        │   ├── address.php                # CRUD alamat pengiriman
+        │   ├── method.php                 # GET metode pengiriman
+        │   └── cost.php                   # GET kalkulasi biaya pengiriman
+        │
+        ├── payment/
+        │   ├── methods.php                # GET daftar metode pembayaran digital
+        │   ├── checkout.php               # POST proses pembayaran
+        │   └── status.php                 # GET status/info pembayaran
+        │
+        ├── menu/
+        │   └── index.php                  # GET menu (customer) / CRUD (admin)
+        │
+        ├── inventory/
+        │   ├── stok.php
+        │   └── supplier.php
+        │
+        ├── promo/
+        │   └── index.php
+        │
+        ├── reports/
+        │   └── index.php                  # Laporan penjualan (admin)
+        │
+        ├── core/                          # Class & fungsi inti 
+        │   ├── Database.php               # Koneksi  ke database
+        │   ├── Auth.php                   # Hash password, generate/verify JWT
+        │   ├── Middleware.php             # Cek token & role dari header Authorization
+        │   └── Response.php               # Helper  JSON
+        │
+        └── config/
+            └── config.php                 # Konfigurasi Database, secret key JWT, dll
+```
