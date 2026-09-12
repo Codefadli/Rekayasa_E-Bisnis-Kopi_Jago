@@ -1,22 +1,4 @@
-```text
-
-1.  frontend/login (Email + Password)
-    fetch POST /api/auth/login.php
-   
-2. backend (PHP API)      
-- Cek email/password   
-- Generate JWT          
-- Return JSON: { token, role }
-- token disimpan di localStorage (frontend)
-          ▼
-3. cek role (dari JWT)   
-    ┌──────┴────────┐
-role: admin     role: customer
-    │                    │
-    ▼                   ▼
-admin/dashboard.html  customer/home.html
-```
-
+![System Architecture](Kopi-Jago_Struktur/docs/system.visual-check.2048x1320.dark.png)
 ```text
 frontend/
 │   └── src/
