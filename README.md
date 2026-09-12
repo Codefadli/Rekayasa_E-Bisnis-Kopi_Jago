@@ -1,4 +1,5 @@
-![System Architecture](Kopi-Jago_Struktur/docs/system.visual-check.2048x1320.dark.png)
+![System Architecture](kopi-jago-high-level-architecture.visual-check.1440x900.dark.png
+)
 ```text
 frontend/
 │   └── src/
