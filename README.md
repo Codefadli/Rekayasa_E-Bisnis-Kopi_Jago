@@ -55,7 +55,7 @@ frontend/
 │       │   ├── laporan.html
 │       │   ├── analitik.html
 │       │   ├── reservasi.html             # Kelola reservasi meja
-│       │   ├── karyawan.html              # Manajemen staff/shift
+│       │   ├
 │       │   ├── support.html               # Balas chat customer
 │       │   ├── log-aktivitas.html         # Audit trail aksi admin
 │       │   └── pengaturan.html
@@ -67,7 +67,6 @@ frontend/
 │       ├── js/
 │       │   ├── api.js
 │       │   ├── auth.js
-│       │   ├── auth-guard.js
 │       │   ├── cart.js
 │       │   ├── wishlist.js
 │       │   ├── shipping.js
@@ -79,7 +78,7 @@ frontend/
 │       │       ├── dashboard.js
 │       │       ├── table.js
 │       │       ├── analitik.js
-│       │       └── karyawan.js           
+│       │            
 │       │
 │       ├── components/
 │       │   ├── navbar-customer.html
@@ -152,9 +151,6 @@ frontend/
         │   ├── jam-ramai.php
         │   └── customer-loyalty.php
         │
-        ├── staff/                         # Manajemen karyawan/shift
-        │   ├── index.php                  # CRUD data karyawan
-        │   └── shift.php                  # Jadwal shift
         │
         ├── support/                       # Live chat/CS
         │   └── index.php                  # Kirim/terima pesan chat
