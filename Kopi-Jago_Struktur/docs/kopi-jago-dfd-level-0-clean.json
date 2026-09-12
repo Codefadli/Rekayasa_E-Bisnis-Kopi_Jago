@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": { "title": "Kopi Jago — DFD Level 0", "quality_profile": "showcase", "viewBox": [1120, 620] },
+  "stages": [
+    { "label": "External Entities" }, { "label": "Level 0 Process Groups" }, { "label": "Defined Data Store Groups" }
+  ],
+  "nodes": [
+    { "id": "customer", "type": "external", "label": "E1 Customer", "sublabel": "Customer requests", "stage": 0, "row": 1, "width": 150, "tag": "external entity" },
+    { "id": "admin", "type": "external", "label": "E2 Admin", "sublabel": "Operational requests", "stage": 0, "row": 3, "width": 150, "tag": "external entity" },
+    { "id": "identity", "type": "security", "label": "1.0 Authentication & Authorization", "sublabel": "Credentials, JWT & role access", "stage": 1, "row": 0, "width": 225 },
+    { "id": "customerCatalog", "type": "backend", "label": "2.0 User & Customer • 3.0 Menu", "sublabel": "Profile, wishlist, menu & rating", "stage": 1, "row": 1, "width": 225 },
+    { "id": "commerce", "type": "backend", "label": "4.0 Order • 5.0 Payment • 6.0 Shipping", "sublabel": "9.0 Promotion • 14.0 Invoice", "stage": 1, "row": 2, "width": 225 },
+    { "id": "operations", "type": "backend", "label": "7.0 Reservation • 8.0 Inventory & Supplier", "sublabel": "11.0 Staff & Shift", "stage": 1, "row": 3, "width": 225 },
+    { "id": "serviceInsight", "type": "backend", "label": "10.0 Support • 12.0 Reporting & Analytics", "sublabel": "13.0 Notification • 15.0 Activity Logging", "stage": 1, "row": 4, "width": 225 },
+    { "id": "accountStore", "type": "database", "label": "D1 / D10 / D11 Account Data", "sublabel": "User, wishlist & notification data", "stage": 2, "row": 0, "width": 230 },
+    { "id": "catalogStore", "type": "database", "label": "D2 / D7 / D8 / D9 Catalog & Operations", "sublabel": "Menu, inventory, supplier & promotion", "stage": 2, "row": 1, "width": 230 },
+    { "id": "commerceStore", "type": "database", "label": "D3 / D4 / D5 Commerce Data", "sublabel": "Order, payment & shipping data", "stage": 2, "row": 2, "width": 230 },
+    { "id": "workforceStore", "type": "database", "label": "D6 / D12 / D13 Operations Data", "sublabel": "Reservation, staff & shift data", "stage": 2, "row": 3, "width": 230 },
+    { "id": "supportAuditStore", "type": "database", "label": "D14 / D15 Support & Audit Data", "sublabel": "Support messages & activity log", "stage": 2, "row": 4, "width": 230 }
+  ],
+  "flows": [
+    { "id": "customer-identity", "from": "customer", "to": "identity", "label": "credentials & access request", "variant": "security" },
+    { "id": "customer-catalog", "from": "customer", "to": "customerCatalog", "label": "profile, menu & wishlist request" },
+    { "id": "customer-commerce", "from": "customer", "to": "commerce", "label": "order, payment & delivery request" },
+    { "id": "customer-service", "from": "customer", "to": "serviceInsight", "label": "support & notification request" },
+    { "id": "admin-identity", "from": "admin", "to": "identity", "label": "admin access request", "variant": "security" },
+    { "id": "admin-catalog", "from": "admin", "to": "customerCatalog", "label": "customer & menu management" },
+    { "id": "admin-commerce", "from": "admin", "to": "commerce", "label": "order status & promotion management" },
+    { "id": "admin-operations", "from": "admin", "to": "operations", "label": "reservation, stock, supplier, staff & shift data" },
+    { "id": "admin-service", "from": "admin", "to": "serviceInsight", "label": "support, reports, analytics & activity review" },
+    { "id": "identity-account-store", "from": "identity", "to": "accountStore", "label": "identity, role & credential data", "variant": "security" },
+    { "id": "catalog-account-store", "from": "customerCatalog", "to": "accountStore", "label": "profile, wishlist & preferences" },
+    { "id": "catalog-catalog-store", "from": "customerCatalog", "to": "catalogStore", "label": "menu & rating data" },
+    { "id": "commerce-store", "from": "commerce", "to": "commerceStore", "label": "order, payment & shipping data" },
+    { "id": "operations-catalog-store", "from": "operations", "to": "catalogStore", "label": "inventory, supplier & promotion data" },
+    { "id": "operations-workforce-store", "from": "operations", "to": "workforceStore", "label": "reservation, staff & shift data" },
+    { "id": "service-account-store", "from": "serviceInsight", "to": "accountStore", "label": "notification preferences" },
+    { "id": "service-commerce-store", "from": "serviceInsight", "to": "commerceStore", "label": "transaction & operational data" },
+    { "id": "service-support-store", "from": "serviceInsight", "to": "supportAuditStore", "label": "support messages & audit trail" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Scope", "items": ["All 15 DFD Level 0 processes are preserved in five related process groups.", "No HTML or PHP files are modeled as processes."] },
+    { "dot": "violet", "title": "External entities", "items": ["Customer and Admin have distinct, explicit data flows.", "Authentication & Authorization handles credentials, JWT, and role access."] },
+    { "dot": "emerald", "title": "Data stores", "items": ["All defined stores D1–D15 are represented in related data-store groups.", "Data flows only through business processes; actors do not access data stores directly."] }
+  ]
+}
