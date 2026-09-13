@@ -2,8 +2,6 @@
 
 
 
-![System Architecture](Kopi-Jago_Struktur/docs/kopi-jago-dfd-level-0.visual-check.1440x900.dark.png)
-
 
 
 
