@@ -1,0 +1,115 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "System Workflow Kopi Jago",
+    "locale": "en",
+    "output": "system-workflow-kopi-jago.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "authentication-routing",
+        "label": "Authentication and routing",
+        "focus": ["customer_entry", "admin_entry", "login", "authorization", "customer_portal", "admin_portal"],
+        "note": "Follow email/password validation, JWT issuance, backend role checks, and role-based routing."
+      },
+      {
+        "id": "customer-order",
+        "label": "Customer order",
+        "focus": ["customer_portal", "order", "payment", "shipping", "invoice"],
+        "note": "Follow menu browsing through cart, checkout, payment, order tracking, completion, and invoice."
+      },
+      {
+        "id": "operations-support",
+        "label": "Operations and support",
+        "focus": ["reservation", "admin_portal", "admin_management", "support", "notification", "activity_log"],
+        "note": "Follow reservations, support chat, notifications, administration, and audit logging."
+      },
+      {
+        "id": "reporting-analytics",
+        "label": "Reporting and analytics",
+        "focus": ["admin_management", "reporting_analytics", "activity_log"],
+        "note": "Follow operational data into reports, analytics, dashboard decision support, and activity logs."
+      }
+    ]
+  },
+  "lanes": [
+    { "id": "actors", "label": "Customer and Admin" },
+    { "id": "security_lane", "label": "Authentication and Authorization" },
+    { "id": "customer_lane", "label": "Customer System" },
+    { "id": "admin_lane", "label": "Admin System" },
+    { "id": "shared_lane", "label": "Shared Operations" },
+    { "id": "insight_lane", "label": "Reporting, Analytics and Audit" }
+  ],
+  "phases": [
+    { "id": "entry_phase", "label": "Entry", "fromCol": 0, "toCol": 0 },
+    { "id": "secure_phase", "label": "Authenticate and authorize", "fromCol": 1, "toCol": 2, "variant": "security" },
+    { "id": "role_phase", "label": "Role-specific workflows", "fromCol": 3, "toCol": 4, "variant": "emphasis" },
+    { "id": "close_phase", "label": "Complete and observe", "fromCol": 5, "toCol": 5 }
+  ],
+  "groups": [
+    { "id": "customer_features", "label": "Customer account and shopping", "lane": "customer_lane", "fromCol": 3, "toCol": 4 },
+    { "id": "admin_features", "label": "Administrative management", "lane": "admin_lane", "fromCol": 3, "toCol": 5 },
+    { "id": "operational_services", "label": "Reservation, support and notification services", "lane": "shared_lane", "fromCol": 4, "toCol": 5 },
+    { "id": "decision_support", "label": "Reports, analytics and activity logging", "lane": "insight_lane", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["customer_entry", "login", "authorization", "customer_portal", "order", "payment", "shipping", "invoice"],
+  "semanticChecks": {
+    "allowedRoots": ["customer_entry", "admin_entry", "support", "notification"],
+    "allowedTerminals": ["invoice", "admin_management", "reporting_analytics", "activity_log", "notification", "support"],
+    "requiredEdges": [
+      { "from": "login", "to": "authorization" },
+      { "from": "authorization", "to": "customer_portal" },
+      { "from": "authorization", "to": "admin_portal" },
+      { "from": "order", "to": "payment" },
+      { "from": "payment", "to": "shipping" },
+      { "from": "shipping", "to": "invoice" },
+      { "from": "reservation", "to": "admin_management" }
+    ],
+    "requiredPaths": [
+      { "from": "customer_entry", "to": "customer_portal" },
+      { "from": "admin_entry", "to": "admin_portal" },
+      { "from": "customer_portal", "to": "invoice" }
+    ]
+  },
+  "nodes": [
+    { "id": "customer_entry", "lane": "actors", "col": 0, "type": "external", "label": "Customer", "width": 170 },
+    { "id": "admin_entry", "lane": "actors", "col": 0, "type": "external", "label": "Admin", "width": 170, "yOffset": 72 },
+    { "id": "login", "lane": "security_lane", "col": 1, "type": "security", "label": "Authentication", "sublabel": "credential check", "width": 170 },
+    { "id": "authorization", "lane": "security_lane", "col": 2, "type": "security", "label": "Authorization", "sublabel": "JWT and role check", "width": 170 },
+    { "id": "customer_portal", "lane": "customer_lane", "col": 3, "type": "frontend", "label": "Customer", "sublabel": "menu, cart, wishlist, profile", "width": 170 },
+    { "id": "admin_portal", "lane": "admin_lane", "col": 3, "type": "frontend", "label": "Admin", "sublabel": "dashboard and operations", "width": 170 },
+    { "id": "order", "lane": "customer_lane", "col": 4, "type": "backend", "label": "Order Workflow", "sublabel": "menu → cart → checkout → tracking", "width": 170 },
+    { "id": "reservation", "lane": "shared_lane", "col": 4, "type": "backend", "label": "Reservation", "sublabel": "date/time → availability → status", "width": 170 },
+    { "id": "support", "lane": "shared_lane", "col": 4, "type": "backend", "label": "Support", "sublabel": "customer message → reply", "width": 170, "yOffset": 72 },
+    { "id": "payment", "lane": "customer_lane", "col": 5, "type": "backend", "label": "Payment", "sublabel": "method → processing → status", "width": 170 },
+    { "id": "shipping", "lane": "customer_lane", "col": 5, "type": "backend", "label": "Shipping", "sublabel": "address → method → cost", "width": 170, "yOffset": 72 },
+    { "id": "invoice", "lane": "shared_lane", "col": 5, "type": "backend", "label": "Invoice", "sublabel": "generate → display → print", "width": 170 },
+    { "id": "admin_management", "lane": "admin_lane", "col": 4, "type": "backend", "label": "Management", "sublabel": "orders, menu, stock, promo, staff", "width": 170 },
+    { "id": "notification", "lane": "shared_lane", "col": 5, "type": "messagebus", "label": "Notification", "sublabel": "preferences; email / WhatsApp", "width": 170, "yOffset": 72 },
+    { "id": "reporting_analytics", "lane": "insight_lane", "col": 5, "type": "backend", "label": "Reports + Analytics", "sublabel": "sales, stock, peaks, loyalty", "width": 170 },
+    { "id": "activity_log", "lane": "insight_lane", "col": 5, "type": "database", "label": "Activity Log", "sublabel": "audit: actor, action, time", "width": 170, "yOffset": 72 }
+  ],
+  "edges": [
+    { "from": "customer_entry", "to": "login", "label": "login / register", "role": "main" },
+    { "from": "admin_entry", "to": "login", "label": "login", "role": "main" },
+    { "from": "login", "to": "authorization", "label": "generate JWT; store token", "variant": "security", "role": "main" },
+    { "from": "authorization", "to": "customer_portal", "label": "role = customer", "variant": "security", "role": "main" },
+    { "from": "authorization", "to": "admin_portal", "label": "role = admin", "variant": "security", "role": "branch" },
+    { "from": "customer_portal", "to": "order", "label": "browse menu; select product; cart; checkout", "role": "main" },
+    { "from": "customer_portal", "to": "reservation", "label": "reserve table", "role": "branch" },
+    { "from": "order", "to": "payment", "label": "select payment; process", "role": "main" },
+    { "from": "payment", "to": "shipping", "label": "payment status; order continues", "role": "main" },
+    { "from": "shipping", "to": "invoice", "label": "completed order", "variant": "emphasis", "role": "main" },
+    { "from": "reservation", "to": "admin_management", "label": "manage / approve / update / cancel", "role": "branch" },
+    { "from": "admin_portal", "to": "admin_management", "label": "manage operations", "role": "main" },
+    { "from": "admin_portal", "to": "reporting_analytics", "label": "view reports and analytics", "role": "branch" },
+    { "from": "admin_portal", "to": "activity_log", "label": "view audit trail", "role": "branch" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Customer path", "items": ["Customer authenticates, receives JWT, and passes backend role authorization", "Menu, wishlist, cart, shipping, promotion, payment, order tracking, invoice, reservation, support, profile, password, and notification preferences are represented from system.md", "Order status follows Pending → Confirmed → Processing → Ready → Shipped / Served → Completed"] },
+    { "dot": "violet", "title": "Admin path", "items": ["Admin dashboard manages orders, customers, menu, inventory, suppliers, promotions, reservations, staff, shifts, support, and settings", "Reporting and analytics provide sales, order, product, customer, operational, best-seller, stock forecast, peak-hour, and loyalty views", "Important administrative actions are retained in the activity log"] },
+    { "dot": "amber", "title": "Specification boundary", "items": ["Frontend communicates with the PHP REST API through Fetch API; the backend validates JWT, authorization, business rules, and data", "MySQL is the persistent source of data", "This is a system workflow, not the DFD Level 0 requested for a separate diagram"] }
+  ]
+}
