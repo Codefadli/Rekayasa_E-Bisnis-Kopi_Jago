@@ -1,0 +1,1243 @@
+/* === VARIABEL WARNA & DASAR === */
+:root {
+    --jago-red: #E31837;
+    --jago-dark: #111111;
+    --jago-darker: #0a0a0a;
+    --jago-light: #f9f9f9;
+    --text-dark: #333333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: var(--text-dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    font-weight: 900;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.btn-primary {
+    display: inline-block;
+    background-color: var(--jago-red);
+    color: white;
+    padding: 12px 24px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    border-radius: 50px;
+    transition: opacity 0.3s;
+}
+
+.btn-primary:hover {
+    opacity: 0.8;
+}
+
+/* AREA PLACEHOLDER UNTUK GAMBAR/VIDEO */
+.placeholder-box {
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-weight: bold;
+    text-align: center;
+    border: 2px dashed #aaa;
+}
+
+/* === NAVBAR (EFEK TRANSPARAN -> MERAH) === */
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: transparent;
+    padding: 25px 50px; /* Tinggi dikembalikan ke ukuran semula agar tidak kekecilan */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    transition: background-color 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease;
+}
+header.scrolled {
+    background-color: var(--jago-red);
+    padding: 15px 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* --- MENGEMBALIKAN LOGO --- */
+.logo {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: white;
+    font-style: italic;
+}
+
+.logo img {
+    height: 40px;
+}
+
+/* --- POSISI MENU DI TENGAH --- */
+nav {
+    margin: 0 auto;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+}
+nav ul li a {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: white;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+nav ul li a:hover {
+    opacity: 0.7;
+}
+
+/* --- MUNCULKAN LOGIN & REGISTER --- */
+.nav-auth {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.auth-login {
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    text-decoration: none; /* Menghilangkan garis bawah link */
+    transition: opacity 0.3s;
+}
+
+.auth-login:hover {
+    opacity: 0.7;
+}
+
+.auth-register {
+    border: 2px solid white; /* Membuat kotak garis untuk tombol register */
+    padding: 8px 20px;
+    border-radius: 50px; /* Membuat ujung tombol melengkung */
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.auth-register:hover {
+    background-color: white;
+    color: var(--jago-dark);
+}
+
+/* Agar saat background header merah (di-scroll), warna teks di tombol ikut menyesuaikan */
+header.scrolled .auth-register:hover {
+    color: var(--jago-red);
+}
+
+/* === HERO SECTION (VIDEO FULL SCREEN) === */
+.hero {
+    margin-top: 0; /* Dibuat 0 agar video menempel paling atas */
+    height: 100vh; /* Full screen menutupi seluruh tinggi layar */
+    width: 100%;
+    position: relative;
+    background-color: var(--jago-dark);
+}
+
+.hero video, .hero .placeholder-box {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* === CART SECTION === */
+.cart-section {
+    padding: 80px 20px;
+    text-align: center;
+    background-color: white;
+}
+
+.cart-section h2 {
+    font-size: 36px;
+    margin-bottom: 40px;
+    color: var(--jago-dark);
+}
+
+.cart-image-container {
+    max-width: 800px;
+    height: 400px;
+    margin: 0 auto;
+}
+
+.cart-image-container img {
+    width: 100%;
+    height: auto;
+}
+
+/* === MENU CAROUSEL INTERAKTIF === */
+.menu-carousel {
+    padding: 80px 0;
+    background-color: white;
+    overflow: hidden;
+}
+
+.menu-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.menu-header h2 {
+    font-size: 24px;
+    color: var(--jago-dark);
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.menu-header h3 {
+    font-size: 36px;
+    color: var(--jago-dark);
+}
+
+.menu-container-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Wajib ada agar bisa digeser */
+    scroll-behavior: smooth;
+    scrollbar-width: none; 
+}
+
+.menu-container-wrapper::-webkit-scrollbar {
+    display: none; 
+}
+
+.menu-slider {
+    display: flex;
+    gap: 30px;
+    padding: 20px 80px;
+    width: max-content; /* Wajib ada agar card berjejer ke samping */
+}
+
+.menu-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    flex: 0 0 220px; /* Lebar pasti tiap kartu */
+    transition: transform 0.3s ease;
+}
+
+.menu-img-box {
+    width: 220px;
+    height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.menu-img-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    /* Efek transisi halus saat gambar membesar (pop-up) */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Efek Pop-up saat kursor mendekati kartu menu */
+.menu-card:hover .menu-img-box img {
+    transform: scale(1.15) translateY(-8px);
+}
+
+.menu-name {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    color: var(--jago-dark);
+    letter-spacing: 0.5px;
+    text-align: center;
+    transition: color 0.3s;
+}
+
+.menu-card:hover .menu-name {
+    color: var(--jago-red);
+}
+
+/* Kontrol Bawah (Dots & Panah Navigasi) */
+.menu-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 30px auto 0;
+    padding: 0 80px;
+}
+
+.carousel-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, width 0.3s ease;
+}
+
+.dot.active {
+    background-color: var(--jago-dark);
+}
+
+.carousel-arrows {
+    display: flex;
+    gap: 15px;
+}
+
+.arrow-btn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--jago-dark);
+    padding: 5px 10px;
+    transition: opacity 0.3s, transform 0.2s;
+}
+
+.arrow-btn:hover {
+    opacity: 0.5;
+    transform: scale(1.1);
+}
+
+/* === FEATURES SECTION (DARK GRID) === */
+.features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: var(--jago-darker);
+    color: white;
+}
+
+.feature-box {
+    padding: 80px 60px;
+    border: 1px solid #222;
+}
+
+.feature-box h3 {
+    color: var(--jago-red);
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.feature-box p {
+    font-size: 16px;
+    color: #ccc;
+    margin-bottom: 30px;
+    max-width: 400px;
+}
+
+/* === APP PROMO SECTION === */
+.app-promo {
+    display: flex; /* Kita ganti dari grid menjadi flex */
+    justify-content: center; /* Memaksa HP dan teks diam di tengah layar */
+    align-items: center;
+    background-color: var(--jago-dark);
+    gap: 40px; /* INI KUNCI JARAKNYA: Ubah angka ini kalau mau lebih mepet atau lebih jauh */
+    padding: 80px 20px;
+}
+
+/* Bungkus HP */
+.app-mockup {
+    height: 300px;
+    width: auto; /* Ganti dari 100% jadi auto agar kotaknya tidak kelebaran */
+}
+
+/* Gambar/GIF HP */
+.app-mockup img {
+    height: 100%;
+    width: auto; /* Gambar akan menyesuaikan proporsi aslinya secara otomatis */
+    border-radius: 20px;
+    object-fit: contain;
+}
+
+/* Teks dan Tombol */
+.app-text {
+    max-width: 400px; /* Menjaga agar teks tidak terlalu memanjang */
+}
+
+.app-text p {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+/* === BE A JAGOAN SECTION === */
+.be-jagoan {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: white;
+    border-top: 1px solid #eee;
+}
+
+.jagoan-text {
+    padding: 100px 50px 100px 100px;
+}
+
+.jagoan-text h2 {
+    font-size: 40px;
+    color: var(--jago-red);
+    margin-bottom: 20px;
+}
+
+.jagoan-text p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.jagoan-image {
+    height: 100%;
+    min-height: 400px;
+}
+
+/* === BLOG SECTION === */
+.blog-section {
+    padding: 80px 50px;
+    background-color: var(--jago-light);
+}
+
+.blog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 50px;
+}
+
+.blog-header-text h2 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.blog-header-text p {
+    max-width: 500px;
+    color: #666;
+}
+
+.btn-outline {
+    border: 2px solid var(--jago-red);
+    color: var(--jago-red);
+    padding: 10px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    border-radius: 50px;
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.blog-card {
+    background: white;
+}
+
+.blog-img {
+    height: 250px;
+    width: 100%;
+}
+
+.blog-info {
+    padding: 20px;
+}
+
+.blog-date {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.blog-title {
+    font-weight: 700;
+    color: var(--jago-dark);
+    font-size: 18px;
+}
+
+/* === NEWSLETTER === */
+.newsletter {
+    background-color: var(--jago-red);
+    color: white;
+    padding: 60px 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.newsletter p {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.newsletter-form p {
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    background: white;
+    border-radius: 50px;
+    overflow: hidden;
+    padding: 5px;
+}
+
+.form-group input {
+    flex: 1;
+    border: none;
+    padding: 10px 20px;
+    outline: none;
+    font-size: 16px;
+}
+
+.form-group button {
+    background-color: var(--jago-dark);
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* === FOOTER === */
+footer {
+    background-color: var(--jago-dark);
+    color: white;
+    padding: 80px 50px 30px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 2fr;
+    gap: 40px;
+    margin-bottom: 60px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 40px;
+}
+
+.footer-logo {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: white;
+    font-style: italic;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.footer-col p {
+    color: #999;
+    font-size: 14px;
+}
+
+.footer-col h4 {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col ul li {
+    margin-bottom: 12px;
+}
+
+.footer-col ul li a {
+    color: #999;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.footer-col ul li a:hover {
+    color: white;
+}
+
+.app-downloads {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.app-btn-placeholder {
+    width: 120px;
+    height: 40px;
+    background: #333;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.promo-banner {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+.copyright {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Pembungkus Utama */
+.features-section {
+    background-color: #1a1a1a; /* Warna background gelap */
+    padding: 80px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Grid 2x2 */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 70px 40px; /* Jarak antar kartu, atas-bawah diperbesar untuk ruang ikon */
+    max-width: 1200px;
+    width: 100%;
+}
+
+/* Gaya Dasar Kartu */
+.feature-card {
+    background-color: #1f1f1f;
+    border-radius: 20px;
+    padding: 50px 30px 40px 30px;
+    position: relative; /* Penting untuk penempatan ikon melayang */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border: 2px solid transparent; 
+}
+
+/* Teks dalam Kartu */
+.feature-card h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.feature-card p {
+    color: #cccccc;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    flex-grow: 1; /* Mendorong tombol ke bagian paling bawah */
+}
+
+/* Ikon Melayang di Atas Garis */
+.feature-icon {
+    position: absolute;
+    top: -35px; /* Menarik ikon ke atas agar menimpa garis tepi */
+    left: 40px; /* Jarak dari kiri */
+    width: 70px;
+    height: 70px;
+    border-radius: 50%; /* Membuat kotak menjadi bulat */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #1a1a1a; /* Memberi jarak visual antara ikon dan garis batas */
+}
+
+.feature-icon img {
+    width: 40px; /* Sesuaikan dengan ukuran gambar aslimu */
+    height: auto;
+}
+
+/* Tombol Merah */
+.btn-red {
+    background-color: #ef233c;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.btn-red:hover {
+    background-color: #d90429;
+}
+
+/* Pewarnaan Spesifik Garis Tepi (Border) dan Latar Ikon (Background) */
+.border-blue { border-color: #4361ee; }
+.bg-blue { background-color: #4361ee; }
+
+.border-orange { border-color: #f77f00; }
+.bg-orange { background-color: #f77f00; }
+
+.border-red { border-color: #ef233c; }
+.bg-red { background-color: #ef233c; }
+
+.border-yellow { border-color: #fcbf49; }
+.bg-yellow { background-color: #fcbf49; }
+
+/* Responsif untuk Layar HP */
+@media (max-width: 768px) {
+    .feature-grid {
+        grid-template-columns: 1fr; /* Berubah jadi 1 kolom menyusun ke bawah di HP */
+        gap: 60px 20px;
+    }
+}
+
+/* Pembungkus Utama Testimonial */
+.testimonials-section {
+    background-color: #ef233c; /* Warna merah Jago Coffee */
+    padding: 50px 20px;
+    text-align: center;
+}
+
+/* Judul Bagian */
+.testimonials-heading {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 50px;
+    letter-spacing: 1px;
+}
+
+/* Grid untuk mengatur 4 kartu sejajar */
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* Desain Kartu Ulasan */
+.testimonial-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Membuat nama pengulas selalu berada di bawah */
+}
+
+/* Teks Ulasan */
+.review-text {
+    color: #222222;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* Nama Pengulas */
+.reviewer-name {
+    color: #666666;
+    font-size: 0.8rem;
+}
+
+/* Responsif untuk layar Tablet & HP */
+@media (max-width: 1024px) {
+    .testimonials-grid {
+        grid-template-columns: repeat(2, 1fr); /* Menjadi 2 baris di layar sedang */
+        gap: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+    .testimonials-grid {
+        grid-template-columns: 1fr; /* Menumpuk ke bawah di HP */
+    }
+    .testimonials-heading {
+        font-size: 1.5rem;
+    }
+}
+
+/* === ACCOUNT PAGE SECTION === */
+.account-section {
+    background-color: #f9f9f9; 
+    padding: 110px 50px 20px; /* Jarak atas dikecilkan dari 140px jadi 110px */
+    height: 100vh; /* Memaksa tinggi pas 1 layar penuh */
+    overflow: hidden; /* Menghilangkan scrollbar */
+    box-sizing: border-box;
+}
+.account-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.account-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--jago-dark, #222);
+    margin-bottom: 25px;
+}
+
+/* --- GARIS KARTU ABU-ABU ELEGAN & BERBAYANG --- */
+.account-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0; /* Garis abu-abu tipis dan rapi */
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Efek shadow lembut yang estetik */
+}
+
+/* --- PENYESUAIAN KONTEN BANNER PROMO (TANPA GAMBAR) --- */
+.dashboard-content {
+    padding: 30px 40px;
+    min-height: auto;
+}
+
+/* --- TAMPILAN BANNER PROMO BERJAJAR KIRI-KANAN --- */
+.promo-banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.promo-banner-text {
+    flex: 1;
+}
+
+/* Kotak Placeholder Gambar/Video di Kanan */
+.promo-banner-img {
+    width: 220px;
+    height: 140px;
+    background-color: #f2f2f2;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.img-placeholder-box {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #666;
+}
+
+.promo-badge {
+    background-color: var(--jago-red, #e3000f);
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.promo-banner-text h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--jago-dark, #222);
+    margin-bottom: 10px;
+}
+
+.promo-banner-text p {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.promo-order-btn {
+    display: inline-block;
+    background-color: var(--jago-dark, #222);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+}
+
+.promo-order-btn:hover {
+    background-color: var(--jago-red, #e3000f);
+}
+
+/* Kotak Visual Placeholder Gambar Menu */
+.promo-banner-img {
+    width: 220px;
+    height: 140px;
+    background-color: #f2f2f2;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.img-placeholder-box {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #666;
+}
+
+/* --- KARTU PROMO --- */
+.promo-card {
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.promo-text h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    color: var(--jago-dark, #222);
+    margin-bottom: 8px;
+}
+
+.promo-text p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.promo-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-outline-red {
+    border: 2px solid var(--jago-dark, #222);
+    background: transparent;
+    color: var(--jago-dark, #222);
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-outline-red:hover {
+    border-color: var(--jago-red, #e3000f);
+    color: var(--jago-red, #e3000f);
+}
+
+.btn-solid-red {
+    background: var(--jago-dark, #222);
+    color: white;
+    border: 2px solid var(--jago-dark, #222);
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-solid-red:hover {
+    background: var(--jago-red, #e3000f);
+    border-color: var(--jago-red, #e3000f);
+}
+
+/* --- KARTU DASHBOARD (ORDERS & WISHLIST) --- */
+.dashboard-tabs {
+    display: flex;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 18px;
+    font-size: 15px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: #aaa;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+}
+
+.tab-btn.active {
+    color: var(--jago-dark, #222);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--jago-red, #e3000f);
+}
+
+.dashboard-content {
+    padding: 20px 40px; /* Jarak dalam dikecilkan */
+    min-height: 250px; /* Dikecilkan dari 350px agar kotaknya tidak memanjang ke bawah */
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+}
+
+.dashboard-header h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    color: var(--jago-dark, #222);
+}
+
+.status-filter {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: 'Open Sans', sans-serif;
+    color: #333;
+    outline: none;
+    cursor: pointer;
+}
+
+/* --- TAMPILAN KOSONG (EMPTY STATE) --- */
+.empty-state {
+    text-align: center;
+    padding: 20px 0; /* Jarak atas bawah dikecilkan dari 40px */
+}
+
+.empty-icon {
+    margin-bottom: 20px;
+}
+
+.empty-state h5 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    color: var(--jago-dark, #222);
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    font-size: 15px;
+    color: #666;
+}
+
+/* --- TOMBOL CHAT SUPPORT MELAYANG --- */
+.chat-support-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: var(--jago-red, #e3000f);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(227, 0, 15, 0.3); /* Bayangan berwarna merah agar menyatu dengan tombol */
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease, background-color 0.3s;
+}
+
+.chat-support-btn:hover {
+    transform: scale(1.1);
+    background-color: var(--jago-dark, #222);
+}
+
+/* Responsif untuk layar HP */
+@media (max-width: 768px) {
+    .promo-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* --- PENGATURAN BACKGROUND VIDEO TRANSPARAN --- */
+.account-section {
+    position: relative; /* Wajib relative agar video absolute mengikutinya */
+    background-color: #000; /* Fallback jika video gagal dimuat */
+    padding: 110px 50px 20px;
+    height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Membuat video menutupi seluruh area section dan berada di paling belakang */
+.bg-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: 1; /* Posisinya di bawah segalanya */
+    object-fit: cover;
+}
+
+/* Lapisan transparan gelap di atas video agar kartu putih dan teks makin kontras */
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.45); /* Tingkat transparansi gelap bisa kamu atur di sini (0.45 = 45% gelap) */
+    z-index: 2;
+}
+
+/* Memastikan kontainer kartu berada di atas video dan overlay */
+.account-container {
+    position: relative;
+    z-index: 3; 
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Mengubah warna judul "My Account" jadi putih agar terlihat jelas di atas video */
+.account-section .account-title {
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* --- PENGATURAN KHUSUS NAVBAR DI HALAMAN LOGIN --- */
+
+/* 1. Sembunyikan tombol Login & Register di pojok kanan */
+header.auth-page .nav-auth {
+    display: none !important;
+}
+
+/* 2. Geser menu navigasi tengah agar bergeser ke arah kanan */
+header.auth-page nav {
+    margin-left: auto; /* Mendorong area nav ke sisi kanan */
+    margin-right: 40px; /* Memberikan jarak dari tepi kanan */
+}
+
+/* --- POPUP (MODAL) LOGIN & REGISTER JAGO COFFEE --- */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Efek gelap di belakang popup */
+    z-index: 999;
+}
+
+.auth-modal {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    width: 90%; max-width: 450px;
+    border-radius: 16px;
+    padding: 30px;
+    z-index: 1000;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.modal-header h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--jago-dark, #222);
+}
+
+.close-btn {
+    background: none; border: none;
+    font-size: 28px; cursor: pointer; color: #999;
+    transition: color 0.3s;
+}
+.close-btn:hover { color: var(--jago-red, #e3000f); }
+
+.input-group {
+    display: flex; align-items: center;
+    border: 1px solid #ddd; border-radius: 8px;
+    padding: 12px 15px; margin-bottom: 15px;
+    transition: border 0.3s;
+}
+.input-group:focus-within { border: 1px solid var(--jago-red, #e3000f); }
+.input-group .icon { margin-right: 12px; color: #888; font-size: 18px; }
+.input-group input { border: none; outline: none; width: 100%; font-size: 15px; font-family: 'Open Sans', sans-serif; }
+
+.btn-modal-submit {
+    width: 100%; padding: 14px; margin-top: 10px;
+    background-color: #ccc; /* Abu-abu default, ganti jadi var(--jago-red) jika ingin langsung merah */
+    color: white; border: none; border-radius: 8px;
+    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 15px;
+    cursor: pointer; transition: background-color 0.3s;
+}
+.btn-modal-submit:hover { background-color: var(--jago-red, #e3000f); }
+
+.switch-auth { text-align: center; font-size: 14px; margin-top: 20px; color: #555; }
+.switch-auth a { color: var(--jago-dark, #222); text-decoration: none; }
+.switch-auth a strong { color: var(--jago-red, #e3000f); }
+
+.recaptcha-text { font-size: 11px; color: #999; text-align: center; margin-top: 25px; line-height: 1.5; }
+.register-subtitle { font-size: 13px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+
+.birthday-section { margin-bottom: 20px; }
+.birthday-section label { display: block; font-size: 13px; color: #444; margin-bottom: 8px; font-weight: 600; }
+.birthday-selects { display: flex; gap: 10px; }
+.birthday-selects select { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer; }

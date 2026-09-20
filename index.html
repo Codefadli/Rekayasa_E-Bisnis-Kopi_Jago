@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jago Coffee - Clone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- PERUBAHAN 1: Ditambahkan id="navbar" di sini -->
+    <header id="navbar">
+        <div class="logo">
+            JAGO
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">ABOUT US</a></li>
+                <li><a href="#">MENU</a></li>
+                <li><a href="#">HOW IT WORKS</a></li>
+                <li><a href="#">BLOG</a></li>
+            </ul>
+        </nav>
+        
+<div class="nav-auth">
+    <a href="login.html" class="auth-login">Login</a>
+    <a href="login.html" class="auth-register">Register</a>
+</div>
+    </header>
+
+    <section class="hero">
+        <video autoplay muted loop playsinline>
+            <source src="Video Hero.mp4" type="video/mp4">
+        </video>
+    </section>
+
+    <section class="cart-section">
+        <h2>A CART THAT GREW WITH THE PEOPLE</h2>
+        <div class="cart-image-container">
+            <img src="Gerobak kopi jago.png" alt="">
+        </div>
+    </section>
+
+    <!-- MENU CAROUSEL -->
+    <section class="menu-carousel">
+        <div class="menu-header">
+            <h2>CURIOUS ABOUT JAGO COFFEE?</h2>
+            <h3>GET YOURS NOW!</h3>
+        </div>
+        
+        <div class="menu-container-wrapper">
+            <div class="menu-slider" id="menuSlider">
+                <div class="menu-card">
+                    <div class="menu-img-box"><img src="pink coco.jfif" alt="Pink Coco"></div>
+                    <div class="menu-name">PINK COCO</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-img-box"><img src="mont blanck kopi.jfif" alt="Mont Blanc Shake"></div>
+                    <div class="menu-name">MONT BLANC SHAKE</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-img-box"><img src="americano koja.jfif" alt="Jago Americano"></div>
+                    <div class="menu-name">JAGO AMERICANO</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-img-box"><img src="macha latte.jfif" alt="Matcha Latte"></div>
+                    <div class="menu-name">MATCHA LATTE</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-img-box"><img src="kopsu jago.jfif" alt="Kopi Susu Jago"></div>
+                    <div class="menu-name">KOPI SUSU JAGO</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-img-box"><img src="citrus cold.jfif" alt="Citrus Cold Brew"></div>
+                    <div class="menu-name">CITRUS COLD BREW</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-img-box"><img src="Salted Caramel Latte.png" alt="Salted Caramel Latte"></div>
+                    <div class="menu-name">SALTED CARAMEL LATTE</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-img-box"><img src="jago coklat.jfif" alt="Jago Chocolate"></div>
+                    <div class="menu-name">JAGO CHOCOLATE</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bagian Kontrol Titik-titik & Panah -->
+        <div class="menu-controls">
+            <div class="carousel-dots" id="carouselDots"></div>
+            <div class="carousel-arrows">
+                <button id="prevBtn" class="arrow-btn">←</button>
+                <button id="nextBtn" class="arrow-btn">→</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section">
+    <div class="feature-grid">
+        <!-- Kartu 1: Biru -->
+        <div class="feature-card border-blue">
+            <div class="feature-icon bg-blue">                
+            </div>
+            <h3>YOUR NEIGHBORHOOD CAFE</h3>
+            <p>Our Jagoans roam the neighborhoods and are always available to serve you a quality beverage.</p>
+            <a href="#" class="btn-red">SEE WHERE</a>
+        </div>
+
+        <!-- Kartu 2: Oranye -->
+        <div class="feature-card border-orange">
+            <div class="feature-icon bg-orange">              
+            </div>
+            <h3>QUALITY DOESN'T HAVE TO BE EXPENSIVE</h3>
+            <p>Starting from IDR 8K, you can taste 100% Arabica coffee beans that are traded directly from Indonesian farmers and are roasted with our own recipes.</p>
+            <a href="#" class="btn-red">SIP YOURS</a>
+        </div>
+
+        <!-- Kartu 3: Merah -->
+        <div class="feature-card border-red">
+            <div class="feature-icon bg-red">                
+            </div>
+            <h3>FAST AND ACCESSIBLE</h3>
+            <p>Order now via Jago App and you'll get a cup-in-hand right away or schedule ahead if that's more convenient. Never a delivery fee.</p>
+            <a href="#" class="btn-red">TRY NOW</a>
+        </div>
+
+        <!-- Kartu 4: Kuning -->
+        <div class="feature-card border-yellow">
+            <div class="feature-icon bg-yellow">
+            </div>
+            <h3>YOUR JAGOANS</h3>
+            <p>Jagoans are fully trained baristas and the operators of the cart. They're always ready to serve you a fresh cup and provide great hospitality as if you walked into a cafe.</p>
+            <a href="#" class="btn-red">MEET THEM</a>
+        </div>
+    </div>
+</section>
+
+<section class="testimonials-section">
+    <h2 class="testimonials-heading">WHAT OUR CUSTOMERS ARE SAYING</h2>
+    
+    <div class="testimonials-grid">
+        <!-- Ulasan 1 -->
+        <div class="testimonial-card">
+            <p class="review-text">The cart design and the concept of cafe-on-wheels are really cool! It's giving a whole new experience for customers</p>
+            <p class="reviewer-name">— Lonyoh </p>
+        </div>
+
+        <!-- Ulasan 2 -->
+        <div class="testimonial-card">
+            <p class="review-text">A solution for people who want to get a cafe quality coffee with a home-made coffee price. Jago Coffee rocks!</p>
+            <p class="reviewer-name">— Alpon </p>
+        </div>
+
+        <!-- Ulasan 3 -->
+        <div class="testimonial-card">
+            <p class="review-text">My go-to whenever I crave for a coffee but too lazy to spend a delivery fee. Jago Coffee is indeed the solution</p>
+            <p class="reviewer-name">— MJ</p>
+        </div>
+
+        <!-- Ulasan 4 -->
+        <div class="testimonial-card">
+            <p class="review-text">You can book Jago Coffee for events too! The baristas are super friendly. Cool !</p>
+            <p class="reviewer-name">— Ciwidey </p>
+        </div>
+    </div>
+</section>
+
+    <section class="app-promo">
+        <div class="app-mockup">
+            <img src="HP koja.gif" alt="Aplikasi Jago Coffee">
+        </div>
+        <div class="app-text">
+            <p>Pay with GoPay or OVO and your Jagoan will be there within 15 minutes</p>
+            <a href="#" class="btn-primary">DOWNLOAD NOW</a>
+        </div>
+    </section>
+
+    <section class="be-jagoan">
+        <div class="jagoan-text">
+            <h2>BE A JAGOAN</h2>
+            <p>Mulai perjalananmu bersama Jago Coffee hanya dari 24 jam. Kamu bisa langsung berjualan kopi dan mendapatkan penghasilan.</p>
+        </div>
+        <div class="jagoan-image placeholder-box">
+            Taruh Foto Jagoan/Barista Di Sini
+        </div>
+    </section>
+
+    <section class="blog-section">
+        <div class="blog-header">
+            <div class="blog-header-text">
+                <h2>NEWEST BLOG</h2>
+                <p>Check out Jago's blog to get served the latest information about what's happening with us.</p>
+            </div>
+            <a href="#" class="btn-outline">SEE ALL POST</a>
+        </div>
+        <div class="blog-grid">
+            <div class="blog-card">
+                <div class="blog-img placeholder-box">Gambar Blog 1</div>
+                <div class="blog-info">
+                    <span class="blog-date">July 1, 2026</span>
+                    <p class="blog-title">Judul Artikel Blog 1...</p>
+                </div>
+            </div>
+            <div class="blog-card">
+                <div class="blog-img placeholder-box">Gambar Blog 2</div>
+                <div class="blog-info">
+                    <span class="blog-date">July 1, 2026</span>
+                    <p class="blog-title">Judul Artikel Blog 2...</p>
+                </div>
+            </div>
+            <div class="blog-card">
+                <div class="blog-img placeholder-box">Gambar Blog 3</div>
+                <div class="blog-info">
+                    <span class="blog-date">April 21, 2026</span>
+                    <p class="blog-title">Judul Artikel Blog 3...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="newsletter">
+        <div>
+            <p>Receive the newest information & other fun stuff by subscribing our newsletter</p>
+        </div>
+        <div class="newsletter-form">
+            <p>By filling this form you'll receive occasional cool news about us.</p>
+            <div class="form-group">
+                <input type="email" placeholder="Email Address">
+                <button>→</button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <span class="footer-logo">JAGO</span>
+                <p>Jl. Karet Pasar Baru Barat VII No.8, Karet Tengsin, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10250</p>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Terms And Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Product & Services</h4>
+                <ul>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Jago Party</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Email</a></li>
+                    <li><a href="#">WhatsApp</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>DOWNLOAD JAGO APP</h4>
+                <div class="app-downloads">
+                    <div class="app-btn-placeholder"></div>
+                    <div class="app-btn-placeholder"></div>
+                </div>
+                <div class="promo-banner placeholder-box">Banner Promo</div>
+                <p style="font-size: 10px; margin-top: 5px;">*S&K Berlaku</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>Copyright © 2026 Jago Coffee. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- PERUBAHAN 2: Ditambahkan script JavaScript untuk mendeteksi scroll di sini -->
+    <script>
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+
+    <script>
+        // PERBAIKAN: Kita targetkan '.menu-container-wrapper' sebagai elemen yang di-scroll
+        const slider = document.querySelector('.menu-container-wrapper'); 
+        
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dotsContainer = document.getElementById('carouselDots');
+
+        // Mengambil semua kartu menu
+        const cards = document.querySelectorAll('.menu-card');
+        const totalDots = cards.length - 3; 
+
+        // Bersihkan dot agar tidak duplikat
+        dotsContainer.innerHTML = '';
+
+        // Membuat titik-titik (dots) secara otomatis
+        for (let i = 0; i <= totalDots; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (i === 0) dot.classList.add('active');
+            
+            dot.addEventListener('click', () => {
+                slider.scrollTo({
+                    left: i * 250,
+                    behavior: 'smooth'
+                });
+            });
+            dotsContainer.appendChild(dot);
+        }
+
+        const dots = dotsContainer.querySelectorAll('.dot');
+
+        // Mengubah dot aktif saat laci digeser
+        slider.addEventListener('scroll', () => {
+            let index = Math.round(slider.scrollLeft / 250);
+            if (index > totalDots) index = totalDots;
+            if (index < 0) index = 0;
+
+            dots.forEach(d => d.classList.remove('active'));
+            if (dots[index]) {
+                dots[index].classList.add('active');
+            }
+        });
+
+        // Tombol panah kanan & kiri
+        nextBtn.addEventListener('click', () => {
+            slider.scrollBy({ left: 250, behavior: 'smooth' });
+        });
+
+        prevBtn.addEventListener('click', () => {
+            slider.scrollBy({ left: -250, behavior: 'smooth' });
+        });
+    </script>
+
+</body>
+</html>
