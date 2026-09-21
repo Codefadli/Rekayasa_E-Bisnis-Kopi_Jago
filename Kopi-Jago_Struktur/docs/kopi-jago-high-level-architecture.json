@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Kopi Jago — High-Level System Architecture",
+    "quality_profile": "showcase",
+    "viewBox": [900, 720]
+  },
+  "components": [
+    { "id": "customer", "type": "external", "label": "Customer", "sublabel": "Web user", "pos": [15, 210], "size": [105, 62] },
+    { "id": "admin", "type": "external", "label": "Admin", "sublabel": "Operations user", "pos": [15, 445], "size": [105, 62] },
+    { "id": "customerWeb", "type": "frontend", "label": "Customer Web", "sublabel": "HTML, CSS, JavaScript", "pos": [144, 195], "size": [145, 78], "tag": "Fetch API + localStorage" },
+    { "id": "adminWeb", "type": "frontend", "label": "Admin Web", "sublabel": "HTML, CSS, JavaScript", "pos": [144, 430], "size": [145, 78], "tag": "Fetch API + localStorage" },
+    { "id": "apiCore", "type": "security", "label": "PHP REST API", "sublabel": "JWT, RBAC, validation & JSON", "pos": [325, 300], "size": [170, 96], "tag": "Authentication & authorization" },
+    { "id": "customerModules", "type": "backend", "label": "Customer & Catalog", "sublabel": "Users, menu, ratings, wishlist, notifications", "pos": [535, 80], "size": [170, 68] },
+    { "id": "commerceModules", "type": "backend", "label": "Order & Commerce", "sublabel": "Orders, payment, shipping, promo, invoice", "pos": [535, 220], "size": [170, 68] },
+    { "id": "operationsModules", "type": "backend", "label": "Operations Management", "sublabel": "Reservations, stock, supplier, staff/shift", "pos": [535, 360], "size": [170, 68] },
+    { "id": "insightModules", "type": "backend", "label": "Support, Insights & Audit", "sublabel": "Support, reports, analytics, activity logging", "pos": [535, 500], "size": [170, 68] },
+    { "id": "mysql", "type": "database", "label": "MySQL", "sublabel": "Domain data & integrity", "pos": [750, 300], "size": [125, 82], "tag": "System of record" }
+  ],
+  "connections": [
+    { "id": "customer-web", "from": "customer", "to": "customerWeb", "variant": "emphasis" },
+    { "id": "admin-web", "from": "admin", "to": "adminWeb", "variant": "emphasis" },
+    { "id": "customer-api", "from": "customerWeb", "to": "apiCore", "label": "HTTPS + Bearer JWT", "variant": "security", "fromSide": "right", "toSide": "top" },
+    { "id": "admin-api", "from": "adminWeb", "to": "apiCore", "label": "HTTPS + Bearer JWT", "variant": "security", "fromSide": "right", "toSide": "bottom" },
+    { "id": "api-customer-modules", "from": "apiCore", "to": "customerModules", "fromSide": "right", "toSide": "left" },
+    { "id": "api-commerce-modules", "from": "apiCore", "to": "commerceModules", "fromSide": "right", "toSide": "left" },
+    { "id": "api-operations-modules", "from": "apiCore", "to": "operationsModules", "fromSide": "right", "toSide": "left" },
+    { "id": "api-insight-modules", "from": "apiCore", "to": "insightModules", "fromSide": "right", "toSide": "left" },
+    { "id": "customer-data", "from": "customerModules", "to": "mysql", "fromSide": "right", "toSide": "top" },
+    { "id": "commerce-data", "from": "commerceModules", "to": "mysql", "fromSide": "right", "toSide": "left" },
+    { "id": "operations-data", "from": "operationsModules", "to": "mysql", "fromSide": "right", "toSide": "left" },
+    { "id": "insights-data", "from": "insightModules", "to": "mysql", "fromSide": "right", "toSide": "bottom" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Interaction", "items": ["Customer and admin use separate web interfaces.", "Both interfaces call the backend through HTTPS and Fetch API."] },
+    { "dot": "violet", "title": "Control", "items": ["Backend validates JWT and enforces role-based access control.", "Business logic and data validation remain on the backend."] },
+    { "dot": "emerald", "title": "Data boundary", "items": ["MySQL is the persistent system of record.", "Frontend access to the database is not permitted."] }
+  ]
+}
