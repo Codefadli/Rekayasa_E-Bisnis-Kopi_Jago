@@ -11,18 +11,21 @@
 
     <!-- PERUBAHAN 1: Ditambahkan id="navbar" di sini -->
     <header id="navbar">
-        <div class="logo">
-            JAGO
-        </div>
-        <nav>
-            <ul>
-                <li><a href="#">ABOUT US</a></li>
-                <li><a href="#">MENU</a></li>
-                <li><a href="#">HOW IT WORKS</a></li>
-                <li><a href="#">BLOG</a></li>
-            </ul>
-        </nav>
-        
+    <div class="logo">
+        <a href="index.html">
+            <img src="logo jago2.png" alt="Jago Coffee" class="nav-logo-img">
+        </a>
+    </div>
+    
+    <nav>
+        <ul>
+            <li><a href="#">ABOUT US</a></li>
+            <li><a href="#">MENU</a></li>
+            <li><a href="#">HOW IT WORKS</a></li>
+            <li><a href="#">BLOG</a></li>
+        </ul>
+    </nav>
+
 <div class="nav-auth">
     <a href="login.html" class="auth-login">Login</a>
     <a href="login.html" class="auth-register">Register</a>
@@ -166,26 +169,39 @@
     </div>
 </section>
 
-    <section class="app-promo">
-        <div class="app-mockup">
-            <img src="HP koja.gif" alt="Aplikasi Jago Coffee">
-        </div>
-        <div class="app-text">
-            <p>Pay with GoPay or OVO and your Jagoan will be there within 15 minutes</p>
-            <a href="#" class="btn-primary">DOWNLOAD NOW</a>
-        </div>
-    </section>
+    <section class="tutorial-section">
+  <div class="tutorial-container">
+    
+    <!-- Gambar HP -->
+    <div class="tutorial-phone">
+      <!-- Ganti 'nama-file-hp.png' dengan nama file gambar HP milikmu -->
+      <img src="HP koja.gif" alt="Aplikasi Jago Coffee" class="phone-img">
+    </div>
 
-    <section class="be-jagoan">
-        <div class="jagoan-text">
-            <h2>BE A JAGOAN</h2>
-            <p>Mulai perjalananmu bersama Jago Coffee hanya dari 24 jam. Kamu bisa langsung berjualan kopi dan mendapatkan penghasilan.</p>
-        </div>
-        <div class="jagoan-image placeholder-box">
-            Taruh Foto Jagoan/Barista Di Sini
-        </div>
-    </section>
+    <!-- Teks Tutorial 3 Langkah -->
+    <div class="tutorial-text">
+      <h2>TRY JAGO IN 3 STEPS</h2>
 
+      <div class="step-item">
+        <h3>1. Choose your location</h3>
+        <p>Our Jagoans will come to you based on your chosen location</p>
+      </div>
+
+      <div class="step-item">
+        <h3>2. Select from coffees or teas</h3>
+        <p>Choose your go-to drinks that start at only IDR 8K</p>
+      </div>
+
+      <div class="step-item">
+        <h3>3. Easily pay and wait for your Jagoan to arrive</h3>
+        <p>Pay with GoPay or OVO and your Jagoan will be there within 15 minutes</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+   
     <section class="blog-section">
         <div class="blog-header">
             <div class="blog-header-text">
@@ -219,59 +235,77 @@
         </div>
     </section>
 
-    <section class="newsletter">
-        <div>
-            <p>Receive the newest information & other fun stuff by subscribing our newsletter</p>
-        </div>
-        <div class="newsletter-form">
-            <p>By filling this form you'll receive occasional cool news about us.</p>
-            <div class="form-group">
-                <input type="email" placeholder="Email Address">
-                <button>→</button>
-            </div>
-        </div>
-    </section>
+    <section class="newsletter-section">
+  <div class="newsletter-container">
+    
+    <!-- Sisi Kiri: Judul & Subtitle -->
+    <div class="newsletter-left">
+      <h2>LET'S GET CLOSER TO BANG JAGO!</h2>
+      <p>Receive the newest information & other fun stuff by subscribing our newsletter</p>
+    </div>
+
+    <!-- Sisi Kanan: Input, Tombol Subscribe, & Catatan -->
+    <div class="newsletter-right">
+      <form class="newsletter-form" onsubmit="event.preventDefault();">
+        <input type="email" placeholder="Type your email here" required>
+        <button type="submit">SUBSCRIBE</button>
+      </form>
+      <p class="form-note">By filling this form you'll receive occasional cool news about us.</p>
+    </div>
+
+  </div>
+</section>
 
     <footer>
-        <div class="footer-grid">
-            <div class="footer-col">
-                <span class="footer-logo">JAGO</span>
-                <p>Jl. Karet Pasar Baru Barat VII No.8, Karet Tengsin, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10250</p>
-            </div>
-            <div class="footer-col">
-                <h4>Company</h4>
-                <ul>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Careers</a></li>
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">Terms And Conditions</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Product & Services</h4>
-                <ul>
-                    <li><a href="#">Services</a></li>
-                    <li><a href="#">Jago Party</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="#">Email</a></li>
-                    <li><a href="#">WhatsApp</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>DOWNLOAD JAGO APP</h4>
-                <div class="app-downloads">
-                    <div class="app-btn-placeholder"></div>
-                    <div class="app-btn-placeholder"></div>
-                </div>
-                <div class="promo-banner placeholder-box">Banner Promo</div>
-                <p style="font-size: 10px; margin-top: 5px;">*S&K Berlaku</p>
-            </div>
+        <footer>
+    <div class="footer-grid">
+        <!-- Kolom 1: Logo & Alamat -->
+        <div class="footer-col">
+            <img src="logo jago2.png" alt="Jago Coffee" class="footer-logo-img">
+            <p>Jl. Karet Pasar Baru Barat VII No.8, Karet Tengsin, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10250</p>
         </div>
+
+        <!-- Kolom 2: Company -->
+        <div class="footer-col">
+            <h4>COMPANY</h4>
+            <ul>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Privacy</a></li>
+                <li><a href="#">Terms And Conditions</a></li>
+            </ul>
+        </div>
+
+        <!-- Kolom 3: Product & Services -->
+        <div class="footer-col">
+            <h4>PRODUCT & SERVICES</h4>
+            <ul>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Jago Party</a></li>
+            </ul>
+        </div>
+
+        <!-- Kolom 4: Support -->
+        <div class="footer-col">
+            <h4>SUPPORT</h4>
+            <ul>
+                <li><a href="#">Email</a></li>
+                <li><a href="#">WhatsApp</a></li>
+            </ul>
+        </div>
+
+        <!-- Kolom 5: Banner Promo & S&K -->
+        <div class="footer-col">
+            <div class="promo-banner-frame">
+                <span class="promo-badge">PROMO SPESIAL</span>
+                <h3>DISKON 20%</h3>
+                <p>Khusus pesanan pertamamu hari ini! Yuk daftar & nikmati promonya.</p>
+                <a href="login.html" class="promo-btn">KLAIM SEKARANG</a>
+            </div>
+            <p class="sk-berlaku">*S&K Berlaku</p>
+        </div>
+    </div>
         <div class="copyright">
             <p>Copyright © 2026 Jago Coffee. All rights reserved.</p>
         </div>
@@ -342,6 +376,39 @@
             slider.scrollBy({ left: -250, behavior: 'smooth' });
         });
     </script>
+
+<button class="chat-support-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </button>
+
+    <!-- Pop-up Box Chat Support -->
+<div class="chat-popup" id="chatPopup">
+  <div class="chat-header">
+    <h3>Chat Support</h3>
+    <button class="close-chat-btn" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-body">
+    <p>Log in to save your chat and continue on any device.</p>
+    <a href="login.html" class="btn-chat-login">Login</a>s
+  </div>
+</div>
+
+<!-- Tombol Chat Melayang -->
+<button class="floating-chat-btn" onclick="toggleChat()">
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path>
+  </svg>
+</button>
+
+<!-- Script Buka-Tutup Pop-up -->
+<script>
+  function toggleChat() {
+    const popup = document.getElementById('chatPopup');
+    popup.classList.toggle('active');
+  }
+</script>
 
 </body>
 </html>

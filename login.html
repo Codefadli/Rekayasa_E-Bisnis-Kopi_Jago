@@ -11,7 +11,11 @@
 
     <!-- NAVBAR -->
     <header id="navbar" class="scrolled auth-page">
-        <div class="logo">JAGO</div>
+      <div class="logo">
+        <a href="index.html"class="nav-logo">
+            <img src="logo jago2.png" alt="Jago Coffee" class="nav-logo">
+        </a>
+    </div>
         <nav>
             <ul>
                 <li><a href="index.html">ABOUT US</a></li>
@@ -84,19 +88,81 @@
     <div id="modal-overlay" class="modal-overlay" onclick="closeModals()"></div>
 
     <!-- MODAL LOGIN -->
+   <!-- MODAL LOGIN -->
     <div id="login-modal" class="auth-modal">
         <div class="modal-header">
             <h2>Login</h2>
             <button class="close-btn" onclick="closeModals()">&times;</button>
         </div>
+        
         <div class="modal-body">
             <div class="input-group">
                 <span class="icon"></span>
                 <input type="text" placeholder="Your email/phone number">
             </div>
-            <button class="btn-modal-submit">Next</button>
+            
+            <div class="input-group">
+                <i class="icon fas fa-lock"></i>
+                <input type="password" placeholder="Password" id="login-password">
+            </div>
+
+            <!-- Link Lupa Password -->
+            <div class="forgot-password-link">
+                <a href="#" id="show-forgot-modal">Lupa Password?</a>
+            </div>
+
+            <!-- Tombol Login -->
+            <button class="btn-modal-submit">Login</button>
+            
             <p class="switch-auth">Don't have account? <a href="javascript:void(0)" onclick="openRegister()">Signup <strong>here</strong></a></p>
             <p class="recaptcha-text">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and <strong>Terms of Service</strong> apply.</p>
+        </div>
+    </div>
+
+
+    <!-- MODAL LUPA PASSWORD (Ditaruh sejajar di luar modal login) -->
+    <div class="auth-modal" id="forgot-modal" style="display: none;">
+        <div class="modal-header">
+            <h2>Lupa Password</h2>
+            <button class="close-btn" id="close-forgot">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="register-subtitle" style="margin-bottom: 20px; font-size: 14px; color: #666;">Masukkan email yang terdaftar, kami akan mengirimkan link untuk mereset password kamu.</p>
+            
+            <div class="input-group">
+                <i class="icon fas fa-envelope"></i>
+                <input type="email" placeholder="Alamat Email" required>
+            </div>
+            
+            <button class="btn-modal-submit" id="btn-send-reset">Kirim Link Reset</button>
+            
+            <div class="switch-auth" style="text-align: center; margin-top: 15px;">
+                <a href="#" id="back-to-login" style="font-size: 13px; color: #666; text-decoration: none;">Kembali ke <strong>Login</strong></a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL RESET PASSWORD (Ditaruh sejajar di luar modal login) -->
+    <div class="auth-modal" id="reset-modal" style="display: none;">
+        <div class="modal-header">
+            <h2>Buat Password Baru</h2>
+            <button class="close-btn" id="close-reset">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="register-subtitle" style="margin-bottom: 20px; font-size: 14px; color: #666;">Silakan masukkan password baru kamu di bawah ini.</p>
+            
+            <div class="input-group">
+                <i class="icon fas fa-lock"></i>
+                <input type="password" placeholder="Password Baru" required>
+            </div>
+            
+            <div class="input-group">
+                <i class="icon fas fa-lock"></i>
+                <input type="password" placeholder="Konfirmasi Password Baru" required>
+            </div>
+            
+            <button class="btn-modal-submit" id="btn-save-password">Simpan Password</button>
         </div>
     </div>
 
@@ -154,5 +220,33 @@
             document.getElementById('register-modal').style.display = 'none';
         }
     </script>
+
+    <!-- Pop-up Box Chat Support -->
+<div class="chat-popup" id="chatPopup">
+  <div class="chat-header">
+    <h3>Chat Support</h3>
+    <button class="close-chat-btn" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-body">
+    <p>Log in to save your chat and continue on any device.</p>
+    <a href="login.html" class="btn-chat-login">Login</a>
+  </div>
+</div>
+
+<!-- Tombol Chat Melayang -->
+<button class="floating-chat-btn" onclick="toggleChat()">
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path>
+  </svg>
+</button>
+
+<!-- Script Buka-Tutup Pop-up -->
+<script>
+  function toggleChat() {
+    const popup = document.getElementById('chatPopup');
+    popup.classList.toggle('active');
+  }
+</script>
+<script src="script.js"></script>
 </body>
 </html>
