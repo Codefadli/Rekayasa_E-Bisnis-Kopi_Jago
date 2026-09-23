@@ -28,23 +28,19 @@ if (backToLoginLink) {
     });
 }
 
-// 3. Simulasi Kirim Link Reset (Pindah ke modal Buat Password Baru)
+// 3. Password reset is not exposed by the current API; do not report a fake success.
 if (btnSendReset) {
     btnSendReset.addEventListener('click', function(e) {
         e.preventDefault();
-        alert("Link reset password telah dikirim ke email kamu! (Simulasi)");
-        if (forgotModal) forgotModal.style.display = 'none';
-        if (resetModal) resetModal.style.display = 'block';
+        alert("Reset password belum tersedia. Silakan hubungi admin.");
     });
 }
 
-// 4. Simulasi Simpan Password Baru
+// 4. Do not pretend a password was changed without an API endpoint.
 if (btnSavePassword) {
     btnSavePassword.addEventListener('click', function(e) {
         e.preventDefault();
-        alert("Password baru berhasil disimpan! Silakan login kembali.");
-        if (resetModal) resetModal.style.display = 'none';
-        if (loginModal) loginModal.style.display = 'block';
+        alert("Reset password belum tersedia. Silakan hubungi admin.");
     });
 }
 

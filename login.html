@@ -98,7 +98,7 @@
         <div class="modal-body">
             <div class="input-group">
                 <span class="icon"></span>
-                <input type="text" placeholder="Your email/phone number">
+                <input type="email" placeholder="Your email" id="login-email" autocomplete="email">
             </div>
             
             <div class="input-group">
@@ -112,7 +112,7 @@
             </div>
 
             <!-- Tombol Login -->
-            <button class="btn-modal-submit">Login</button>
+            <button class="btn-modal-submit" id="btn-login" type="button">Login</button>
             
             <p class="switch-auth">Don't have account? <a href="javascript:void(0)" onclick="openRegister()">Signup <strong>here</strong></a></p>
             <p class="recaptcha-text">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and <strong>Terms of Service</strong> apply.</p>
@@ -175,27 +175,27 @@
         <div class="modal-body">
             <p class="register-subtitle">Create account to be our member to earn points, get free vouchers, and hear our news earlier.</p>
             <div class="input-group">
-                <input type="text" placeholder="Your Full Name*">
+                <input type="text" placeholder="Your Full Name*" id="register-name" autocomplete="name">
             </div>
             <div class="input-group">
                 <span class="icon"></span>
-                <input type="email" placeholder="Your email">
+                <input type="email" placeholder="Your email" id="register-email" autocomplete="email">
             </div>
             <div class="input-group">
                 <span class="icon"></span>
-                <input type="password" placeholder="Password">
+                <input type="password" placeholder="Password" id="register-password" autocomplete="new-password">
             </div>
             
             <div class="birthday-section">
-                <label>My Birthday (Optional)</label>
+                <label for="birth_day">My Birthday</label>
                 <div class="birthday-selects">
-                    <select><option>Day</option></select>
-                    <select><option>Month</option></select>
-                    <select><option>Year</option></select>
+                    <select id="birth_day" name="birth_day" required><option value="">Day</option></select>
+                    <select id="birth_month" name="birth_month" required><option value="">Month</option></select>
+                    <select id="birth_year" name="birth_year" required><option value="">Year</option></select>
                 </div>
             </div>
 
-            <button class="btn-modal-submit">Create New Account</button>
+            <button class="btn-modal-submit" id="btn-register" type="button">Create New Account</button>
             <p class="switch-auth">Already have account? <a href="javascript:void(0)" onclick="openLogin()">Login <strong>here</strong></a></p>
         </div>
     </div>
@@ -219,7 +219,11 @@
             document.getElementById('login-modal').style.display = 'none';
             document.getElementById('register-modal').style.display = 'none';
         }
+        if (window.location.hash === '#register') openRegister();
     </script>
+    <script src="frontend/src/js/api.js"></script>
+    <script src="frontend/src/js/auth.js"></script>
+    <script>kjBindAuthForms();</script>
 
     <!-- Pop-up Box Chat Support -->
 <div class="chat-popup" id="chatPopup">
