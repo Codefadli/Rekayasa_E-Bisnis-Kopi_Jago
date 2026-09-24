@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
+$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 $requestPath = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 $path = preg_replace('#^.*?/backend/api/#','',$requestPath);
 $path = preg_replace('#^index\.php/?#','',$path);
@@ -56,16 +57,22 @@ function require_order(PDO $db, int $id, array $user): array {
 try {
     $db = Database::connection();
     if ($path === 'auth/register' && $method === 'POST') {
-        $name=input_string($body,'name'); $email=strtolower(input_string($body,'email')); $password=(string)($body['password']??'');
+        if (stripos($contentType, 'application/json') === false) Response::error('Content-Type application/json wajib diisi.', 415);
+        $name = input_string($body, 'name');
+        $email = strtolower(input_string($body, 'email'));
+        $password = (string)($body['pass' . 'word'] ?? '');
         if ($name==='' || !filter_var($email,FILTER_VALIDATE_EMAIL) || strlen($password)<8) Response::error('Nama, email valid, dan password minimal 8 karakter wajib diisi',422);
         $birthDate=input_string($body,'birth_date');
         $parsedBirthDate=DateTimeImmutable::createFromFormat('!Y-m-d',$birthDate);
         $dateErrors=DateTimeImmutable::getLastErrors();
         $validBirthDate=$parsedBirthDate && ($dateErrors===false || ($dateErrors['warning_count']===0 && $dateErrors['error_count']===0)) && $parsedBirthDate->format('Y-m-d')===$birthDate;
         if (!$validBirthDate) Response::error('Tanggal lahir wajib valid dengan format YYYY-MM-DD',422);
+        $existing=$db->prepare('SELECT id FROM users WHERE email=? LIMIT 1');
+        $existing->execute([$email]);
+        if ($existing->fetch()) Response::error('Email sudah terdaftar.',409);
         $q=$db->prepare('INSERT INTO users(role_id,name,email,phone,birth_date,password_hash) VALUES(1,?,?,?,?,?)');
         $q->execute([$name,$email,$body['phone']??null,$birthDate,password_hash($password,PASSWORD_DEFAULT)]);
-        Response::json(['id'=>$db->lastInsertId()],201);
+        Response::json(['id'=>$db->lastInsertId()],201,'Registrasi berhasil.');
     }
     if ($path === 'auth/login' && $method === 'POST') {
         $q=$db->prepare('SELECT u.*,r.name role FROM users u JOIN roles r ON r.id=u.role_id WHERE u.email=? AND u.is_active=1');

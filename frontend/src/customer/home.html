@@ -2,11 +2,12 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0; url=/Rekayasa_E-Bisnis-Kopi_Jago/customer/home.html">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Kopi Jago Customer</title>
+    <script src="../js/routes.js"></script>
 </head>
 <body>
     <p>Mengarahkan ke homepage customer Kopi Jago...</p>
-    <script>window.location.replace('/Rekayasa_E-Bisnis-Kopi_Jago/customer/home.html');</script>
+    <script>window.location.replace(`${KJ_ROUTES.home.replace('/frontend/src/customer/home.html', '/customer/home.html')}`);</script>
 </body>
 </html>
