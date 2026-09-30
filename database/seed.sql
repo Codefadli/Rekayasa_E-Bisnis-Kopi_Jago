@@ -10,6 +10,13 @@ INSERT IGNORE INTO vehicles(seller_id,type,plate) VALUES (3,'sepeda','JAGO-01'),
 INSERT IGNORE INTO seller_profiles(user_id,area,status,vehicle_type) VALUES (3,'Kota Bandung','available','sepeda'),(4,'Kota Bandung','available','sepeda_listrik');
 INSERT IGNORE INTO menu_categories(id,name,slug) VALUES (1,'Kopi Susu','kopi-susu'),(2,'Kopi Hitam','kopi-hitam'),(3,'Non Kopi','non-kopi');
 INSERT IGNORE INTO menu_items(category_id,name,description,price,is_featured) VALUES
-(1,'Kopi Jago Signature','Kopi susu gula aren khas Kopi Jago',18000,1),(1,'Kopi Susu Vanilla','Kopi susu vanilla',19000,0),(2,'Americano','Espresso dan air',15000,0),(3,'Chocolate Latte','Cokelat dan susu',20000,1);
+(1,'Kopi Jago Signature','Kopi susu gula aren khas Kopi Jago',18000,1),
+(1,'Kopi Susu Vanilla','Kopi susu vanilla',19000,0),
+(2,'Americano','Espresso dan air',15000,0),
+(3,'Chocolate Latte','Cokelat dan susu',20000,1),
+(3,'Pink Coco','Minuman segar coconut strawberry',19000,1),
+(3,'Mont Blanc Shake','Milkshake cokelat premium',22000,0),
+(3,'Matcha Latte','Green tea latte Jepang',20000,1),
+(3,'Citrus Cold Brew','Cold brew dengan citrus segar',18000,0);
 INSERT IGNORE INTO inventory_stock(menu_id,stock) SELECT id,100 FROM menu_items;
 INSERT IGNORE INTO promos(code,name,discount_type,discount_value,min_purchase,start_date,end_date) VALUES ('JAGO10','Diskon 10%','percentage',10,20000,'2026-01-01','2026-12-31');

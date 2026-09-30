@@ -1,1 +1,179 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=home.html#cart"><title>Keranjang Kopi Jago</title></head><body><script>location.replace('home.html#cart');</script></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Keranjang - Kopi Jago</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .customer-page{background:#f8f3ee;color:#34251e;min-height:100vh;display:flex;flex-direction:column}
+        .customer-nav{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 6%;background:#fff;box-shadow:0 2px 12px #0002}
+        .customer-nav img{width:118px;height:auto}.customer-links{display:flex;align-items:center;gap:20px;font:600 13px 'Open Sans',sans-serif;color:#4b2e22}.customer-links a:hover{color:#bd3d2f}.customer-links a.active{color:#bd3d2f;border-bottom:2px solid #bd3d2f}
+        .customer-account{display:flex;align-items:center;gap:10px;font:600 13px 'Open Sans',sans-serif}.customer-account a,.customer-account button{border:0;background:none;color:#4b2e22;padding:8px;cursor:pointer}.customer-account .primary{background:#bd3d2f;color:#fff;border-radius:3px}
+        .customer-main{max-width:900px;margin:auto;padding:54px 6%;flex:1}.page-heading{margin-bottom:32px}.page-heading h1{margin:0 0 8px;font:900 32px Montserrat,sans-serif;color:#4b2e22}.page-heading p{color:#806d62;margin:0}
+        .cart-container{background:#fff;border-radius:8px;box-shadow:0 4px 18px #4b2e2215;overflow:hidden}
+        .cart-item{display:flex;gap:20px;padding:24px;border-bottom:1px solid #eadfd7;align-items:center}.cart-item:last-child{border:0}
+        .cart-image{width:100px;height:100px;background:#f1e4d8;border-radius:6px;overflow:hidden;flex-shrink:0}.cart-image img{width:100%;height:100%;object-fit:cover}
+        .cart-details{flex:1}.cart-name{font:700 16px Montserrat,sans-serif;color:#4b2e22;margin:0 0 6px}.cart-meta{font-size:13px;color:#8b7568;margin:0 0 10px}.cart-price{font:600 14px Montserrat,sans-serif;color:#bd3d2f}
+        .cart-controls{display:flex;align-items:center;gap:12px}.qty-control{display:flex;align-items:center;gap:8px;border:1px solid #ddd;border-radius:4px;overflow:hidden}.qty-btn{border:0;background:#f8f3ee;padding:8px 12px;cursor:pointer;font-weight:700;color:#4b2e22}.qty-btn:hover{background:#eadfd7}.qty-value{padding:8px 12px;font-weight:600;min-width:40px;text-align:center}
+        .remove-btn{border:0;background:#fff;color:#bd3d2f;cursor:pointer;padding:8px;font-size:13px;text-decoration:underline}.remove-btn:hover{color:#a53527}
+        .cart-summary{padding:24px;background:#fef5f3;border-top:2px solid #bd3d2f}.summary-row{display:flex;justify-content:space-between;padding:8px 0;font-size:15px}.summary-row.total{font-weight:700;font-size:18px;color:#4b2e22;border-top:2px solid #eadfd7;margin-top:12px;padding-top:16px}
+        .checkout-btn{width:100%;margin-top:16px;border:0;background:#bd3d2f;color:#fff;padding:14px;border-radius:6px;cursor:pointer;font:700 14px Montserrat,sans-serif;text-transform:uppercase}.checkout-btn:hover{background:#a53527}.checkout-btn:disabled{opacity:.6;cursor:not-allowed}
+        .empty-state{text-align:center;padding:80px 20px}.empty-state h2{font:700 24px Montserrat,sans-serif;color:#4b2e22;margin:0 0 12px}.empty-state p{color:#806d62;margin:0 0 24px}.empty-state a{display:inline-block;background:#bd3d2f;color:#fff;padding:12px 28px;border-radius:4px;font:600 13px Montserrat,sans-serif;text-decoration:none}.empty-state a:hover{background:#a53527}
+        .customer-footer{padding:32px 6%;background:#4b2e22;color:#fff;text-align:center;font-size:13px;margin-top:auto}
+        @media(max-width:760px){.customer-nav{flex-wrap:wrap;padding:14px 5%}.customer-links{order:3;width:100%;justify-content:space-between;gap:8px}.customer-links a{font-size:11px}.customer-account{margin-left:auto}.customer-main{padding:38px 5%}.cart-item{flex-direction:column;align-items:flex-start}.cart-image{width:80px;height:80px}}
+    </style>
+</head>
+<body class="customer-page">
+    <header class="customer-nav">
+        <a href="home.html" aria-label="Kopi Jago"><img src="../logo%20jago2.png" alt="Jago Coffee"></a>
+        <nav class="customer-links" aria-label="Navigasi customer">
+            <a href="home.html#home">Home</a>
+            <a href="home.html#menu">Menu</a>
+            <a href="cart.html" class="active">Keranjang <span id="cart-badge">(0)</span></a>
+            <a href="orders.html">Pesanan</a>
+            <a href="wishlist.html">Wishlist</a>
+        </nav>
+        <div id="account-area" class="customer-account"></div>
+    </header>
+    <main class="customer-main">
+        <div class="page-heading">
+            <h1>Keranjang Belanja</h1>
+            <p>Periksa pesananmu sebelum checkout</p>
+        </div>
+        <div id="cart-content"></div>
+    </main>
+    <footer class="customer-footer">© 2026 Kopi Jago. Minuman favorit, diantar dengan jago.</footer>
+    <script src="../frontend/src/js/routes.js"></script>
+    <script src="../frontend/src/js/api.js"></script>
+    <script src="shared.js"></script>
+    <script>
+        // esc, token, api, showAccount, loadCartCount, imageByName, sizeLabel now from shared.js
+
+        async function loadCart() {
+            const content = document.getElementById('cart-content');
+            
+            if (!token()) {
+                content.innerHTML = `<div class="empty-state">
+                    <h2>Keranjang Kosong</h2>
+                    <p>Login untuk mulai belanja</p>
+                    <a href="../login.html">Login Sekarang</a>
+                </div>`;
+                return;
+            }
+
+            // Loading state
+            content.innerHTML = '<div style="text-align:center;padding:60px"><p>Memuat keranjang...</p></div>';
+
+            try {
+                const items = await api('cart');
+                console.log('[Cart Page] Items loaded:', items.length);
+                const count = items.reduce((sum, item) => sum + Number(item.qty), 0);
+                document.getElementById('cart-badge').textContent = `(${count})`;
+
+                if (items.length === 0) {
+                    content.innerHTML = `<div class="empty-state">
+                        <h2>Keranjang Kosong</h2>
+                        <p>Belum ada item di keranjang</p>
+                        <a href="home.html#menu">Lihat Menu</a>
+                    </div>`;
+                    return;
+                }
+
+                const total = items.reduce((sum, item) => sum + Number(item.subtotal), 0);
+                
+                content.innerHTML = `
+                    <div class="cart-container">
+                        ${items.map(item => `
+                            <div class="cart-item" data-menu-id="${item.menu_id}" data-size="${item.size || 'medium'}">
+                                <div class="cart-image">
+                                    <img src="${imageByName[item.name] || '../kopsu%20jago.jfif'}" alt="${esc(item.name)}">
+                                </div>
+                                <div class="cart-details">
+                                    <h3 class="cart-name">${esc(item.name)}</h3>
+                                    <p class="cart-meta">Ukuran: ${sizeLabel[item.size || 'medium']}</p>
+                                    <p class="cart-price">Rp ${Number(item.price).toLocaleString('id-ID')} × ${item.qty}</p>
+                                </div>
+                                <div class="cart-controls">
+                                    <div class="qty-control">
+                                        <button class="qty-btn qty-minus" data-menu-id="${item.menu_id}" data-size="${item.size || 'medium'}">−</button>
+                                        <span class="qty-value">${item.qty}</span>
+                                        <button class="qty-btn qty-plus" data-menu-id="${item.menu_id}" data-size="${item.size || 'medium'}">+</button>
+                                    </div>
+                                    <button class="remove-btn" data-menu-id="${item.menu_id}" data-size="${item.size || 'medium'}">Hapus</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <div class="cart-summary">
+                            <div class="summary-row total">
+                                <span>Total</span>
+                                <span>Rp ${total.toLocaleString('id-ID')}</span>
+                            </div>
+                            <a href="checkout.html" class="checkout-btn">Checkout</a>
+                        </div>
+                    </div>
+                `;
+
+                // Attach event listeners
+                content.querySelectorAll('.qty-plus').forEach(btn => {
+                    btn.addEventListener('click', () => updateQty(btn.dataset.menuId, btn.dataset.size, 1));
+                });
+                content.querySelectorAll('.qty-minus').forEach(btn => {
+                    btn.addEventListener('click', () => updateQty(btn.dataset.menuId, btn.dataset.size, -1));
+                });
+                content.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.addEventListener('click', () => removeItem(btn.dataset.menuId, btn.dataset.size));
+                });
+                document.getElementById('checkout-btn')?.addEventListener('click', checkout);
+
+            } catch (error) {
+                console.error('[Cart Page] Load error:', error);
+                content.innerHTML = `<div class="empty-state">
+                    <h2>Error</h2>
+                    <p>${esc(error.message)}</p>
+                    <button onclick="loadCart()" style="background:#bd3d2f;color:#fff;border:0;padding:12px 28px;border-radius:4px;cursor:pointer">Coba Lagi</button>
+                </div>`;
+            }
+        }
+
+        async function updateQty(menuId, size, delta) {
+            try {
+                const items = await api('cart');
+                const item = items.find(i => String(i.menu_id) === String(menuId) && (i.size || 'medium') === size);
+                if (!item) return;
+                
+                const newQty = Number(item.qty) + delta;
+                if (newQty < 1) {
+                    await removeItem(menuId, size);
+                    return;
+                }
+                
+                await api('cart', {
+                    method: 'POST',
+                    body: JSON.stringify({menu_id: Number(menuId), size: size, qty: newQty})
+                });
+                await loadCart();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function removeItem(menuId, size) {
+            if (!confirm('Hapus item dari keranjang?')) return;
+            try {
+                await api(`cart?menu_id=${menuId}&size=${size}`, {method: 'DELETE'});
+                await loadCart();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function checkout() {
+            alert('Fitur checkout akan segera tersedia');
+        }
+
+        showAccount();
+        loadCart();
+    </script>
+</body>
+</html>

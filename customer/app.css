@@ -1,0 +1,116 @@
+/* === RESET & BASE === */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:'Open Sans',sans-serif;color:#34251e;line-height:1.6;overflow-x:hidden}
+h1,h2,h3,h4,h5,h6{font-family:'Montserrat',sans-serif;font-weight:900}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid #bd3d2f;outline-offset:2px}
+img{max-width:100%;height:auto}
+
+/* === NAVBAR === */
+.customer-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 6%;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:padding 0.3s}
+.customer-nav.scrolled{padding:14px 6%}
+.nav-logo{width:120px;height:auto;transition:width 0.3s}
+.customer-nav.scrolled .nav-logo{width:100px}
+.hamburger{display:none;flex-direction:column;gap:4px;background:none;border:0;padding:8px}
+.hamburger span{width:24px;height:3px;background:#4b2e22;border-radius:2px;transition:all 0.3s}
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(7px,-6px)}
+.customer-links{display:flex;align-items:center;gap:20px;font:600 13px 'Open Sans',sans-serif;color:#4b2e22}
+.customer-links a{transition:color 0.2s,border-color 0.2s;border-bottom:2px solid transparent;padding-bottom:2px}
+.customer-links a:hover,.customer-links a.active{color:#bd3d2f;border-bottom-color:#bd3d2f}
+.customer-account{display:flex;align-items:center;gap:10px;font:600 13px 'Open Sans',sans-serif}
+.customer-account a,.customer-account button{border:0;background:none;color:#4b2e22;padding:8px;transition:color 0.2s}
+.customer-account a:hover,.customer-account button:hover{color:#bd3d2f}
+.customer-account .primary{background:#bd3d2f;color:#fff;border-radius:4px;padding:8px 16px}
+.customer-account .primary:hover{background:#a53527}
+
+/* === HERO === */
+.hero-section{position:relative;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.hero-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,rgba(50,31,24,0.85),rgba(50,31,24,0.65));z-index:2}
+.hero-content{position:relative;z-index:3;text-align:center;color:#fff;padding:0 5%;max-width:800px}
+.hero-content h1{font-size:clamp(48px,8vw,86px);margin:0 0 20px;text-transform:uppercase;letter-spacing:2px;line-height:0.95}
+.hero-content p{font-size:clamp(16px,2vw,20px);margin:0 0 36px;opacity:0.95;line-height:1.6}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.hero-btn{padding:16px 36px;border-radius:6px;font:700 14px 'Montserrat',sans-serif;text-transform:uppercase;transition:all 0.3s;display:inline-block}
+.primary-btn{background:#bd3d2f;color:#fff;border:2px solid #bd3d2f}
+.primary-btn:hover{background:#a53527;border-color:#a53527;transform:translateY(-2px)}
+.secondary-btn{background:transparent;color:#fff;border:2px solid #fff}
+.secondary-btn:hover{background:#fff;color:#4b2e22}
+
+/* === MENU SECTION === */
+.menu-section{background:#f8f3ee;padding:80px 0}
+.menu-wrapper{max-width:1200px;margin:0 auto;padding:0 6%}
+.section-heading{text-align:center;margin-bottom:48px}
+.section-heading h2{font-size:clamp(28px,4vw,36px);color:#4b2e22;margin:0 0 12px;text-transform:uppercase}
+.section-heading p{font-size:clamp(15px,2vw,18px);color:#806d62;margin:0}
+.category-filter{display:flex;justify-content:center;gap:12px;margin-bottom:40px;flex-wrap:wrap}
+.category-filter button{border:1px solid #bd3d2f;background:#fff;color:#bd3d2f;padding:10px 20px;border-radius:20px;font:600 12px 'Montserrat',sans-serif;transition:all 0.2s}
+.category-filter button:hover{background:#fef5f3}
+.category-filter button.active{background:#bd3d2f;color:#fff}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px}
+.drink-card{background:#fff;box-shadow:0 5px 18px rgba(75,46,34,0.08);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;transition:transform 0.3s,box-shadow 0.3s}
+.drink-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(75,46,34,0.12)}
+.drink-image{height:200px;background:#f1e4d8;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.drink-image img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s}
+.drink-card:hover .drink-image img{transform:scale(1.05)}
+.drink-body{padding:20px;display:flex;flex-direction:column;flex:1}
+.drink-body h3{margin:0 0 7px;font:700 18px 'Montserrat',sans-serif;color:#4b2e22}
+.drink-category{margin:0 0 12px;color:#8b7568;font-size:12px;text-transform:uppercase;font-weight:600}
+.drink-desc{margin:0 0 16px;font-size:13px;color:#6d5d52;line-height:1.4}
+.size-selector{margin-bottom:14px}
+.size-label{display:block;margin-bottom:8px;font:600 13px 'Montserrat',sans-serif;color:#4b2e22}
+.size-options{display:flex;gap:8px}
+.size-btn{flex:1;border:1px solid #ddd;background:#fff;padding:8px;border-radius:4px;font:600 11px 'Montserrat',sans-serif;color:#6d5d52;text-align:center;transition:all 0.2s}
+.size-btn:hover{border-color:#bd3d2f}
+.size-btn.active{background:#bd3d2f;color:#fff;border-color:#bd3d2f}
+.drink-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
+.drink-price{font:700 16px 'Montserrat',sans-serif;color:#bd3d2f}
+.drink-actions{display:flex;gap:8px}
+.drink-button{border:0;background:#bd3d2f;color:#fff;border-radius:4px;padding:10px 16px;font:600 12px 'Montserrat',sans-serif;transition:background 0.2s}
+.drink-button:hover{background:#a53527}
+.drink-button:disabled{opacity:0.6;cursor:wait}
+.wishlist-btn{border:1px solid #bd3d2f;background:#fff;color:#bd3d2f;padding:10px;border-radius:4px;line-height:1;transition:all 0.2s}
+.wishlist-btn:hover{background:#fef5f3}
+.wishlist-btn.active{background:#bd3d2f;color:#fff}
+.status-message{min-height:24px;margin:18px 0;text-align:center;color:#bd3d2f;font-size:14px}
+.error-state,.empty-state{text-align:center;padding:60px 20px;background:#fff;border-radius:8px;margin:20px 0}
+.error-state h3,.empty-state h2{color:#4b2e22;margin:0 0 12px;font-size:22px}
+.error-state p,.empty-state p{color:#6d5d52;margin:0 0 24px;font-size:15px}
+.error-state button,.empty-state a{background:#bd3d2f;color:#fff;border:0;padding:12px 24px;border-radius:6px;font:600 14px 'Montserrat',sans-serif;display:inline-block;transition:background 0.2s}
+.error-state button:hover,.empty-state a:hover{background:#a53527}
+.customer-footer{padding:40px 6%;background:#321f18;color:#fff;text-align:center;font-size:13px}
+
+/* === RESPONSIVE === */
+@media(max-width:1024px){
+    .menu-wrapper{padding:0 4%}
+    .product-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+}
+@media(max-width:768px){
+    html{scroll-padding-top:70px}
+    .hamburger{display:flex}
+    .customer-links{position:fixed;top:70px;left:0;right:0;flex-direction:column;background:#fff;padding:20px;box-shadow:0 8px 16px rgba(0,0,0,0.1);gap:12px;transform:translateY(-100%);opacity:0;visibility:hidden;transition:all 0.3s}
+    .customer-links.active{transform:translateY(0);opacity:1;visibility:visible}
+    .customer-links a{width:100%;padding:12px;border:0;border-bottom:1px solid #eadfd7}
+    .customer-account{margin-left:auto}
+    .hero-content h1{font-size:clamp(36px,10vw,60px)}
+    .hero-content{padding:0 4%}
+    .menu-wrapper{padding:0 4%}
+    .product-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+    .drink-image{height:160px}
+    .section-heading h2{font-size:clamp(24px,5vw,32px)}
+}
+@media(max-width:390px){
+    .product-grid{grid-template-columns:1fr;gap:16px}
+    .size-options{flex-direction:column}
+    .size-btn{padding:10px}
+    .hero-actions{flex-direction:column}
+    .hero-btn{width:100%;max-width:280px}
+}
+@media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important}
+}

@@ -125,25 +125,131 @@ try {
         $db->prepare('UPDATE users SET password_hash=? WHERE id=?')->execute([password_hash($new,PASSWORD_DEFAULT),$u['id']]); $db->prepare('DELETE FROM auth_tokens WHERE user_id=?')->execute([$u['id']]); Response::json(['message'=>'Password changed; please login again']);
     }
     if ($path === 'menu' && $method === 'GET') {
-        $q=$db->query('SELECT m.*,c.name category,COALESCE(i.stock,0) stock FROM menu_items m JOIN menu_categories c ON c.id=m.category_id LEFT JOIN inventory_stock i ON i.menu_id=m.id WHERE m.is_available=1 ORDER BY m.is_featured DESC,m.name'); Response::json($q->fetchAll());
+        $q=$db->query('SELECT m.*,c.name category,COALESCE(i.stock,0) stock FROM menu_items m JOIN menu_categories c ON c.id=m.category_id LEFT JOIN inventory_stock i ON i.menu_id=m.id WHERE m.is_available=1 ORDER BY m.is_featured DESC,m.name'); 
+        $items = $q->fetchAll();
+        foreach($items as &$item) {
+            $sizes = $db->prepare('SELECT size,price FROM menu_sizes WHERE menu_id=? ORDER BY FIELD(size,"small","medium","large")');
+            $sizes->execute([$item['id']]);
+            $item['sizes'] = $sizes->fetchAll();
+        }
+        Response::json($items);
+    }
+    
+    if ($path === 'outlets' && $method === 'GET') {
+        $q=$db->query('SELECT sp.user_id as id, sp.outlet_name, sp.outlet_address, sp.outlet_phone, sp.outlet_hours, sp.last_latitude, sp.last_longitude, sp.max_delivery_km, sp.delivery_fee_per_km, sp.flat_delivery_fee, sp.status FROM seller_profiles sp WHERE sp.status IN ("available","busy") ORDER BY sp.outlet_name');
+        Response::json($q->fetchAll());
     }
     if ($path === 'cart' && in_array($method,['GET','POST','DELETE'],true)) {
-        $u=Auth::require(['customer']); if($method==='POST'){ $id=(int)($body['menu_id']??0);$qty=filter_var($body['qty']??1,FILTER_VALIDATE_INT);if($id<1||$qty===false||$qty<1||$qty>99)Response::error('Menu dan jumlah tidak valid',422);$m=$db->prepare('SELECT id FROM menu_items WHERE id=? AND is_available=1');$m->execute([$id]);if(!$m->fetch())Response::error('Menu tidak tersedia',422);$db->prepare('INSERT INTO cart_items(user_id,menu_id,qty) VALUES(?,?,?) ON DUPLICATE KEY UPDATE qty=VALUES(qty)')->execute([$u['id'],$id,$qty]); } elseif($method==='DELETE')$db->prepare('DELETE FROM cart_items WHERE user_id=? AND menu_id=?')->execute([$u['id'],(int)($body['menu_id']??$_GET['menu_id']??0)]);$q=$db->prepare('SELECT c.menu_id,c.qty,m.name,m.price,c.qty*m.price subtotal FROM cart_items c JOIN menu_items m ON m.id=c.menu_id WHERE c.user_id=? AND m.is_available=1');$q->execute([$u['id']]);Response::json($q->fetchAll());
+        $u=Auth::require(['customer']); 
+        if($method==='POST'){ 
+            $id=(int)($body['menu_id']??0);
+            $qty=filter_var($body['qty']??1,FILTER_VALIDATE_INT);
+            $size=$body['size']??'medium';
+            if(!in_array($size,['small','medium','large'],true))$size='medium';
+            if($id<1||$qty===false||$qty<1||$qty>99)Response::error('Menu dan jumlah tidak valid',422);
+            $m=$db->prepare('SELECT id FROM menu_items WHERE id=? AND is_available=1');
+            $m->execute([$id]);
+            if(!$m->fetch())Response::error('Menu tidak tersedia',422);
+            $db->prepare('INSERT INTO cart_items(user_id,menu_id,size,qty) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE qty=VALUES(qty)')->execute([$u['id'],$id,$size,$qty]); 
+        } elseif($method==='DELETE') {
+            $menuId=(int)($body['menu_id']??$_GET['menu_id']??0);
+            $size=$body['size']??$_GET['size']??'medium';
+            $db->prepare('DELETE FROM cart_items WHERE user_id=? AND menu_id=? AND size=?')->execute([$u['id'],$menuId,$size]);
+        }
+        $q=$db->prepare('SELECT c.menu_id,c.size,c.qty,m.name,ms.price,c.qty*ms.price subtotal FROM cart_items c JOIN menu_items m ON m.id=c.menu_id LEFT JOIN menu_sizes ms ON ms.menu_id=c.menu_id AND ms.size=c.size WHERE c.user_id=? AND m.is_available=1');
+        $q->execute([$u['id']]);
+        $items=$q->fetchAll();
+        foreach($items as &$item) {
+            if(!$item['price']) {
+                $fallback=$db->prepare('SELECT price FROM menu_items WHERE id=?');
+                $fallback->execute([$item['menu_id']]);
+                $fb=$fallback->fetch();
+                $item['price']=$fb['price']??0;
+                $item['subtotal']=$item['qty']*$item['price'];
+            }
+        }
+        Response::json($items);
     }
     if ($path === 'wishlist' && in_array($method,['GET','POST','DELETE'],true)) {
         $u=Auth::require(['customer']);$id=(int)($body['menu_id']??$_GET['menu_id']??0);if($method==='POST'){$m=$db->prepare('SELECT id FROM menu_items WHERE id=? AND is_available=1');$m->execute([$id]);if(!$m->fetch())Response::error('Menu tidak tersedia',422);$db->prepare('INSERT IGNORE INTO wishlist(user_id,menu_id) VALUES(?,?)')->execute([$u['id'],$id]);}if($method==='DELETE')$db->prepare('DELETE FROM wishlist WHERE user_id=? AND menu_id=?')->execute([$u['id'],$id]);$q=$db->prepare('SELECT w.menu_id,m.name,m.price FROM wishlist w JOIN menu_items m ON m.id=w.menu_id WHERE w.user_id=?');$q->execute([$u['id']]);Response::json($q->fetchAll());
     }
     if ($path === 'addresses' && in_array($method,['GET','POST'],true)) { $u=Auth::require(['customer']);if($method==='POST'){$recipient=input_string($body,'recipient_name',$u['name']);$phone=input_string($body,'phone',(string)($u['phone']??''));$line=input_string($body,'address_line');$city=input_string($body,'city');$province=input_string($body,'province');if(!$recipient||!$phone||!$line||!$city||!$province)Response::error('Data alamat belum lengkap',422);$db->prepare('INSERT INTO addresses(user_id,label,recipient_name,phone,address_line,city,province,postal_code,is_default) VALUES(?,?,?,?,?,?,?,?,?)')->execute([$u['id'],input_string($body,'label')?:null,$recipient,$phone,$line,$city,$province,input_string($body,'postal_code')?:null,(int)($body['is_default']??0)]);} $q=$db->prepare('SELECT * FROM addresses WHERE user_id=? ORDER BY is_default DESC,id');$q->execute([$u['id']]);Response::json($q->fetchAll()); }
     if ($path === 'orders' && $method === 'POST') {
-        $u=Auth::require(['customer']); $db->beginTransaction(); $q=$db->prepare('SELECT c.menu_id,c.qty,m.price,COALESCE(i.stock,0) stock FROM cart_items c JOIN menu_items m ON m.id=c.menu_id LEFT JOIN inventory_stock i ON i.menu_id=m.id WHERE c.user_id=? AND m.is_available=1 FOR UPDATE'); $q->execute([$u['id']]); $items=$q->fetchAll();
-        if (!$items) { $db->rollBack(); Response::error('Cart kosong'); } foreach($items as $x) if ((int)$x['stock'] < (int)$x['qty']) { $db->rollBack(); Response::error('Stok menu tidak mencukupi',422); }
-        $sub=array_sum(array_map(fn($i)=>(float)$i['qty']*(float)$i['price'],$items)); $discount=0; $payment=$body['payment_method']??'cash'; $fulfillment=$body['fulfillment_type']??'delivery';
-        if (!in_array($payment,['cash','qris','bank_transfer','ewallet'],true) || !in_array($fulfillment,['pickup','delivery'],true)) { $db->rollBack(); Response::error('Pilihan checkout tidak valid',422); }
-        $address=$body['address_id']??null; if ($fulfillment==='delivery' && !$address) { $db->rollBack(); Response::error('Alamat wajib untuk delivery',422); } if ($fulfillment==='pickup') $address=null;
+        $u=Auth::require(['customer']); $db->beginTransaction(); 
+        
+        // Validate outlet for pickup/delivery
+        $outletId = (int)($body['outlet_id']??0);
+        $fulfillment=$body['fulfillment_type']??'delivery';
+        if (!in_array($fulfillment,['pickup','delivery'],true)) { $db->rollBack(); Response::error('Tipe fulfillment tidak valid',422); }
+        
+        $outlet = $db->prepare('SELECT user_id,outlet_name,last_latitude,last_longitude,max_delivery_km,delivery_fee_per_km,flat_delivery_fee FROM seller_profiles WHERE user_id=? AND status IN ("available","busy")');
+        $outlet->execute([$outletId]);
+        $outletData = $outlet->fetch();
+        if (!$outletData) { $db->rollBack(); Response::error('Outlet tidak tersedia',422); }
+        
+        // Calculate shipping cost for delivery
+        $shippingCost = 0;
+        if ($fulfillment === 'delivery') {
+            $lat = (float)($body['delivery_lat']??0);
+            $lng = (float)($body['delivery_lng']??0);
+            if (!$lat || !$lng) { $db->rollBack(); Response::error('Koordinat delivery wajib diisi',422); }
+            
+            // Haversine distance
+            $R = 6371; // km
+            $dLat = deg2rad($lat - $outletData['last_latitude']);
+            $dLon = deg2rad($lng - $outletData['last_longitude']);
+            $a = sin($dLat/2) * sin($dLat/2) + cos(deg2rad($outletData['last_latitude'])) * cos(deg2rad($lat)) * sin($dLon/2) * sin($dLon/2);
+            $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+            $distance = $R * $c;
+            
+            $maxKm = (float)($outletData['max_delivery_km']??5);
+            if ($distance > $maxKm) { 
+                $db->rollBack(); 
+                Response::error("Alamat di luar jangkauan delivery ({$maxKm} km). Jarak: ".round($distance,1)." km",422); 
+            }
+            
+            $shippingCost = $outletData['flat_delivery_fee'] 
+                ? (float)$outletData['flat_delivery_fee']
+                : ceil($distance * (float)($outletData['delivery_fee_per_km']??2000));
+        }
+        
+        // Get cart items with prices from DB (NEVER trust frontend)
+        $q=$db->prepare('SELECT c.menu_id,c.size,c.qty,m.name,COALESCE(ms.price,m.price) price,COALESCE(i.stock,0) stock FROM cart_items c JOIN menu_items m ON m.id=c.menu_id LEFT JOIN menu_sizes ms ON ms.menu_id=c.menu_id AND ms.size=c.size LEFT JOIN inventory_stock i ON i.menu_id=m.id WHERE c.user_id=? AND m.is_available=1 FOR UPDATE'); 
+        $q->execute([$u['id']]); 
+        $items=$q->fetchAll();
+        if (!$items) { $db->rollBack(); Response::error('Cart kosong'); } 
+        foreach($items as $x) if ((int)$x['stock'] < (int)$x['qty']) { $db->rollBack(); Response::error('Stok '.$x['name'].' tidak mencukupi',422); }
+        
+        $sub=array_sum(array_map(fn($i)=>(float)$i['qty']*(float)$i['price'],$items)); 
+        $discount=0; 
+        $payment=$body['payment_method']??'cash'; 
+        if (!in_array($payment,['cash','qris','bank_transfer','ewallet'],true)) { $db->rollBack(); Response::error('Metode bayar tidak valid',422); }
+        
+        $address=$body['address_id']??null; 
+        if ($fulfillment==='delivery' && !$address) { $db->rollBack(); Response::error('Alamat wajib untuk delivery',422); } 
+        if ($fulfillment==='pickup') $address=null;
         if ($address) { $a=$db->prepare('SELECT id FROM addresses WHERE id=? AND user_id=?'); $a->execute([(int)$address,$u['id']]); if (!$a->fetch()) { $db->rollBack(); Response::error('Alamat tidak valid',422); } }
+        
         if (!empty($body['promo_code'])) { $p=$db->prepare('SELECT * FROM promos WHERE code=? AND is_active=1 AND CURDATE() BETWEEN start_date AND end_date AND min_purchase<=?'); $p->execute([strtoupper(trim($body['promo_code'])),$sub]); if($r=$p->fetch()) $discount=$r['discount_type']==='percentage'?round($sub*$r['discount_value']/100,2):min($sub,$r['discount_value']); }
-        $num='INV-'.date('YmdHis').'-'.bin2hex(random_bytes(3)); $o=$db->prepare('INSERT INTO orders(order_number,user_id,status,fulfillment_type,subtotal,discount_amount,total_amount,payment_method,payment_status,address_id,notes) VALUES(?,?,?, ?,?,?,?, ?,?,?,?)'); $o->execute([$num,$u['id'],'pending',$fulfillment,$sub,$discount,max(0,$sub-$discount),$payment,'pending',$address,$body['notes']??null]); $id=$db->lastInsertId();
-        foreach($items as $x){$db->prepare('INSERT INTO order_items(order_id,menu_id,qty,price) VALUES(?,?,?,?)')->execute([$id,$x['menu_id'],$x['qty'],$x['price']]);$db->prepare('UPDATE inventory_stock SET stock=stock-? WHERE menu_id=? AND stock>=?')->execute([$x['qty'],$x['menu_id'],$x['qty']]);} notify($db,$u['id'],'Order dibuat','Order '.$num.' berhasil dibuat dan menunggu konfirmasi.'); $db->prepare('DELETE FROM cart_items WHERE user_id=?')->execute([$u['id']]); $db->commit(); Response::json(['id'=>$id,'order_number'=>$num,'total_amount'=>max(0,$sub-$discount),'payment_status'=>'pending'],201);
+        
+        $total = max(0, $sub - $discount + $shippingCost);
+        $num='INV-'.date('YmdHis').'-'.bin2hex(random_bytes(3)); 
+        $o=$db->prepare('INSERT INTO orders(order_number,user_id,status,fulfillment_type,subtotal,discount_amount,shipping_cost,total_amount,payment_method,payment_status,address_id,notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)'); 
+        $o->execute([$num,$u['id'],'pending',$fulfillment,$sub,$discount,$shippingCost,$total,$payment,'pending',$address,$body['notes']??null]); 
+        $id=$db->lastInsertId();
+        
+        foreach($items as $x){
+            $db->prepare('INSERT INTO order_items(order_id,menu_id,qty,price) VALUES(?,?,?,?)')->execute([$id,$x['menu_id'],$x['qty'],$x['price']]);
+            $db->prepare('UPDATE inventory_stock SET stock=stock-? WHERE menu_id=? AND stock>=?')->execute([$x['qty'],$x['menu_id'],$x['qty']]);
+        } 
+        
+        notify($db,$u['id'],'Order dibuat','Order '.$num.' berhasil dibuat. Segera lakukan pembayaran.'); 
+        
+        // DONT clear cart yet - wait until payment success
+        // $db->prepare('DELETE FROM cart_items WHERE user_id=?')->execute([$u['id']]); 
+        
+        $db->commit(); 
+        Response::json(['id'=>$id,'order_number'=>$num,'subtotal'=>$sub,'shipping_cost'=>$shippingCost,'total_amount'=>$total,'payment_status'=>'pending'],201);
     }
     if ($path === 'orders' && $method === 'GET') { $u=Auth::require(); $sql=$u['role']==='customer'?'SELECT * FROM orders WHERE user_id=? ORDER BY created_at DESC':($u['role']==='seller'?'SELECT o.*,u.name customer FROM orders o JOIN users u ON u.id=o.user_id JOIN vehicles v ON v.id=o.vehicle_id WHERE v.seller_id=? ORDER BY o.created_at DESC':'SELECT o.*,u.name customer FROM orders o JOIN users u ON u.id=o.user_id ORDER BY o.created_at DESC'); $q=$db->prepare($sql);$q->execute($u['role']==='admin'?[]:[$u['id']]);Response::json($q->fetchAll()); }
     if (preg_match('#^orders/(\d+)$#',$path,$m) && $method==='GET') { $u=Auth::require(); Response::json(require_order($db,(int)$m[1],$u)); }

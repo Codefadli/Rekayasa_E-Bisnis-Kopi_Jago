@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pembayaran - Kopi Jago</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .customer-page{background:#f8f3ee;color:#34251e;min-height:100vh;display:flex;flex-direction:column}
+        .customer-nav{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 6%;background:#fff;box-shadow:0 2px 12px #0002}
+        .customer-nav img{width:118px}
+        .payment-container{max-width:700px;margin:auto;padding:54px 6%;flex:1}
+        .section-box{background:#fff;border-radius:8px;box-shadow:0 4px 18px #4b2e2215;padding:24px;margin-bottom:24px}
+        .section-title{font:700 18px Montserrat,sans-serif;color:#4b2e22;margin:0 0 16px}
+        .method-card{border:2px solid #eadfd7;padding:16px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:12px;margin-bottom:12px;transition:all .2s}
+        .method-card:hover,.method-card.selected{border-color:#bd3d2f;background:#fef5f3}
+        .method-icon{font-size:28px}
+        .method-name{font:600 15px Montserrat,sans-serif}
+        #bank-selector{display:none;margin-top:16px}
+        .bank-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px}
+        .bank-btn{border:1px solid #ddd;background:#fff;padding:12px;border-radius:4px;cursor:pointer;font:600 12px Montserrat,sans-serif;transition:all .2s}
+        .bank-btn:hover,.bank-btn.selected{border-color:#bd3d2f;background:#fef5f3}
+        .summary-row{display:flex;justify-content:space-between;padding:8px 0;font-size:15px}
+        .summary-row.total{font-weight:700;font-size:18px;color:#4b2e22;border-top:2px solid #eadfd7;margin-top:12px;padding-top:16px}
+        .btn-submit{width:100%;border:0;background:#bd3d2f;color:#fff;padding:16px;border-radius:6px;cursor:pointer;font:700 14px Montserrat,sans-serif;text-transform:uppercase;margin-top:16px}
+        .btn-submit:hover{background:#a53527}
+        .btn-submit:disabled{opacity:.6;cursor:not-allowed}
+        #payment-instructions{display:none;margin-top:24px}
+        .qr-container,.va-container{text-align:center}
+        .qr-image{max-width:280px;margin:16px auto;border:1px solid #ddd;padding:16px;border-radius:8px}
+        .va-box{display:flex;align-items:center;gap:12px;justify-content:center;margin:16px 0;padding:16px;background:#f8f3ee;border-radius:6px}
+        .va-number{font:700 20px monospace;color:#4b2e22}
+        .copy-btn{border:0;background:#bd3d2f;color:#fff;padding:8px 16px;border-radius:4px;cursor:pointer}
+        .instructions{text-align:left;margin-top:24px;padding:16px;background:#f8f3ee;border-radius:6px}
+        .instructions ol{margin:8px 0;padding-left:24px}
+        .customer-footer{padding:32px 6%;background:#4b2e22;color:#fff;text-align:center;font-size:13px;margin-top:auto}
+    </style>
+</head>
+<body class="customer-page">
+    <header class="customer-nav">
+        <a href="home.html"><img src="../logo%20jago2.png" alt="Jago Coffee"></a>
+    </header>
+    
+    <main class="payment-container">
+        <h1 style="font:900 32px Montserrat,sans-serif;color:#4b2e22;margin:0 0 24px">Pembayaran</h1>
+        
+        <div class="section-box">
+            <h2 class="section-title">Ringkasan Pesanan</h2>
+            <div id="order-summary"></div>
+        </div>
+        
+        <div class="section-box">
+            <h2 class="section-title">Metode Pembayaran</h2>
+            <div id="payment-methods"></div>
+            <div id="bank-selector"></div>
+            <button id="btn-pay" class="btn-submit">Tampilkan QR Code</button>
+        </div>
+        
+        <div id="payment-instructions" class="section-box"></div>
+    </main>
+    
+    <footer class="customer-footer">© 2026 Kopi Jago. Minuman favorit, diantar dengan jago.</footer>
+    
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="YOUR_CLIENT_KEY_HERE"></script>
+    <script src="../frontend/src/js/routes.js"></script>
+    <script src="../frontend/src/js/api.js"></script>
+    <script src="shared.js"></script>
+    <script src="payment.js"></script>
+</body>
+</html>

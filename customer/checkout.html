@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checkout - Kopi Jago</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        .customer-page{background:#f8f3ee;color:#34251e;min-height:100vh;display:flex;flex-direction:column}
+        .customer-nav{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 6%;background:#fff;box-shadow:0 2px 12px #0002}
+        .customer-nav img{width:118px;height:auto}.customer-links{display:flex;align-items:center;gap:20px;font:600 13px 'Open Sans',sans-serif;color:#4b2e22}.customer-links a:hover{color:#bd3d2f}.customer-links a.active{color:#bd3d2f;border-bottom:2px solid #bd3d2f}
+        .customer-account{display:flex;align-items:center;gap:10px;font:600 13px 'Open Sans',sans-serif}.customer-account a,.customer-account button{border:0;background:none;color:#4b2e22;padding:8px;cursor:pointer}.customer-account .primary{background:#bd3d2f;color:#fff;border-radius:3px}
+        .checkout-container{max-width:900px;margin:auto;padding:54px 6%;flex:1}
+        .section-box{background:#fff;border-radius:8px;box-shadow:0 4px 18px #4b2e2215;padding:24px;margin-bottom:24px}
+        .section-title{font:700 18px Montserrat,sans-serif;color:#4b2e22;margin:0 0 16px}
+        .toggle-group{display:flex;gap:12px;margin-bottom:20px}
+        .toggle-btn{flex:1;border:2px solid #bd3d2f;background:#fff;color:#bd3d2f;padding:14px;border-radius:6px;cursor:pointer;font:600 14px Montserrat,sans-serif;transition:all .2s}
+        .toggle-btn.active{background:#bd3d2f;color:#fff}
+        .form-group{margin-bottom:16px}
+        .form-label{display:block;margin-bottom:6px;font:600 13px Montserrat,sans-serif;color:#4b2e22}
+        .form-input{width:100%;border:1px solid #ddd;padding:12px;border-radius:4px;font:400 14px 'Open Sans',sans-serif}
+        .form-input:focus{outline:2px solid #bd3d2f;border-color:#bd3d2f}
+        #map{height:300px;border-radius:6px;margin:16px 0}
+        .outlet-card{border:1px solid #eadfd7;padding:16px;border-radius:6px;margin-bottom:12px;cursor:pointer;transition:all .2s}
+        .outlet-card:hover,.outlet-card.selected{border-color:#bd3d2f;background:#fef5f3}
+        .outlet-name{font:700 15px Montserrat,sans-serif;color:#4b2e22;margin:0 0 6px}
+        .outlet-info{font-size:13px;color:#8b7568;margin:4px 0}
+        .summary-row{display:flex;justify-content:space-between;padding:8px 0;font-size:15px}
+        .summary-row.total{font-weight:700;font-size:18px;color:#4b2e22;border-top:2px solid #eadfd7;margin-top:12px;padding-top:16px}
+        .btn-submit{width:100%;border:0;background:#bd3d2f;color:#fff;padding:16px;border-radius:6px;cursor:pointer;font:700 14px Montserrat,sans-serif;text-transform:uppercase;margin-top:16px}
+        .btn-submit:hover{background:#a53527}
+        .btn-submit:disabled{opacity:.6;cursor:not-allowed}
+        .error-msg{color:#bd3d2f;font-size:13px;margin-top:8px}
+        .customer-footer{padding:32px 6%;background:#4b2e22;color:#fff;text-align:center;font-size:13px;margin-top:auto}
+    </style>
+</head>
+<body class="customer-page">
+    <header class="customer-nav">
+        <a href="home.html" aria-label="Kopi Jago"><img src="../logo%20jago2.png" alt="Jago Coffee"></a>
+        <nav class="customer-links">
+            <a href="home.html#home">Home</a>
+            <a href="home.html#menu">Menu</a>
+            <a href="cart.html">Keranjang</a>
+        </nav>
+        <div id="account-area" class="customer-account"></div>
+    </header>
+    
+    <main class="checkout-container">
+        <h1 style="font:900 32px Montserrat,sans-serif;color:#4b2e22;margin:0 0 24px">Checkout</h1>
+        
+        <div class="section-box">
+            <h2 class="section-title">Metode Pengambilan</h2>
+            <div class="toggle-group">
+                <button class="toggle-btn active" data-type="pickup" onclick="selectFulfillment('pickup')">Ambil di Tempat</button>
+                <button class="toggle-btn" data-type="delivery" onclick="selectFulfillment('delivery')">Antar ke Lokasi</button>
+            </div>
+            
+            <div id="pickup-section">
+                <div id="outlet-list"></div>
+            </div>
+            
+            <div id="delivery-section" style="display:none">
+                <div class="form-group">
+                    <label class="form-label">Alamat Pengiriman</label>
+                    <textarea id="delivery-address" class="form-input" rows="3" placeholder="Masukkan alamat lengkap"></textarea>
+                </div>
+                <div id="map"></div>
+                <p id="distance-info" class="outlet-info"></p>
+                <p id="delivery-error" class="error-msg"></p>
+            </div>
+        </div>
+        
+        <div class="section-box">
+            <h2 class="section-title">Ringkasan Pesanan</h2>
+            <div id="order-summary"></div>
+            <button id="btn-checkout" class="btn-submit">Lanjut ke Pembayaran</button>
+        </div>
+    </main>
+    
+    <footer class="customer-footer">© 2026 Kopi Jago. Minuman favorit, diantar dengan jago.</footer>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../frontend/src/js/routes.js"></script>
+    <script src="../frontend/src/js/api.js"></script>
+    <script src="shared.js"></script>
+    <script src="checkout.js"></script>
+</body>
+</html>

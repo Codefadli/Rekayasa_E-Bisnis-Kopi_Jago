@@ -1,7 +1,7 @@
 function kjRoleDestination(role) {
     if (role === 'admin') return KJ_ROUTES.admin;
     if (role === 'seller') return KJ_ROUTES.seller;
-    return KJ_ROUTES.home;
+    return KJ_ROUTES.menu;
 }
 
 async function kjLogin(email, password) {
