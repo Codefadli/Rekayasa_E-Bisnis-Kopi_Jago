@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kopi Jago Admin</title>
+<style>
+:root{--bg:#f6f1ea;--card:#fff;--ink:#2b2118;--mut:#8a7a6a;--ac:#6f4e37;--ac2:#c8a27a;--ok:#2e7d32;--bad:#c62828;--bd:#e6dccf}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1713;--card:#272019;--ink:#f1e8dc;--mut:#a89a8a;--ac:#c8a27a;--ac2:#6f4e37;--bd:#3a3028}}
+*{box-sizing:border-box}body{margin:0;font:14px system-ui,sans-serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh}
+aside{width:210px;background:var(--card);border-right:1px solid var(--bd);padding:14px 8px;position:sticky;top:0;height:100vh;overflow:auto;flex:none}
+aside h1{font-size:17px;margin:4px 10px 14px;color:var(--ac)}
+aside a{display:block;padding:8px 12px;border-radius:8px;color:var(--ink);text-decoration:none;margin:2px 0}
+aside a.on,aside a:hover{background:var(--ac);color:#fff}
+main{flex:1;padding:20px;min-width:0}
+h2{margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+input,select,textarea,button{font:inherit;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--ink)}
+button{cursor:pointer;background:var(--ac);color:#fff;border:0}button.g{background:transparent;color:var(--ink);border:1px solid var(--bd)}button.d{background:var(--bad)}button.s{padding:4px 8px;font-size:12px}
+.wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mut);font-weight:600;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.stat b{display:block;font-size:22px;color:var(--ac)}.stat span{color:var(--mut);font-size:12px}
+.tag{padding:2px 8px;border-radius:99px;background:var(--bd);font-size:12px}.tag.ok{background:#c8e6c9;color:#1b5e20}.tag.bad{background:#ffcdd2;color:#b71c1c}.tag.w{background:#ffe0b2;color:#e65100}
+#modal{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:14px;z-index:9}#modal.on{display:flex}
+#box{background:var(--card);border-radius:14px;padding:18px;width:100%;max-width:520px;max-height:90vh;overflow:auto}
+label{display:block;margin:8px 0 3px;color:var(--mut);font-size:12px}label+input,label+select,label+textarea{width:100%}
+#toast{position:fixed;bottom:16px;right:16px;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:8px;display:none;z-index:10}
+.chat{display:grid;grid-template-columns:240px 1fr;gap:12px;height:70vh}.cl{overflow:auto}.cl div{padding:9px;border-bottom:1px solid var(--bd);cursor:pointer}.cl div:hover{background:var(--bd)}
+.th{display:flex;flex-direction:column;height:100%}.ms{flex:1;overflow:auto;display:flex;flex-direction:column;gap:6px;padding:6px}
+.m{max-width:75%;padding:8px 10px;border-radius:10px;background:var(--bd)}.m.admin{align-self:flex-end;background:var(--ac);color:#fff}
+#login{margin:auto;max-width:320px;width:100%}
+@media(max-width:700px){aside{display:none}.chat{grid-template-columns:1fr}}
+</style></head><body>
+<div id="app"></div><div id="modal"><div id="box"></div></div><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rp=n=>'Rp '+Number(n||0).toLocaleString('id-ID'), API='/api';
+let token=localStorage.getItem('kj_token'), cur=null, poll=null;
+
+function toast(m,bad){const t=$('#toast');t.textContent=m;t.style.background=bad?'var(--bad)':'';t.style.color=bad?'#fff':'';t.style.display='block';setTimeout(()=>t.style.display='none',2800)}
+async function api(path,{method='GET',body,params,raw}={}){
+  const u=new URL(API+path,location.origin);Object.entries(params||{}).forEach(([k,v])=>v!==''&&v!=null&&u.searchParams.set(k,v));
+  const r=await fetch(u,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:body?JSON.stringify(body):undefined});
+  if(raw)return r;
+  const j=await r.json().catch(()=>({ok:false,error:'Respons rusak'}));
+  if(r.status===401&&path!=='/auth/login'){logout();throw new Error('Sesi habis')}
+  if(!j.ok){const e=new Error(j.error+(j.errors?': '+Object.entries(j.errors).map(([k,v])=>k+' '+(Array.isArray(v)?v.join(','):v)).join('; '):''));throw e}
+  return j;
+}
+const run=async f=>{try{return await f()}catch(e){toast(e.message,1)}};
+function modal(html){$('#box').innerHTML=html;$('#modal').classList.add('on')}
+function closeModal(){$('#modal').classList.remove('on')}
+$('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
+const tag=(v)=>{const c={completed:'ok',paid:'ok',confirmed:'ok',available:'ok',cancelled:'bad',rejected:'bad',failed:'bad',pending:'w',refunded:'w'}[v]||'';return `<span class="tag ${c}">${esc(v)}</span>`};
+
+/* ---------- auth ---------- */
+function logout(){token=null;localStorage.removeItem('kj_token');clearInterval(poll);boot()}
+function loginView(){
+  $('#app').innerHTML=`<div id="login" class="card" style="margin-top:20vh"><h2>Kopi Jago Admin</h2>
+  <label>Email</label><input id="em" value="admin@kopijago.id"><label>Password</label><input id="pw" type="password">
+  <p><button id="go" style="width:100%">Masuk</button></p></div>`;
+  const go=()=>run(async()=>{const j=await api('/auth/login',{method:'POST',body:{email:$('#em').value,password:$('#pw').value}});token=j.data.token;localStorage.setItem('kj_token',token);boot()});
+  $('#go').onclick=go;$('#pw').onkeydown=e=>{if(e.key==='Enter')go()};
+}
+
+/* ---------- generic CRUD ---------- */
+const NAV=[['dashboard','Dashboard'],['menu','Menu'],['categories','Kategori'],['stock','Stok'],['suppliers','Supplier'],['promos','Promo'],['orders','Pesanan'],['customers','Pelanggan'],['reservations','Reservasi'],['chat','Live Chat'],['reports','Laporan'],['logs','Log Aktivitas'],['settings','Pengaturan']];
+const CRUD={
+ menu:{t:'Menu',p:'/menu',cols:[['name','Nama'],['category_name','Kategori'],['price','Harga',rp],['stock','Stok'],['is_available','Tersedia',v=>v==1?tag('available'):tag('cancelled')]],
+  f:[['name','Nama'],['category_id','Kategori','select','cat'],['price','Harga','number'],['description','Deskripsi','textarea'],['is_available','Tersedia','bool'],['is_featured','Unggulan','bool'],['stock','Stok awal','number','new']]},
+ categories:{t:'Kategori',p:'/categories',cols:[['name','Nama'],['slug','Slug'],['item_count','Jumlah menu']],f:[['name','Nama']]},
+ suppliers:{t:'Supplier',p:'/suppliers',cols:[['name','Nama'],['contact_name','Kontak'],['phone','Telepon'],['email','Email'],['is_active','Aktif',v=>v==1?'Ya':'Tidak']],
+  f:[['name','Nama'],['contact_name','Kontak'],['phone','Telepon'],['email','Email'],['address','Alamat'],['is_active','Aktif','bool']]},
+ promos:{t:'Promo',p:'/promos',cols:[['code','Kode'],['name','Nama'],['discount_type','Tipe'],['discount_value','Nilai'],['start_date','Mulai'],['end_date','Akhir'],['is_active','Aktif',v=>v==1?'Ya':'Tidak']],
+  f:[['code','Kode'],['name','Nama'],['discount_type','Tipe','select',['percentage','fixed']],['discount_value','Nilai','number'],['min_purchase','Min belanja','number'],['start_date','Mulai','date'],['end_date','Akhir','date'],['usage_limit','Batas pakai','number'],['is_active','Aktif','bool']]}
+};
+let cats=[];
+async function crud(key,page=1,q=''){
+  const c=CRUD[key];cur=key;
+  const j=await api(c.p,{params:{page,q}});
+  if(key==='menu'&&!cats.length)cats=(await api('/categories')).data;
+  $('#view').innerHTML=`<h2>${c.t}</h2><div class="bar"><input id="q" placeholder="Cari..." value="${esc(q)}"><button class="g" id="sq">Cari</button><button id="add">+ Tambah</button></div>
+  <div class="card wrap"><table><tr>${c.cols.map(x=>`<th>${x[1]}</th>`).join('')}<th></th></tr>${j.data.map(r=>`<tr>${c.cols.map(x=>`<td>${x[2]?x[2](r[x[0]]):esc(r[x[0]])}</td>`).join('')}<td><button class="s g" data-e="${r.id}">Ubah</button> <button class="s d" data-d="${r.id}">Hapus</button></td></tr>`).join('')||'<tr><td>Kosong</td></tr>'}</table></div>${pager(j.meta)}`;
+  $('#sq').onclick=()=>crud(key,1,$('#q').value);$('#q').onkeydown=e=>{if(e.key==='Enter')crud(key,1,$('#q').value)};
+  $('#add').onclick=()=>form(key);
+  document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>form(key,j.data.find(r=>r.id==b.dataset.e)));
+  document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>run(async()=>{if(!confirm('Hapus data ini?'))return;const r=await api(c.p+'/'+b.dataset.d,{method:'DELETE'});toast(r.data.note||'Terhapus');crud(key,page,q)}));
+  bindPager(p=>crud(key,p,q));
+}
+function pager(m){return m&&m.last_page>1?`<div class="bar"><button class="g s" data-pg="${m.page-1}" ${m.page<=1?'disabled':''}>‹</button> Hal ${m.page}/${m.last_page} (${m.total}) <button class="g s" data-pg="${m.page+1}" ${m.page>=m.last_page?'disabled':''}>›</button></div>`:''}
+function bindPager(fn){document.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>fn(+b.dataset.pg))}
+function form(key,row){
+  const c=CRUD[key];
+  const inp=([k,l,t,o])=>{
+    if(o==='new'&&row)return '';
+    const v=row?row[k]:'';
+    if(t==='select'){const op=o==='cat'?cats.map(x=>[x.id,x.name]):o.map(x=>[x,x]);return `<label>${l}</label><select name="${k}">${op.map(([a,b])=>`<option value="${esc(a)}" ${a==v?'selected':''}>${esc(b)}</option>`).join('')}</select>`}
+    if(t==='bool')return `<label>${l}</label><select name="${k}"><option value="1" ${v!=0?'selected':''}>Ya</option><option value="0" ${row&&v==0?'selected':''}>Tidak</option></select>`;
+    if(t==='textarea')return `<label>${l}</label><textarea name="${k}" rows="3">${esc(v)}</textarea>`;
+    return `<label>${l}</label><input name="${k}" type="${t||'text'}" value="${esc(v)}">`};
+  modal(`<h3>${row?'Ubah':'Tambah'} ${c.t}</h3>${c.f.map(inp).join('')}<p><button id="sv">Simpan</button> <button class="g" onclick="closeModal()">Batal</button></p>`);
+  $('#sv').onclick=()=>run(async()=>{
+    const b={};document.querySelectorAll('#box [name]').forEach(e=>{if(e.value!=='')b[e.name]=e.value});
+    await api(c.p+(row?'/'+row.id:''),{method:row?'PUT':'POST',body:b});closeModal();toast('Tersimpan');crud(key)});
+}
+
+/* ---------- pages ---------- */
+const PAGES={
+ async dashboard(){const d=(await api('/dashboard')).data;
+  const s=[['Pesanan hari ini',d.orders_today],['Omzet hari ini',rp(d.revenue_today)],['Pesanan pending',d.pending_orders],['Reservasi pending',d.pending_reservations],['Chat belum dibalas',d.unanswered_chats],['Stok menipis',d.low_stock]];
+  $('#view').innerHTML=`<h2>Dashboard</h2><div class="grid">${s.map(x=>`<div class="card stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('')}</div>`},
+ menu:()=>crud('menu'),categories:()=>crud('categories'),suppliers:()=>crud('suppliers'),promos:()=>crud('promos'),
+
+ async stock(page=1,low=''){const j=await api('/stock',{params:{page,low}});
+  $('#view').innerHTML=`<h2>Stok</h2><div class="bar"><label style="margin:0"><input type="checkbox" id="lw" ${low?'checked':''} style="width:auto"> Hanya menipis</label></div>
+  <div class="card wrap"><table><tr><th>Menu</th><th>Kategori</th><th>Stok</th><th>Update</th><th></th></tr>${j.data.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.category_name)}</td><td>${r.is_low==1?`<span class="tag bad">${r.stock}</span>`:r.stock}</td><td>${esc(r.updated_at||'-')}</td><td><button class="s" data-m="${r.menu_id}">Ubah stok</button></td></tr>`).join('')}</table></div>${pager(j.meta)}`;
+  $('#lw').onchange=e=>PAGES.stock(1,e.target.checked?1:'');bindPager(p=>PAGES.stock(p,low));
+  document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>run(async()=>{const sup=(await api('/suppliers',{params:{active:1,per_page:100}})).data;
+   modal(`<h3>Gerak stok</h3><label>Tipe</label><select id="ty"><option value="in">Masuk</option><option value="out">Keluar</option><option value="adjust">Set ulang (stok jadi angka ini)</option></select>
+   <label>Jumlah</label><input id="qt" type="number" min="0"><label>Supplier</label><select id="sp"><option value="">-</option>${sup.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}</select><label>Catatan</label><input id="nt">
+   <p><button id="sv">Simpan</button> <button class="g" onclick="closeModal()">Batal</button></p>`);
+   $('#sv').onclick=()=>run(async()=>{await api(`/stock/${b.dataset.m}/movement`,{method:'POST',body:{type:$('#ty').value,qty:+$('#qt').value,supplier_id:$('#sp').value||null,note:$('#nt').value}});closeModal();toast('Stok diperbarui');PAGES.stock(page,low)})}))},
+
+ async orders(page=1,status='',q=''){const j=await api('/orders',{params:{page,status,q}});
+  const ST=['pending','confirmed','processing','ready','on_delivery','completed','cancelled'];
+  $('#view').innerHTML=`<h2>Pesanan</h2><div class="bar"><input id="q" placeholder="No pesanan / nama" value="${esc(q)}"><select id="st"><option value="">Semua status</option>${ST.map(s=>`<option ${s==status?'selected':''}>${s}</option>`).join('')}</select><button class="g" id="sq">Cari</button></div>
+  <div class="card wrap"><table><tr><th>No</th><th>Pelanggan</th><th>Layanan</th><th>Total</th><th>Status</th><th>Bayar</th><th>Waktu</th><th></th></tr>${j.data.map(r=>`<tr><td>${esc(r.order_number)}</td><td>${esc(r.customer_name)}</td><td>${r.fulfillment_type}</td><td>${rp(r.total_amount)}</td><td>${tag(r.status)}</td><td>${tag(r.payment_status)}</td><td>${esc(r.created_at)}</td><td><button class="s g" data-o="${r.id}">Detail</button></td></tr>`).join('')}</table></div>${pager(j.meta)}`;
+  const f=()=>PAGES.orders(1,$('#st').value,$('#q').value);$('#sq').onclick=f;$('#st').onchange=f;bindPager(p=>PAGES.orders(p,status,q));
+  document.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>orderDetail(b.dataset.o,()=>PAGES.orders(page,status,q)))},
+
+ async customers(page=1,q=''){const j=await api('/customers',{params:{page,q}});
+  $('#view').innerHTML=`<h2>Pelanggan</h2><div class="bar"><input id="q" placeholder="Cari..." value="${esc(q)}"><button class="g" id="sq">Cari</button></div>
+  <div class="card wrap"><table><tr><th>Nama</th><th>Email</th><th>Telepon</th><th>Pesanan</th><th>Total belanja</th><th>Status</th><th></th></tr>${j.data.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.email)}</td><td>${esc(r.phone)}</td><td>${r.order_count}</td><td>${rp(r.total_spent)}</td><td>${r.is_active==1?tag('available'):tag('cancelled')}</td><td><button class="s g" data-c="${r.id}">Detail</button> <button class="s ${r.is_active==1?'d':''}" data-t="${r.id}" data-a="${r.is_active==1?0:1}">${r.is_active==1?'Nonaktifkan':'Aktifkan'}</button></td></tr>`).join('')}</table></div>${pager(j.meta)}`;
+  $('#sq').onclick=()=>PAGES.customers(1,$('#q').value);bindPager(p=>PAGES.customers(p,q));
+  document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>run(async()=>{await api(`/customers/${b.dataset.t}/active`,{method:'PATCH',body:{is_active:+b.dataset.a}});PAGES.customers(page,q)}));
+  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>run(async()=>{const c=(await api('/customers/'+b.dataset.c)).data;
+   modal(`<h3>${esc(c.name)}</h3><p>${esc(c.email)} · ${esc(c.phone)}</p><p>Pesanan ${c.stats.orders} · Dibatalkan ${c.stats.cancelled} · Belanja ${rp(c.stats.spent)}</p><h4>Alamat</h4>${c.addresses.map(a=>`<p>${esc(a.label)}: ${esc(a.address_line)}, ${esc(a.city)}</p>`).join('')||'-'}<h4>Pesanan terakhir</h4>${c.recent_orders.map(o=>`<p>${esc(o.order_number)} ${tag(o.status)} ${rp(o.total_amount)}</p>`).join('')||'-'}<button class="g" onclick="closeModal()">Tutup</button>`)}))},
+
+ async reservations(page=1,status=''){const j=await api('/reservations',{params:{page,status}});
+  $('#view').innerHTML=`<h2>Reservasi Meja</h2><div class="bar"><select id="st"><option value="">Semua</option>${['pending','confirmed','rejected','cancelled','completed'].map(s=>`<option ${s==status?'selected':''}>${s}</option>`).join('')}</select></div>
+  <div class="card wrap"><table><tr><th>Pelanggan</th><th>Waktu</th><th>Tamu</th><th>Meja</th><th>Status</th><th>Catatan</th><th></th></tr>${j.data.map(r=>`<tr><td>${esc(r.customer_name)}<br><small>${esc(r.customer_phone)}</small></td><td>${esc(r.reserved_at)}</td><td>${r.guests}</td><td>${r.table_no||'-'}</td><td>${tag(r.status)}</td><td>${esc(r.notes||r.admin_note||'')}</td><td>${r.status==='pending'?`<button class="s" data-y="${r.id}">Konfirmasi</button> <button class="s d" data-n="${r.id}">Tolak</button>`:r.status==='confirmed'?`<button class="s g" data-k="${r.id}">Selesai</button>`:''}</td></tr>`).join('')}</table></div>${pager(j.meta)}`;
+  $('#st').onchange=e=>PAGES.reservations(1,e.target.value);bindPager(p=>PAGES.reservations(p,status));
+  const act=(sel,fn)=>document.querySelectorAll(sel).forEach(b=>b.onclick=()=>run(async()=>{if(await fn(b.dataset[sel.slice(2,3)])!==false)PAGES.reservations(page,status)}));
+  act('[data-y]',async id=>{const t=prompt('Nomor meja');if(!t)return false;await api(`/reservations/${id}/confirm`,{method:'POST',body:{table_no:+t}});toast('Dikonfirmasi')});
+  act('[data-n]',async id=>{const t=prompt('Alasan penolakan');if(!t)return false;await api(`/reservations/${id}/reject`,{method:'POST',body:{reason:t}});toast('Ditolak')});
+  act('[data-k]',async id=>{await api(`/reservations/${id}/complete`,{method:'POST'})})},
+
+ async chat(uid){
+  const list=(await api('/chat',{params:{per_page:50}})).data;
+  $('#view').innerHTML=`<h2>Live Chat</h2><div class="card chat"><div class="cl">${list.map(c=>`<div data-u="${c.user_id}"><b>${esc(c.customer_name)}</b> ${c.needs_reply==1?'<span class="tag w">baru</span>':''}<br><small>${esc((c.last_message||'').slice(0,50))}</small></div>`).join('')||'Belum ada chat'}</div><div class="th" id="th"><p style="color:var(--mut);padding:10px">Pilih percakapan</p></div></div>`;
+  document.querySelectorAll('[data-u]').forEach(d=>d.onclick=()=>openThread(+d.dataset.u));
+  if(uid)openThread(uid)},
+
+ async reports(from,to){
+  const j=(await api('/reports/overview',{params:{from,to}})).data,s=j.summary;from=j.range.from;to=j.range.to;
+  const mx=Math.max(1,...j.daily.map(d=>d.revenue)),w=Math.max(600,j.daily.length*18),bw=w/j.daily.length;
+  $('#view').innerHTML=`<h2>Laporan Penjualan</h2><div class="bar"><input type="date" id="f" value="${from}"><input type="date" id="t" value="${to}"><button id="ap">Terapkan</button><button class="g" id="ex">Ekspor CSV</button></div>
+  <div class="grid">${[['Omzet',rp(s.revenue)],['Pesanan selesai',s.orders],['Rata-rata/pesanan',rp(s.avg_order_value)],['Item terjual',s.items_sold],['Dibatalkan',s.cancelled],['Pelanggan baru',s.new_customers]].map(x=>`<div class="card stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('')}</div>
+  <div class="card wrap"><b>Omzet harian</b><svg width="${w}" height="190" style="display:block;margin-top:8px">${j.daily.map((d,i)=>{const h=d.revenue/mx*150;return `<rect x="${i*bw+2}" y="${160-h}" width="${bw-4}" height="${h}" rx="3" fill="var(--ac)"><title>${d.date}: ${rp(d.revenue)} (${d.orders} pesanan)</title></rect>${i%Math.ceil(j.daily.length/12)==0?`<text x="${i*bw}" y="180" font-size="10" fill="var(--mut)">${d.date.slice(5)}</text>`:''}`}).join('')}</svg></div>
+  <div class="grid"><div class="card"><b>Menu terlaris</b>${j.topMenu.map(m=>`<p>${esc(m.name)} <span class="tag">${m.qty}x</span> ${rp(m.revenue)}</p>`).join('')||'<p>-</p>'}</div>
+  <div class="card"><b>Per kategori</b>${j.byCategory.map(m=>`<p>${esc(m.name)}: ${rp(m.revenue)}</p>`).join('')||'<p>-</p>'}</div>
+  <div class="card"><b>Per pembayaran</b>${j.byPayment.map(m=>`<p>${esc(m.payment_method)}: ${m.orders} · ${rp(m.revenue)}</p>`).join('')||'<p>-</p>'}</div></div>`;
+  $('#ap').onclick=()=>PAGES.reports($('#f').value,$('#t').value);
+  $('#ex').onclick=()=>run(async()=>{const r=await api('/reports/export',{params:{from,to},raw:true});if(!r.ok)throw new Error('Gagal ekspor');const a=document.createElement('a');a.href=URL.createObjectURL(await r.blob());a.download=`penjualan_${from}_${to}.csv`;a.click()})},
+
+ async logs(page=1,f={}){
+  const [j,fl]=await Promise.all([api('/logs',{params:{page,...f}}),api('/logs/filters')]);
+  const sel=(id,arr,v)=>`<select id="${id}"><option value="">${id}</option>${arr.map(a=>`<option ${a==v?'selected':''}>${esc(a)}</option>`).join('')}</select>`;
+  $('#view').innerHTML=`<h2>Log Aktivitas</h2><div class="bar">${sel('action',fl.data.actions,f.action)}${sel('entity',fl.data.entities,f.entity)}<input type="date" id="from" value="${f.from||''}"><input type="date" id="to" value="${f.to||''}"><button id="ap">Filter</button></div>
+  <div class="card wrap"><table><tr><th>Waktu</th><th>Admin</th><th>Aksi</th><th>Objek</th><th>Detail</th><th>IP</th></tr>${j.data.map(r=>`<tr><td>${esc(r.created_at)}</td><td>${esc(r.admin_name||'-')}</td><td>${tag(r.action)}</td><td>${esc(r.entity)}${r.entity_id?' #'+r.entity_id:''}</td><td style="white-space:normal;max-width:360px"><small>${esc(r.detail?JSON.stringify(r.detail):'')}</small></td><td>${esc(r.ip)}</td></tr>`).join('')}</table></div>${pager(j.meta)}`;
+  $('#ap').onclick=()=>PAGES.logs(1,Object.fromEntries(['action','entity','from','to'].map(k=>[k,$('#'+k).value])));bindPager(p=>PAGES.logs(p,f))},
+
+ async settings(){const s=(await api('/settings')).data;
+  const L={store_name:'Nama toko',store_address:'Alamat',store_phone:'Telepon',open_time:'Jam buka (HH:MM)',close_time:'Jam tutup (HH:MM)',is_open:'Toko buka (1/0)',delivery_fee:'Ongkir',tax_percent:'Pajak %',low_stock_threshold:'Batas stok menipis',reservation_slot_minutes:'Durasi slot reservasi (menit)'};
+  $('#view').innerHTML=`<h2>Pengaturan Toko</h2><div class="card" style="max-width:520px">${Object.keys(L).map(k=>`<label>${L[k]}</label><input name="${k}" value="${esc(s[k])}">`).join('')}<p><button id="sv">Simpan</button></p></div>`;
+  $('#sv').onclick=()=>run(async()=>{const b={};document.querySelectorAll('#view [name]').forEach(e=>b[e.name]=e.value);await api('/settings',{method:'PUT',body:b});toast('Pengaturan tersimpan')})}
+};
+
+async function openThread(uid){
+  clearInterval(poll);let last=0;
+  $('#th').innerHTML=`<div class="ms" id="ms"></div><div class="bar" style="margin:6px 0 0"><input id="rp" style="flex:1" placeholder="Tulis balasan..."><button id="sd">Kirim</button></div>`;
+  const load=async()=>{const j=(await api('/chat/'+uid,{params:{after_id:last}})).data;const ms=$('#ms');if(!ms)return clearInterval(poll);
+   j.messages.forEach(m=>{last=m.id;ms.insertAdjacentHTML('beforeend',`<div class="m ${m.sender_role}">${esc(m.message)}<br><small>${esc(m.created_at)}</small></div>`)});if(j.messages.length)ms.scrollTop=ms.scrollHeight};
+  const send=()=>run(async()=>{const v=$('#rp').value.trim();if(!v)return;await api(`/chat/${uid}/reply`,{method:'POST',body:{message:v}});$('#rp').value='';load()});
+  $('#sd').onclick=send;$('#rp').onkeydown=e=>{if(e.key==='Enter')send()};
+  await run(load);poll=setInterval(()=>load().catch(()=>{}),5000);
+}
+
+async function orderDetail(id,after){
+  await run(async()=>{const o=(await api('/orders/'+id)).data;
+   const veh=o.fulfillment_type==='delivery'&&['confirmed','processing','ready'].includes(o.status)?(await api('/vehicles/available')).data:[];
+   modal(`<h3>${esc(o.order_number)} ${tag(o.status)}</h3><p>${esc(o.customer_name)} · ${esc(o.customer_phone)}<br>${o.fulfillment_type} · ${esc(o.payment_method)} ${tag(o.payment_status)}</p>
+   ${o.address?`<p>${esc(o.address.address_line)}, ${esc(o.address.city)}</p>`:''}${o.vehicle?`<p>Kurir: ${esc(o.vehicle.seller_name)} (${esc(o.vehicle.type)} ${esc(o.vehicle.plate)}) <button class="s g" id="un">Lepas</button></p>`:''}
+   <table>${o.items.map(i=>`<tr><td>${esc(i.name)}</td><td>${i.qty}x</td><td>${rp(i.line_total)}</td></tr>`).join('')}<tr><td colspan="2">Diskon</td><td>-${rp(o.discount_amount)}</td></tr><tr><td colspan="2">Ongkir</td><td>${rp(o.shipping_cost)}</td></tr><tr><td colspan="2"><b>Total</b></td><td><b>${rp(o.total_amount)}</b></td></tr></table>
+   ${veh.length?`<label>Tugaskan kurir</label><select id="vh"><option value="">-</option>${veh.map(v=>`<option value="${v.id}">${esc(v.seller_name)} · ${v.type} · ${esc(v.plate)}</option>`).join('')}</select> <button class="s" id="as">Tugaskan</button>`:''}
+   <label>Ubah status</label><div class="bar">${o.allowed_next.map(s=>`<button class="s ${s==='cancelled'?'d':''}" data-s="${s}">${s}</button>`).join('')||'<small>Status final</small>'}</div>
+   <label>Pembayaran</label><select id="ps">${['pending','paid','failed','refunded'].map(p=>`<option ${p==o.payment_status?'selected':''}>${p}</option>`).join('')}</select>
+   <p><button class="g" onclick="closeModal()">Tutup</button></p>`);
+   const re=()=>{closeModal();after();orderDetail(id,after)};
+   document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>run(async()=>{if(b.dataset.s==='cancelled'&&!confirm('Batalkan pesanan? Stok dikembalikan.'))return;await api(`/orders/${id}/status`,{method:'PATCH',body:{status:b.dataset.s}});toast('Status diubah');re()}));
+   $('#ps').onchange=e=>run(async()=>{await api(`/orders/${id}/payment`,{method:'PATCH',body:{payment_status:e.target.value}});toast('Pembayaran diubah');after()});
+   if($('#as'))$('#as').onclick=()=>run(async()=>{if(!$('#vh').value)return;await api(`/orders/${id}/assign`,{method:'POST',body:{vehicle_id:+$('#vh').value}});toast('Kurir ditugaskan');re()});
+   if($('#un'))$('#un').onclick=()=>run(async()=>{await api(`/orders/${id}/unassign`,{method:'POST'});re()})})}
+
+/* ---------- shell ---------- */
+function route(){
+  if(!token)return loginView();
+  clearInterval(poll);
+  const h=(location.hash||'#dashboard').slice(1);
+  document.querySelectorAll('aside a').forEach(a=>a.classList.toggle('on',a.dataset.k===h));
+  run(()=>(PAGES[h]||PAGES.dashboard)());
+}
+async function boot(){
+  if(!token)return loginView();
+  $('#app').innerHTML=`<div style="display:flex;width:100%"><aside><h1>☕ Kopi Jago</h1>${NAV.map(n=>`<a href="#${n[0]}" data-k="${n[0]}">${n[1]}</a>`).join('')}<a href="#" id="lo" style="margin-top:14px;color:var(--bad)">Keluar</a></aside><main id="view"></main></div>`;
+  $('#lo').onclick=e=>{e.preventDefault();api('/auth/logout',{method:'POST'}).catch(()=>{}).finally(logout)};
+  route();
+}
+window.onhashchange=route;boot();
+</script></body></html>
