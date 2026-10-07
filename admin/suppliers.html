@@ -1,1 +1,2009 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Admin - Supplier</title><link rel="stylesheet" href="../style.css"></head><body><main class="container"><h1>Supplier</h1><p>Modul supplier Kopi Jago.</p><a href="dashboard.html">Kembali ke dashboard</a></main></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Supplier - Kopi Jago</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --jago-red: #ea1d43;
+            --jago-red-dark: #c41233;
+            --sidebar-bg: #ea1d43;
+            --sidebar-active: #c41233;
+            --sidebar-hover: rgba(0, 0, 0, 0.12);
+            --bg-main: #f4f6f9;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            width: 250px;
+            background: var(--sidebar-bg);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 22px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .brand-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 26px;
+            letter-spacing: 1px;
+            color: #fff;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 15px 10px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--sidebar-hover);
+            color: #fff;
+        }
+
+        .sidebar-menu a.active {
+            background: var(--sidebar-active);
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .sidebar-menu a i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-footer {
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .logout-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: rgba(0,0,0,0.15);
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 700;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(0,0,0,0.3);
+        }
+
+        /* ================= MAIN ================= */
+
+        .main-wrapper {
+            margin-left: 250px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .top-navbar {
+            height: 65px;
+            background: #fff;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f4f6f9;
+            padding: 8px 16px;
+            border-radius: 8px;
+            width: 350px;
+        }
+
+        .search-box input {
+            border: 0;
+            background: transparent;
+            outline: none;
+            margin-left: 10px;
+            width: 100%;
+            font-size: 13px;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--jago-red);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* ================= BUTTON ================= */
+
+        .btn-primary {
+            background: var(--jago-red);
+            border: none;
+            color: white;
+            padding: 11px 17px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--jago-red-dark);
+        }
+
+        /* ================= SUMMARY ================= */
+
+        .summary-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .summary-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .icon-blue {
+            background: #e5f2ff;
+            color: #2589d9;
+        }
+
+        .icon-green {
+            background: #e5f8ef;
+            color: #24a865;
+        }
+
+        .icon-orange {
+            background: #fff3df;
+            color: #ed9517;
+        }
+
+        .summary-text small {
+            display: block;
+            color: var(--text-muted);
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .summary-text strong {
+            font-size: 20px;
+        }
+
+        /* ================= CARD ================= */
+
+        .card-container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+        }
+
+        .table-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .table-top h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .table-top p {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .filter-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-box select {
+            border: 1px solid #e2e6ea;
+            border-radius: 6px;
+            padding: 8px 10px;
+            outline: none;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 12px;
+            color: var(--text-dark);
+            background: #fff;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .data-table th {
+            padding: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid #f1f2f6;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f1f2f6;
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr:hover {
+            background: #fafbfc;
+        }
+
+        /* ================= SUPPLIER ================= */
+
+        .supplier-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .supplier-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: #fff0f3;
+            color: var(--jago-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .supplier-name {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .supplier-type {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .contact {
+            font-size: 12px;
+        }
+
+        .contact small {
+            color: var(--text-muted);
+            display: block;
+            margin-top: 3px;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status i {
+            font-size: 7px;
+            margin-right: 6px;
+        }
+
+        .status-active {
+            background: #e8f8ef;
+            color: #20a464;
+        }
+
+        .status-inactive {
+            background: #ffe8ed;
+            color: #e51c43;
+        }
+
+        /* ================= ACTION ================= */
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .edit-btn {
+            background: #eaf4ff;
+            color: #278bd5;
+        }
+
+        .edit-btn:hover {
+            background: #d9ebfc;
+        }
+
+        .delete-btn {
+            background: #ffe9ed;
+            color: var(--jago-red);
+        }
+
+        .delete-btn:hover {
+            background: #ffd8df;
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.45);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            width: 550px;
+            max-width: 90%;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+        }
+
+        .close-btn {
+            border: none;
+            background: transparent;
+            font-size: 22px;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dfe3e8;
+            border-radius: 7px;
+            outline: none;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 13px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--jago-red);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            background: #eef0f2;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+            .summary-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 750px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main-wrapper {
+                margin-left: 220px;
+            }
+
+            .top-navbar {
+                padding: 0 15px;
+            }
+
+            .search-box {
+                width: 230px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .data-table {
+                min-width: 950px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-brand">
+        <span class="brand-logo">JAGO</span>
+    </div>
+
+    <ul class="sidebar-menu">
+
+        <li>
+            <a href="dashboard.html">
+                <i class="fa-solid fa-chart-pie"></i>
+                Dashboard
+            </a>
+        </li>
+
+        <li>
+            <a href="menu.html">
+                <i class="fa-solid fa-utensils"></i>
+                Menu
+            </a>
+        </li>
+
+        <li>
+            <a href="orders.html">
+                <i class="fa-solid fa-receipt"></i>
+                Pesanan
+            </a>
+        </li>
+
+        <li>
+            <a href="customers.html">
+                <i class="fa-solid fa-users"></i>
+                Pelanggan
+            </a>
+        </li>
+
+        <li>
+            <a href="inventory.html">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                Stok Bahan Baku
+            </a>
+        </li>
+
+        <!-- ACTIVE -->
+        <li>
+            <a href="suppliers.html" class="active">
+                <i class="fa-solid fa-truck"></i>
+                Supplier
+            </a>
+        </li>
+
+        <li>
+            <a href="promos.html">
+                <i class="fa-solid fa-tags"></i>
+                Promo & Diskon
+            </a>
+        </li>
+
+        <li>
+            <a href="reports.html">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                Laporan
+            </a>
+        </li>
+
+        <li>
+            <a href="activity-log.html">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Log Aktivitas
+            </a>
+        </li>
+
+        <li>
+            <a href="settings.html">
+                <i class="fa-solid fa-gear"></i>
+                Pengaturan Toko
+            </a>
+        </li>
+
+    </ul>
+
+    <div class="sidebar-footer">
+
+        <button class="logout-btn" onclick="handleLogout()">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            Logout
+
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="main-wrapper">
+
+    <!-- NAVBAR -->
+
+    <header class="top-navbar">
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"
+               style="color: var(--text-muted);">
+            </i>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Cari nama supplier..."
+                onkeyup="searchSupplier()"
+            >
+
+        </div>
+
+        <div class="user-profile">
+
+            <div class="user-avatar">
+                A
+            </div>
+
+            <div style="font-size: 13px;">
+
+                <strong>Admin Jago</strong>
+
+                <div style="
+                    color: var(--text-muted);
+                    font-size: 11px;">
+                    Administrator
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENT -->
+
+    <main class="content">
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>Manajemen Supplier</h1>
+
+                <p>
+                    Kelola data supplier dan pemasok bahan baku Kopi Jago.
+                </p>
+
+            </div>
+
+            <button class="btn-primary" onclick="openModal()">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Tambah Supplier
+
+            </button>
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div class="summary-container">
+
+            <div class="summary-card">
+
+                <div class="summary-icon icon-blue">
+
+                    <i class="fa-solid fa-truck"></i>
+
+                </div>
+
+                <div class="summary-text">
+
+                    <small>Total Supplier</small>
+
+                    <strong id="totalSupplier">4</strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon icon-green">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+                <div class="summary-text">
+
+                    <small>Supplier Aktif</small>
+
+                    <strong id="supplierAktif">3</strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon icon-orange">
+
+                    <i class="fa-solid fa-box"></i>
+
+                </div>
+
+                <div class="summary-text">
+
+                    <small>Jenis Bahan Disuplai</small>
+
+                    <strong>8</strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLE -->
+
+        <div class="card-container">
+
+            <div class="table-top">
+
+                <div>
+
+                    <h2>Daftar Supplier</h2>
+
+                    <p>
+                        Data pemasok bahan baku yang bekerja sama dengan toko.
+                    </p>
+
+                </div>
+
+                <div class="filter-box">
+
+                    <select id="statusFilter"
+                            onchange="filterStatus()">
+
+                        <option value="all">
+                            Semua Status
+                        </option>
+
+                        <option value="active">
+                            Aktif
+                        </option>
+
+                        <option value="inactive">
+                            Tidak Aktif
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table class="data-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Supplier</th>
+                            <th>Kontak</th>
+                            <th>Alamat</th>
+                            <th>Bahan Disuplai</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="supplierTable">
+
+
+                        <!-- SUPPLIER 1 -->
+
+                        <tr data-status="active">
+
+                            <td>
+
+                                <div class="supplier-info">
+
+                                    <div class="supplier-icon">
+
+                                        <i class="fa-solid fa-building"></i>
+
+                                    </div>
+
+                                    <div>
+
+                                        <div class="supplier-name">
+                                            PT Kopi Nusantara
+                                        </div>
+
+                                        <div class="supplier-type">
+                                            Supplier Kopi
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="contact">
+
+                                    0812-3456-7890
+
+                                    <small>
+                                        kopinusantara@gmail.com
+                                    </small>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                Jakarta Selatan
+                            </td>
+
+
+                            <td>
+                                Kopi Arabika
+                            </td>
+
+
+                            <td>
+
+                                <span class="status status-active">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Aktif
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="action-btn edit-btn"
+                                        onclick="editSupplier(this)"
+                                        title="Edit">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="action-btn delete-btn"
+                                        onclick="deleteSupplier(this)"
+                                        title="Hapus">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- SUPPLIER 2 -->
+
+                        <tr data-status="active">
+
+                            <td>
+
+                                <div class="supplier-info">
+
+                                    <div class="supplier-icon">
+
+                                        <i class="fa-solid fa-building"></i>
+
+                                    </div>
+
+                                    <div>
+
+                                        <div class="supplier-name">
+                                            Fresh Dairy Indonesia
+                                        </div>
+
+                                        <div class="supplier-type">
+                                            Supplier Susu
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="contact">
+
+                                    0857-1122-3344
+
+                                    <small>
+                                        sales@freshdairy.id
+                                    </small>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                Depok
+                            </td>
+
+
+                            <td>
+                                Fresh Milk
+                            </td>
+
+
+                            <td>
+
+                                <span class="status status-active">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Aktif
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="action-btn edit-btn"
+                                        onclick="editSupplier(this)">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="action-btn delete-btn"
+                                        onclick="deleteSupplier(this)">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- SUPPLIER 3 -->
+
+                        <tr data-status="active">
+
+                            <td>
+
+                                <div class="supplier-info">
+
+                                    <div class="supplier-icon">
+
+                                        <i class="fa-solid fa-building"></i>
+
+                                    </div>
+
+                                    <div>
+
+                                        <div class="supplier-name">
+                                            Sumber Pangan Jaya
+                                        </div>
+
+                                        <div class="supplier-type">
+                                            Supplier Bahan
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="contact">
+
+                                    0821-9988-7766
+
+                                    <small>
+                                        info@sumberpangan.id
+                                    </small>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                Tangerang
+                            </td>
+
+
+                            <td>
+                                Gula Pasir
+                            </td>
+
+
+                            <td>
+
+                                <span class="status status-active">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Aktif
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="action-btn edit-btn"
+                                        onclick="editSupplier(this)">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="action-btn delete-btn"
+                                        onclick="deleteSupplier(this)">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- SUPPLIER 4 -->
+
+                        <tr data-status="inactive">
+
+                            <td>
+
+                                <div class="supplier-info">
+
+                                    <div class="supplier-icon">
+
+                                        <i class="fa-solid fa-building"></i>
+
+                                    </div>
+
+                                    <div>
+
+                                        <div class="supplier-name">
+                                            Jaya Beverage Supply
+                                        </div>
+
+                                        <div class="supplier-type">
+                                            Supplier Minuman
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="contact">
+
+                                    0896-5566-7788
+
+                                    <small>
+                                        jaya@beverages.id
+                                    </small>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                Bekasi
+                            </td>
+
+
+                            <td>
+                                Sirup & Topping
+                            </td>
+
+
+                            <td>
+
+                                <span class="status status-inactive">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Tidak Aktif
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="action-btn edit-btn"
+                                        onclick="editSupplier(this)">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="action-btn delete-btn"
+                                        onclick="deleteSupplier(this)">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL
+===================================================== -->
+
+<div class="modal" id="supplierModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="modalTitle">
+                Tambah Supplier
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal()">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+        <form
+            id="supplierForm"
+            onsubmit="saveSupplier(event)">
+
+
+            <div class="form-group">
+
+                <label>
+                    Nama Supplier
+                </label>
+
+                <input
+                    type="text"
+                    id="supplierName"
+                    placeholder="Contoh: PT Kopi Nusantara"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Nomor Telepon
+                    </label>
+
+                    <input
+                        type="text"
+                        id="supplierPhone"
+                        placeholder="0812-xxxx-xxxx"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="supplierEmail"
+                        placeholder="supplier@email.com"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Alamat
+                </label>
+
+                <textarea
+                    id="supplierAddress"
+                    placeholder="Alamat supplier"
+                    required></textarea>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Bahan yang Disuplai
+                    </label>
+
+                    <input
+                        type="text"
+                        id="supplierMaterial"
+                        placeholder="Contoh: Kopi Arabika"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Status
+                    </label>
+
+                    <select
+                        id="supplierStatus"
+                        required>
+
+                        <option value="active">
+                            Aktif
+                        </option>
+
+                        <option value="inactive">
+                            Tidak Aktif
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn-cancel"
+                    onclick="closeModal()">
+
+                    Batal
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn-primary">
+
+                    <i class="fa-solid fa-save"></i>
+
+                    Simpan
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+    /* ================= LOGIN ================= */
+
+    if (localStorage.getItem('admin_logged_in') !== 'true') {
+
+        window.location.href = 'login.html';
+
+    }
+
+
+    /* ================= LOGOUT ================= */
+
+    function handleLogout() {
+
+        if (confirm('Apakah Anda yakin ingin keluar?')) {
+
+            localStorage.removeItem('admin_logged_in');
+
+            window.location.href = 'login.html';
+
+        }
+
+    }
+
+
+    /* ================= MODAL ================= */
+
+    let editingRow = null;
+
+
+    function openModal() {
+
+        editingRow = null;
+
+        document.getElementById('modalTitle').innerText =
+            'Tambah Supplier';
+
+        document.getElementById('supplierForm').reset();
+
+        document.getElementById('supplierModal').style.display =
+            'flex';
+
+    }
+
+
+    function closeModal() {
+
+        document.getElementById('supplierModal').style.display =
+            'none';
+
+    }
+
+
+    /* ================= SAVE ================= */
+
+    function saveSupplier(event) {
+
+        event.preventDefault();
+
+
+        const name =
+            document.getElementById('supplierName').value;
+
+        const phone =
+            document.getElementById('supplierPhone').value;
+
+        const email =
+            document.getElementById('supplierEmail').value;
+
+        const address =
+            document.getElementById('supplierAddress').value;
+
+        const material =
+            document.getElementById('supplierMaterial').value;
+
+        const status =
+            document.getElementById('supplierStatus').value;
+
+
+        const statusText =
+            status === 'active'
+                ? 'Aktif'
+                : 'Tidak Aktif';
+
+
+        const statusClass =
+            status === 'active'
+                ? 'status-active'
+                : 'status-inactive';
+
+
+        /* EDIT */
+
+        if (editingRow) {
+
+            editingRow.setAttribute(
+                'data-status',
+                status
+            );
+
+
+            editingRow.querySelector('.supplier-name')
+                .innerText = name;
+
+
+            editingRow.querySelector('.contact')
+                .innerHTML =
+                phone +
+                '<small>' +
+                email +
+                '</small>';
+
+
+            editingRow.cells[2]
+                .innerText = address;
+
+
+            editingRow.cells[3]
+                .innerText = material;
+
+
+            const statusElement =
+                editingRow.cells[4]
+                    .querySelector('.status');
+
+
+            statusElement.className =
+                'status ' + statusClass;
+
+
+            statusElement.innerHTML =
+                '<i class="fa-solid fa-circle"></i> ' +
+                statusText;
+
+        }
+
+
+        /* TAMBAH */
+
+        else {
+
+            const table =
+                document.getElementById('supplierTable');
+
+
+            const row =
+                document.createElement('tr');
+
+
+            row.setAttribute(
+                'data-status',
+                status
+            );
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    <div class="supplier-info">
+
+                        <div class="supplier-icon">
+
+                            <i class="fa-solid fa-building"></i>
+
+                        </div>
+
+                        <div>
+
+                            <div class="supplier-name">
+                                ${name}
+                            </div>
+
+                            <div class="supplier-type">
+                                Supplier Bahan
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+
+                <td>
+
+                    <div class="contact">
+
+                        ${phone}
+
+                        <small>
+                            ${email}
+                        </small>
+
+                    </div>
+
+                </td>
+
+
+                <td>
+                    ${address}
+                </td>
+
+
+                <td>
+                    ${material}
+                </td>
+
+
+                <td>
+
+                    <span class="status ${statusClass}">
+
+                        <i class="fa-solid fa-circle"></i>
+
+                        ${statusText}
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <div class="action-buttons">
+
+                        <button
+                            class="action-btn edit-btn"
+                            onclick="editSupplier(this)">
+
+                            <i class="fa-solid fa-pen"></i>
+
+                        </button>
+
+
+                        <button
+                            class="action-btn delete-btn"
+                            onclick="deleteSupplier(this)">
+
+                            <i class="fa-solid fa-trash"></i>
+
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        }
+
+
+        closeModal();
+
+        updateSummary();
+
+    }
+
+
+    /* ================= EDIT ================= */
+
+    function editSupplier(button) {
+
+        editingRow =
+            button.closest('tr');
+
+
+        const name =
+            editingRow
+                .querySelector('.supplier-name')
+                .innerText;
+
+
+        const contact =
+            editingRow
+                .querySelector('.contact');
+
+
+        const phone =
+            contact.childNodes[0]
+                .textContent
+                .trim();
+
+
+        const email =
+            contact.querySelector('small')
+                .innerText;
+
+
+        const address =
+            editingRow.cells[2].innerText;
+
+
+        const material =
+            editingRow.cells[3].innerText;
+
+
+        const status =
+            editingRow.getAttribute(
+                'data-status'
+            );
+
+
+        document.getElementById('modalTitle')
+            .innerText = 'Edit Supplier';
+
+
+        document.getElementById('supplierName')
+            .value = name;
+
+
+        document.getElementById('supplierPhone')
+            .value = phone;
+
+
+        document.getElementById('supplierEmail')
+            .value = email;
+
+
+        document.getElementById('supplierAddress')
+            .value = address;
+
+
+        document.getElementById('supplierMaterial')
+            .value = material;
+
+
+        document.getElementById('supplierStatus')
+            .value = status;
+
+
+        document.getElementById('supplierModal')
+            .style.display = 'flex';
+
+    }
+
+
+    /* ================= DELETE ================= */
+
+    function deleteSupplier(button) {
+
+        const row =
+            button.closest('tr');
+
+
+        const name =
+            row
+                .querySelector('.supplier-name')
+                .innerText;
+
+
+        if (
+            confirm(
+                'Apakah Anda yakin ingin menghapus supplier "' +
+                name +
+                '"?'
+            )
+        ) {
+
+            row.remove();
+
+            updateSummary();
+
+        }
+
+    }
+
+
+    /* ================= SEARCH ================= */
+
+    function searchSupplier() {
+
+        const keyword =
+            document
+                .getElementById('searchInput')
+                .value
+                .toLowerCase();
+
+
+        const rows =
+            document
+                .querySelectorAll(
+                    '#supplierTable tr'
+                );
+
+
+        rows.forEach(function(row) {
+
+            const name =
+                row
+                    .querySelector('.supplier-name')
+                    .innerText
+                    .toLowerCase();
+
+
+            if (name.includes(keyword)) {
+
+                row.style.display = '';
+
+            } else {
+
+                row.style.display = 'none';
+
+            }
+
+        });
+
+    }
+
+
+    /* ================= FILTER ================= */
+
+    function filterStatus() {
+
+        const status =
+            document
+                .getElementById('statusFilter')
+                .value;
+
+
+        const rows =
+            document
+                .querySelectorAll(
+                    '#supplierTable tr'
+                );
+
+
+        rows.forEach(function(row) {
+
+            if (
+                status === 'all' ||
+                row.getAttribute('data-status') === status
+            ) {
+
+                row.style.display = '';
+
+            } else {
+
+                row.style.display = 'none';
+
+            }
+
+        });
+
+    }
+
+
+    /* ================= SUMMARY ================= */
+
+    function updateSummary() {
+
+        const rows =
+            document.querySelectorAll(
+                '#supplierTable tr'
+            );
+
+
+        let active = 0;
+
+
+        rows.forEach(function(row) {
+
+            if (
+                row.getAttribute('data-status') ===
+                'active'
+            ) {
+
+                active++;
+
+            }
+
+        });
+
+
+        document.getElementById('totalSupplier')
+            .innerText = rows.length;
+
+
+        document.getElementById('supplierAktif')
+            .innerText = active;
+
+    }
+
+
+    /* ================= CLOSE MODAL ================= */
+
+    window.onclick = function(event) {
+
+        const modal =
+            document.getElementById(
+                'supplierModal'
+            );
+
+
+        if (event.target === modal) {
+
+            closeModal();
+
+        }
+
+    };
+
+</script>
+
+</body>
+</html>

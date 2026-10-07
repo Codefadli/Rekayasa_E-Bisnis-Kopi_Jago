@@ -1,1 +1,316 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Admin - Menu</title><link rel="stylesheet" href="../style.css"></head><body><main class="container"><h1>Menu Minuman</h1><p>Kelola katalog minuman Kopi Jago.</p><a href="dashboard.html">Kembali ke dashboard</a></main></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kelola Menu - Kopi Jago</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Variabel CSS patokan orders.html */
+            --jago-red: #ea1d43;
+            --jago-red-dark: #c41233;
+            --sidebar-bg: #ea1d43;
+            --sidebar-active: #c41233;
+            --sidebar-hover: rgba(0, 0, 0, 0.12);
+            --bg-main: #f4f6f9;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Open Sans', sans-serif; background: var(--bg-main); color: var(--text-dark); display: flex; min-height: 100vh; }
+
+        /* --- SIDEBAR PATOKAN --- */
+        .sidebar { width: 250px; background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; flex-shrink: 0; position: fixed; top: 0; bottom: 0; left: 0; z-index: 100; }
+        .sidebar-brand { padding: 22px 20px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .brand-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 26px; letter-spacing: 1px; color: #fff; text-transform: uppercase; text-decoration: none; }
+        
+        .sidebar-menu { list-style: none; padding: 15px 10px; flex: 1; overflow-y: auto; }
+        .sidebar-menu li { margin-bottom: 4px; }
+        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: rgba(255, 255, 255, 0.9); text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+        .sidebar-menu a:hover { background: var(--sidebar-hover); color: #fff; }
+        .sidebar-menu a.active { background: var(--sidebar-active); color: #fff; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+        .sidebar-menu a i { width: 20px; text-align: center; font-size: 16px; }
+        .sidebar-footer { padding: 15px; border-top: 1px solid rgba(255,255,255,0.2); }
+        .logout-btn { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: rgba(0,0,0,0.15); border: 0; color: #fff; cursor: pointer; font-weight: 700; border-radius: 6px; transition: 0.2s; }
+        .logout-btn:hover { background: rgba(0,0,0,0.3); }
+
+        /* --- MAIN WRAPPER & TOP NAVBAR PATOKAN --- */
+        .main-wrapper { margin-left: 250px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .top-navbar { height: 65px; background: #fff; padding: 0 30px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.03); position: sticky; top: 0; z-index: 99; }
+        .search-box { display: flex; align-items: center; background: #f4f6f9; padding: 8px 16px; border-radius: 8px; width: 350px; }
+        .search-box input { border: 0; background: transparent; outline: none; margin-left: 10px; width: 100%; font-size: 13px; font-family: 'Open Sans', sans-serif; }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--jago-red); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+
+        /* --- KONTEN MENU.HTML ASLI --- */
+        .content { padding: 30px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .page-header h1 { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 800; }
+        
+        .btn-primary { background: var(--jago-red); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .btn-primary:hover { background: var(--jago-red-dark); }
+
+        .card-container { background: #fff; border-radius: 12px; box-shadow: var(--card-shadow); padding: 20px; }
+        .table-filter { display: flex; gap: 12px; margin-bottom: 20px; }
+        .filter-select { padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; background: #fff; }
+
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        .data-table th { padding: 12px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid #f1f2f6; }
+        .data-table td { padding: 14px 12px; border-bottom: 1px solid #f1f2f6; vertical-align: middle; }
+        .menu-thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: #f8f3ee; }
+
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; }
+        .status-tersedia { background: #e8f8f5; color: #2ecc71; }
+        .status-habis { background: #fdf2f2; color: #e74c3c; }
+
+        .action-btns { display: flex; gap: 8px; }
+        .btn-action { width: 32px; height: 32px; border-radius: 6px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .btn-edit { background: #ebf5fb; color: #3498db; }
+        .btn-edit:hover { background: #3498db; color: #fff; }
+        .btn-delete { background: #fdf2f2; color: #e74c3c; }
+        .btn-delete:hover { background: #e74c3c; color: #fff; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-card { background: #fff; width: 100%; max-width: 550px; border-radius: 12px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 800; }
+        .close-modal { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group.full { grid-column: span 2; }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; }
+        .form-group textarea { resize: vertical; height: 70px; }
+
+        .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; }
+        .btn-secondary { background: #e2e8f0; color: var(--text-dark); border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-logo">JAGO</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="menu.html" class="active"><i class="fa-solid fa-utensils"></i> Menu</a></li>
+            <li><a href="orders.html"><i class="fa-solid fa-receipt"></i> Pesanan</a></li>
+            <li><a href="customers.html"><i class="fa-solid fa-users"></i> Pelanggan</a></li>
+            <li><a href="inventory.html"><i class="fa-solid fa-boxes-stacked"></i> Stok Bahan Baku</a></li>
+            <li><a href="suppliers.html"><i class="fa-solid fa-truck"></i> Supplier</a></li>
+            <li><a href="promos.html"><i class="fa-solid fa-tags"></i> Promo & Diskon</a></li>
+            <li><a href="reports.html"><i class="fa-solid fa-file-invoice-dollar"></i> Laporan</a></li>
+            <li><a href="activity-log.html"><i class="fa-solid fa-clock-rotate-left"></i> Log Aktivitas</a></li>
+            <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Pengaturan Toko</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="handleLogout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <header class="top-navbar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
+                <input type="text" id="search-menu" placeholder="Cari nama menu...">
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">A</div>
+                <div style="font-size: 13px;">
+                    <strong>Admin Jago</strong>
+                    <div style="color: var(--text-muted); font-size: 11px;">Administrator</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="page-header">
+                <div>
+                    <h1>Kelola Data Menu</h1>
+                    <p style="color: var(--text-muted); font-size: 13px;">Tambah, edit, atau hapus menu minuman dan makanan Kopi Jago.</p>
+                </div>
+                <button class="btn-primary" onclick="openModal('add')">
+                    <i class="fa-solid fa-plus"></i> Tambah Menu Baru
+                </button>
+            </div>
+
+            <div class="card-container">
+                <div class="table-filter">
+                    <select class="filter-select" id="filter-category">
+                        <option value="">Semua Kategori</option>
+                        <option value="Kopi">Kopi</option>
+                        <option value="Non Kopi">Non Kopi</option>
+                        <option value="Makanan">Makanan</option>
+                        <option value="Pastry">Pastry</option>
+                    </select>
+                    <select class="filter-select" id="filter-status">
+                        <option value="">Semua Status</option>
+                        <option value="Tersedia">Tersedia</option>
+                        <option value="Habis">Habis</option>
+                    </select>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Gambar</th>
+                            <th>Nama Menu</th>
+                            <th>Kategori</th>
+                            <th>Harga Standard</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="menu-table-body">
+                        <tr>
+                            <td><div class="menu-thumb" style="background:#e2d4cb; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-mug-saucer"></i></div></td>
+                            <td>
+                                <strong>Iced Latte</strong>
+                                <div style="font-size: 11px; color: var(--text-muted);">Espresso dengan susu segar dan es</div>
+                            </td>
+                            <td>Kopi</td>
+                            <td>Rp 18.000</td>
+                            <td><span class="status-badge status-tersedia">Tersedia</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-action btn-edit" title="Edit" onclick="openModal('edit', 1)"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-action btn-delete" title="Hapus" onclick="deleteMenu(1)"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><div class="menu-thumb" style="background:#e2d4cb; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-mug-saucer"></i></div></td>
+                            <td>
+                                <strong>Matcha Latte</strong>
+                                <div style="font-size: 11px; color: var(--text-muted);">Matcha Jepang pilihan dengan susu</div>
+                            </td>
+                            <td>Non Kopi</td>
+                            <td>Rp 22.000</td>
+                            <td><span class="status-badge status-habis">Habis</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-action btn-edit" title="Edit" onclick="openModal('edit', 2)"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-action btn-delete" title="Hapus" onclick="deleteMenu(2)"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Form Tambah/Edit Menu -->
+    <div class="modal-overlay" id="menu-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Tambah Menu Baru</h3>
+                <button class="close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="menu-form" onsubmit="saveMenu(event)">
+                <input type="hidden" id="menu-id">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="nama_menu">Nama Menu</label>
+                        <input type="text" id="nama_menu" placeholder="Contoh: Kopi Susu Jago" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kategori">Kategori</label>
+                        <select id="kategori" required>
+                            <option value="Kopi">Kopi</option>
+                            <option value="Non Kopi">Non Kopi</option>
+                            <option value="Makanan">Makanan</option>
+                            <option value="Pastry">Pastry</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="harga">Harga (Rp)</label>
+                        <input type="number" id="harga" placeholder="18000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status Ketersediaan</label>
+                        <select id="status" required>
+                            <option value="Tersedia">Tersedia</option>
+                            <option value="Habis">Habis</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="gambar">File Gambar</label>
+                        <input type="file" id="gambar" accept="image/*">
+                    </div>
+                    <div class="form-group full">
+                        <label for="deskripsi">Deskripsi Singkat</label>
+                        <textarea id="deskripsi" placeholder="Jelaskan rasa atau bahan utama menu..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn-primary">Simpan Menu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check Autentikasi Login
+        if (localStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        function handleLogout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                localStorage.removeItem('admin_logged_in');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Modal Handler
+        const modal = document.getElementById('menu-modal');
+        function openModal(mode, id = null) {
+            document.getElementById('modal-title').textContent = mode === 'add' ? 'Tambah Menu Baru' : 'Edit Menu';
+            if (mode === 'add') {
+                document.getElementById('menu-form').reset();
+                document.getElementById('menu-id').value = '';
+            } else {
+                // Dummy preload data untuk edit
+                document.getElementById('menu-id').value = id;
+                document.getElementById('nama_menu').value = id === 1 ? 'Iced Latte' : 'Matcha Latte';
+                document.getElementById('kategori').value = id === 1 ? 'Kopi' : 'Non Kopi';
+                document.getElementById('harga').value = id === 1 ? 18000 : 22000;
+                document.getElementById('status').value = id === 1 ? 'Tersedia' : 'Habis';
+                document.getElementById('deskripsi').value = id === 1 ? 'Espresso dengan susu segar dan es' : 'Matcha Jepang pilihan dengan susu';
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        function saveMenu(e) {
+            e.preventDefault();
+            alert('Data menu berhasil disimpan! (Siap disambungkan ke API backend)');
+            closeModal();
+        }
+
+        function deleteMenu(id) {
+            if (confirm('Yakin ingin menghapus menu ini?')) {
+                alert('Menu berhasil dihapus!');
+            }
+        }
+    </script>
+</body>
+</html>

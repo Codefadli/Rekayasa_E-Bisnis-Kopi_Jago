@@ -1,1 +1,1869 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Admin - Log Aktivitas</title><link rel="stylesheet" href="../style.css"></head><body><main class="container"><h1>Log Aktivitas</h1><p>Audit aktivitas Admin.</p><a href="dashboard.html">Kembali ke dashboard</a></main></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Log Aktivitas - Kopi Jago</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        :root {
+            --jago-red: #ea1d43;
+            --jago-red-dark: #c41233;
+            --sidebar-bg: #ea1d43;
+            --sidebar-active: #c41233;
+            --sidebar-hover: rgba(0, 0, 0, 0.12);
+
+            --bg-main: #f4f6f9;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+
+            --green: #20b26b;
+            --blue: #3498db;
+            --orange: #f39c12;
+            --purple: #8e5bd9;
+
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-dark);
+
+            display: flex;
+
+            min-height: 100vh;
+        }
+
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            width: 250px;
+
+            background: var(--sidebar-bg);
+
+            color: #fff;
+
+            display: flex;
+            flex-direction: column;
+
+            flex-shrink: 0;
+
+            position: fixed;
+
+            top: 0;
+            bottom: 0;
+            left: 0;
+
+            z-index: 100;
+        }
+
+
+        .sidebar-brand {
+            padding: 22px 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.2);
+        }
+
+
+        .brand-logo {
+            font-family: 'Montserrat', sans-serif;
+
+            font-weight: 900;
+
+            font-style: italic;
+
+            font-size: 26px;
+
+            letter-spacing: 1px;
+
+            color: #fff;
+
+            text-transform: uppercase;
+
+            text-decoration: none;
+        }
+
+
+        .sidebar-menu {
+            list-style: none;
+
+            padding: 15px 10px;
+
+            flex: 1;
+
+            overflow-y: auto;
+        }
+
+
+        .sidebar-menu li {
+            margin-bottom: 4px;
+        }
+
+
+        .sidebar-menu a {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px 16px;
+
+            color: rgba(255,255,255,0.9);
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            transition: all 0.2s;
+        }
+
+
+        .sidebar-menu a:hover {
+            background: var(--sidebar-hover);
+
+            color: #fff;
+        }
+
+
+        .sidebar-menu a.active {
+            background: var(--sidebar-active);
+
+            color: #fff;
+
+            font-weight: 700;
+
+            box-shadow:
+                0 2px 6px rgba(0,0,0,0.15);
+        }
+
+
+        .sidebar-menu a i {
+            width: 20px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        .sidebar-footer {
+            padding: 15px;
+
+            border-top:
+                1px solid rgba(255,255,255,0.2);
+        }
+
+
+        .logout-btn {
+            width: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 10px 15px;
+
+            background: rgba(0,0,0,0.15);
+
+            border: 0;
+
+            color: #fff;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            border-radius: 6px;
+
+            transition: 0.2s;
+        }
+
+
+        .logout-btn:hover {
+            background: rgba(0,0,0,0.3);
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .main-wrapper {
+            margin-left: 250px;
+
+            flex: 1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            min-width: 0;
+        }
+
+
+        /* ================= NAVBAR ================= */
+
+        .top-navbar {
+            height: 65px;
+
+            background: #fff;
+
+            padding: 0 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            box-shadow:
+                0 2px 10px rgba(0,0,0,0.03);
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 99;
+        }
+
+
+        .search-box {
+            display: flex;
+
+            align-items: center;
+
+            background: #f4f6f9;
+
+            padding: 8px 16px;
+
+            border-radius: 8px;
+
+            width: 350px;
+        }
+
+
+        .search-box input {
+            border: 0;
+
+            background: transparent;
+
+            outline: none;
+
+            margin-left: 10px;
+
+            width: 100%;
+
+            font-size: 13px;
+
+            font-family:
+                'Open Sans', sans-serif;
+        }
+
+
+        .user-profile {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+
+            border-radius: 50%;
+
+            background: var(--jago-red);
+
+            color: #fff;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: 700;
+
+            font-size: 14px;
+        }
+
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 30px;
+        }
+
+
+        .page-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 24px;
+        }
+
+
+        .page-header h1 {
+            font-family:
+                'Montserrat', sans-serif;
+
+            font-weight: 700;
+
+            font-size: 24px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .page-header p {
+            color: var(--text-muted);
+
+            font-size: 13px;
+        }
+
+
+        /* ================= STAT CARD ================= */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .stat-card {
+            background: #fff;
+
+            border-radius: 12px;
+
+            padding: 18px;
+
+            box-shadow: var(--card-shadow);
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+        }
+
+
+        .stat-icon {
+            width: 43px;
+            height: 43px;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 17px;
+        }
+
+
+        .icon-red {
+            color: var(--jago-red);
+
+            background: #ffe8ed;
+        }
+
+
+        .icon-green {
+            color: var(--green);
+
+            background: #e7f8ef;
+        }
+
+
+        .icon-blue {
+            color: var(--blue);
+
+            background: #e7f3ff;
+        }
+
+
+        .stat-info small {
+            display: block;
+
+            color: var(--text-muted);
+
+            font-size: 11px;
+
+            margin-bottom: 4px;
+        }
+
+
+        .stat-info strong {
+            font-family:
+                'Montserrat', sans-serif;
+
+            font-size: 19px;
+        }
+
+
+        /* ================= FILTER ================= */
+
+        .filter-bar {
+            background: #fff;
+
+            border-radius: 12px;
+
+            padding: 16px 18px;
+
+            box-shadow: var(--card-shadow);
+
+            margin-bottom: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+
+        .filter-left {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .filter-title {
+            font-size: 12px;
+
+            font-weight: 700;
+
+            color: var(--text-dark);
+
+            margin-right: 5px;
+        }
+
+
+        .filter-select {
+            border: 1px solid #e1e5e9;
+
+            background: #fff;
+
+            padding: 8px 12px;
+
+            border-radius: 7px;
+
+            font-size: 11px;
+
+            color: var(--text-dark);
+
+            outline: none;
+
+            cursor: pointer;
+        }
+
+
+        .date-input {
+            border: 1px solid #e1e5e9;
+
+            padding: 8px 10px;
+
+            border-radius: 7px;
+
+            font-size: 11px;
+
+            color: var(--text-dark);
+
+            outline: none;
+        }
+
+
+        .clear-btn {
+            border: none;
+
+            background: #f5f6f8;
+
+            color: var(--text-muted);
+
+            padding: 8px 12px;
+
+            border-radius: 7px;
+
+            font-size: 11px;
+
+            cursor: pointer;
+        }
+
+
+        .clear-btn:hover {
+            background: #eceef1;
+
+            color: var(--text-dark);
+        }
+
+
+        /* ================= LOG CARD ================= */
+
+        .log-card {
+            background: #fff;
+
+            border-radius: 12px;
+
+            box-shadow: var(--card-shadow);
+
+            padding: 20px;
+        }
+
+
+        .log-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+
+        .log-header h3 {
+            font-family:
+                'Montserrat', sans-serif;
+
+            font-size: 16px;
+        }
+
+
+        .log-header span {
+            font-size: 11px;
+
+            color: var(--text-muted);
+        }
+
+
+        /* ================= ACTIVITY ================= */
+
+        .activity-list {
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        .activity-item {
+            display: grid;
+
+            grid-template-columns:
+                45px 1fr auto;
+
+            gap: 14px;
+
+            padding: 16px 8px;
+
+            border-bottom:
+                1px solid #f0f1f3;
+
+            align-items: start;
+        }
+
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+
+        .activity-icon {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 14px;
+        }
+
+
+        .activity-red {
+            color: var(--jago-red);
+
+            background: #ffe8ed;
+        }
+
+
+        .activity-green {
+            color: var(--green);
+
+            background: #e7f8ef;
+        }
+
+
+        .activity-blue {
+            color: var(--blue);
+
+            background: #e7f3ff;
+        }
+
+
+        .activity-orange {
+            color: var(--orange);
+
+            background: #fff2df;
+        }
+
+
+        .activity-purple {
+            color: var(--purple);
+
+            background: #f0eaff;
+        }
+
+
+        .activity-content strong {
+            display: block;
+
+            font-size: 13px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .activity-content p {
+            color: var(--text-muted);
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+
+        .activity-content b {
+            color: var(--text-dark);
+        }
+
+
+        .activity-time {
+            color: var(--text-muted);
+
+            font-size: 10px;
+
+            white-space: nowrap;
+
+            padding-top: 4px;
+        }
+
+
+        /* ================= BADGE ================= */
+
+        .activity-badge {
+            display: inline-block;
+
+            margin-top: 7px;
+
+            padding: 4px 8px;
+
+            border-radius: 15px;
+
+            font-size: 9px;
+
+            font-weight: 700;
+        }
+
+
+        .badge-login {
+            color: #2980b9;
+
+            background: #e8f4ff;
+        }
+
+
+        .badge-add {
+            color: #20a464;
+
+            background: #e8f8ef;
+        }
+
+
+        .badge-edit {
+            color: #d68a12;
+
+            background: #fff4df;
+        }
+
+
+        .badge-delete {
+            color: #d93450;
+
+            background: #ffe9ed;
+        }
+
+
+        .badge-order {
+            color: #7c55bd;
+
+            background: #f0eaff;
+        }
+
+
+        /* ================= PAGINATION ================= */
+
+        .pagination {
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 6px;
+
+            margin-top: 20px;
+        }
+
+
+        .page-btn {
+            width: 30px;
+            height: 30px;
+
+            border: 1px solid #e5e7eb;
+
+            background: #fff;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            cursor: pointer;
+
+            color: var(--text-muted);
+        }
+
+
+        .page-btn:hover {
+            background: #f5f6f8;
+        }
+
+
+        .page-btn.active {
+            background: var(--jago-red);
+
+            color: #fff;
+
+            border-color:
+                var(--jago-red);
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+
+            .filter-bar {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+
+            .filter-left {
+                flex-wrap: wrap;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+
+            .main-wrapper {
+                margin-left: 220px;
+            }
+
+
+            .content {
+                padding: 20px;
+            }
+
+
+            .search-box {
+                width: 220px;
+            }
+
+
+            .activity-item {
+                grid-template-columns:
+                    40px 1fr;
+            }
+
+
+            .activity-time {
+                grid-column: 2;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+
+    <div class="sidebar-brand">
+
+        <span class="brand-logo">
+            JAGO
+        </span>
+
+    </div>
+
+
+    <ul class="sidebar-menu">
+
+
+        <li>
+            <a href="dashboard.html">
+
+                <i class="fa-solid fa-chart-pie"></i>
+
+                Dashboard
+
+            </a>
+        </li>
+
+
+        <li>
+            <a href="menu.html">
+
+                <i class="fa-solid fa-utensils"></i>
+
+                Menu
+
+            </a>
+        </li>
+
+
+        <li>
+            <a href="orders.html">
+
+                <i class="fa-solid fa-receipt"></i>
+
+                Pesanan
+
+            </a>
+        </li>
+
+
+        <li>
+            <a href="customers.html">
+
+                <i class="fa-solid fa-users"></i>
+
+                Pelanggan
+
+            </a>
+        </li>
+
+
+        <li>
+            <a href="inventory.html">
+
+                <i class="fa-solid fa-boxes-stacked"></i>
+
+                Stok Bahan Baku
+
+            </a>
+        </li>
+
+
+        <li>
+            <a href="suppliers.html">
+
+                <i class="fa-solid fa-truck"></i>
+
+                Supplier
+
+            </a>
+        </li>
+
+
+        <li>
+            <a href="promos.html">
+
+                <i class="fa-solid fa-tags"></i>
+
+                Promo & Diskon
+
+            </a>
+        </li>
+
+
+        <li>
+            <a href="reports.html">
+
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                Laporan
+
+            </a>
+        </li>
+
+
+        <!-- ACTIVE -->
+
+        <li>
+            <a href="activity-log.html"
+               class="active">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+                Log Aktivitas
+
+            </a>
+        </li>
+
+
+        <li>
+            <a href="settings.html">
+
+                <i class="fa-solid fa-gear"></i>
+
+                Pengaturan Toko
+
+            </a>
+        </li>
+
+
+    </ul>
+
+
+    <div class="sidebar-footer">
+
+        <button
+            class="logout-btn"
+            onclick="handleLogout()">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            Logout
+
+        </button>
+
+    </div>
+
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="main-wrapper">
+
+
+    <!-- TOP NAVBAR -->
+
+    <header class="top-navbar">
+
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"
+               style="color:var(--text-muted);">
+            </i>
+
+            <input
+                type="text"
+                id="searchActivity"
+                placeholder="Cari aktivitas admin..."
+                onkeyup="searchActivity()">
+
+        </div>
+
+
+        <div class="user-profile">
+
+            <div class="user-avatar">
+                A
+            </div>
+
+
+            <div style="font-size:13px;">
+
+                <strong>
+                    Admin Jago
+                </strong>
+
+                <div style="
+                    color:var(--text-muted);
+                    font-size:11px;">
+
+                    Administrator
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </header>
+
+
+    <!-- =================================================
+         CONTENT
+    ================================================= -->
+
+    <main class="content">
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    Log Aktivitas
+                </h1>
+
+                <p>
+                    Pantau seluruh aktivitas yang dilakukan oleh admin pada sistem.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================= -->
+
+        <div class="stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon icon-red">
+
+                    <i class="fa-solid fa-list-check"></i>
+
+                </div>
+
+
+                <div class="stat-info">
+
+                    <small>
+                        Aktivitas Hari Ini
+                    </small>
+
+                    <strong>
+                        24
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon icon-green">
+
+                    <i class="fa-solid fa-user-check"></i>
+
+                </div>
+
+
+                <div class="stat-info">
+
+                    <small>
+                        Admin Aktif
+                    </small>
+
+                    <strong>
+                        3
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon icon-blue">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                </div>
+
+
+                <div class="stat-info">
+
+                    <small>
+                        Status Sistem
+                    </small>
+
+                    <strong style="
+                        color:var(--green);
+                        font-size:15px;">
+
+                        Normal
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             FILTER
+        ================================================= -->
+
+        <div class="filter-bar">
+
+
+            <div class="filter-left">
+
+                <span class="filter-title">
+
+                    <i class="fa-solid fa-filter"></i>
+
+                    Filter
+
+                </span>
+
+
+                <select
+                    class="filter-select"
+                    id="activityType"
+                    onchange="filterActivity()">
+
+                    <option value="all">
+                        Semua Aktivitas
+                    </option>
+
+                    <option value="login">
+                        Login
+                    </option>
+
+                    <option value="add">
+                        Menambahkan Data
+                    </option>
+
+                    <option value="edit">
+                        Mengubah Data
+                    </option>
+
+                    <option value="delete">
+                        Menghapus Data
+                    </option>
+
+                    <option value="order">
+                        Pesanan
+                    </option>
+
+                </select>
+
+
+                <input
+                    type="date"
+                    class="date-input">
+
+
+                <button
+                    class="clear-btn"
+                    onclick="clearFilter()">
+
+                    <i class="fa-solid fa-rotate-left"></i>
+
+                    Reset
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             LOG
+        ================================================= -->
+
+        <div class="log-card">
+
+
+            <div class="log-header">
+
+                <div>
+
+                    <h3>
+                        Aktivitas Terbaru
+                    </h3>
+
+                    <span>
+                        Riwayat aktivitas admin terbaru
+                    </span>
+
+                </div>
+
+
+                <span>
+                    24 aktivitas
+                </span>
+
+            </div>
+
+
+            <div
+                class="activity-list"
+                id="activityList">
+
+
+                <!-- =================================================
+                     ITEM 1
+                ================================================= -->
+
+                <div
+                    class="activity-item"
+                    data-type="login"
+                    data-search="login admin sistem">
+
+                    <div class="activity-icon activity-blue">
+
+                        <i class="fa-solid fa-right-to-bracket"></i>
+
+                    </div>
+
+
+                    <div class="activity-content">
+
+                        <strong>
+                            Admin berhasil login
+                        </strong>
+
+                        <p>
+                            Admin <b>Admin Jago</b>
+                            berhasil masuk ke sistem administrasi.
+                        </p>
+
+
+                        <span class="activity-badge badge-login">
+                            LOGIN
+                        </span>
+
+                    </div>
+
+
+                    <div class="activity-time">
+
+                        Hari ini, 10:32 WIB
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ITEM 2
+                ================================================= -->
+
+                <div
+                    class="activity-item"
+                    data-type="order"
+                    data-search="pesanan rizky iced latte">
+
+                    <div class="activity-icon activity-purple">
+
+                        <i class="fa-solid fa-receipt"></i>
+
+                    </div>
+
+
+                    <div class="activity-content">
+
+                        <strong>
+                            Pesanan baru diproses
+                        </strong>
+
+                        <p>
+                            Pesanan
+                            <b>#JK-001245</b>
+                            milik Rizky A. sedang diproses.
+                        </p>
+
+
+                        <span class="activity-badge badge-order">
+                            PESANAN
+                        </span>
+
+                    </div>
+
+
+                    <div class="activity-time">
+
+                        Hari ini, 10:32 WIB
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ITEM 3
+                ================================================= -->
+
+                <div
+                    class="activity-item"
+                    data-type="edit"
+                    data-search="stok kopi arabika">
+
+                    <div class="activity-icon activity-orange">
+
+                        <i class="fa-solid fa-boxes-stacked"></i>
+
+                    </div>
+
+
+                    <div class="activity-content">
+
+                        <strong>
+                            Stok bahan baku diperbarui
+                        </strong>
+
+                        <p>
+                            Admin mengubah stok
+                            <b>Kopi Arabika</b>
+                            dari 8 kg menjadi 5 kg.
+                        </p>
+
+
+                        <span class="activity-badge badge-edit">
+                            PERUBAHAN DATA
+                        </span>
+
+                    </div>
+
+
+                    <div class="activity-time">
+
+                        Hari ini, 09:45 WIB
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ITEM 4
+                ================================================= -->
+
+                <div
+                    class="activity-item"
+                    data-type="add"
+                    data-search="menu caramel latte">
+
+                    <div class="activity-icon activity-green">
+
+                        <i class="fa-solid fa-plus"></i>
+
+                    </div>
+
+
+                    <div class="activity-content">
+
+                        <strong>
+                            Menu baru ditambahkan
+                        </strong>
+
+                        <p>
+                            Admin menambahkan menu baru
+                            <b>Caramel Latte</b>
+                            ke dalam daftar menu.
+                        </p>
+
+
+                        <span class="activity-badge badge-add">
+                            DATA BARU
+                        </span>
+
+                    </div>
+
+
+                    <div class="activity-time">
+
+                        Hari ini, 09:12 WIB
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ITEM 5
+                ================================================= -->
+
+                <div
+                    class="activity-item"
+                    data-type="edit"
+                    data-search="promo diskon weekend">
+
+                    <div class="activity-icon activity-orange">
+
+                        <i class="fa-solid fa-tags"></i>
+
+                    </div>
+
+
+                    <div class="activity-content">
+
+                        <strong>
+                            Promo diperbarui
+                        </strong>
+
+                        <p>
+                            Admin mengubah promo
+                            <b>Weekend Coffee</b>
+                            menjadi diskon 20%.
+                        </p>
+
+
+                        <span class="activity-badge badge-edit">
+                            PERUBAHAN DATA
+                        </span>
+
+                    </div>
+
+
+                    <div class="activity-time">
+
+                        Hari ini, 08:47 WIB
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ITEM 6
+                ================================================= -->
+
+                <div
+                    class="activity-item"
+                    data-type="delete"
+                    data-search="hapus supplier">
+
+                    <div class="activity-icon activity-red">
+
+                        <i class="fa-solid fa-trash"></i>
+
+                    </div>
+
+
+                    <div class="activity-content">
+
+                        <strong>
+                            Data supplier dihapus
+                        </strong>
+
+                        <p>
+                            Admin menghapus data supplier
+                            <b>PT Kopi Nusantara</b>
+                            dari sistem.
+                        </p>
+
+
+                        <span class="activity-badge badge-delete">
+                            DATA DIHAPUS
+                        </span>
+
+                    </div>
+
+
+                    <div class="activity-time">
+
+                        Kemarin, 16:21 WIB
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ITEM 7
+                ================================================= -->
+
+                <div
+                    class="activity-item"
+                    data-type="add"
+                    data-search="supplier baru">
+
+                    <div class="activity-icon activity-green">
+
+                        <i class="fa-solid fa-truck"></i>
+
+                    </div>
+
+
+                    <div class="activity-content">
+
+                        <strong>
+                            Supplier baru ditambahkan
+                        </strong>
+
+                        <p>
+                            Admin menambahkan supplier
+                            <b>CV Berkah Kopi</b>
+                            ke sistem.
+                        </p>
+
+
+                        <span class="activity-badge badge-add">
+                            DATA BARU
+                        </span>
+
+                    </div>
+
+
+                    <div class="activity-time">
+
+                        Kemarin, 14:32 WIB
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ITEM 8
+                ================================================= -->
+
+                <div
+                    class="activity-item"
+                    data-type="edit"
+                    data-search="pelanggan rizky">
+
+                    <div class="activity-icon activity-blue">
+
+                        <i class="fa-solid fa-user-pen"></i>
+
+                    </div>
+
+
+                    <div class="activity-content">
+
+                        <strong>
+                            Data pelanggan diperbarui
+                        </strong>
+
+                        <p>
+                            Admin memperbarui informasi pelanggan
+                            <b>Rizky Ardiansyah</b>.
+                        </p>
+
+
+                        <span class="activity-badge badge-edit">
+                            PERUBAHAN DATA
+                        </span>
+
+                    </div>
+
+
+                    <div class="activity-time">
+
+                        Kemarin, 13:18 WIB
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 PAGINATION
+            ================================================= -->
+
+            <div class="pagination">
+
+                <button class="page-btn">
+
+                    <i class="fa-solid fa-chevron-left"></i>
+
+                </button>
+
+
+                <button class="page-btn active">
+                    1
+                </button>
+
+
+                <button class="page-btn">
+                    2
+                </button>
+
+
+                <button class="page-btn">
+                    3
+                </button>
+
+
+                <button class="page-btn">
+                    4
+                </button>
+
+
+                <button class="page-btn">
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+    /* ================= LOGIN ================= */
+
+    if (
+        localStorage.getItem('admin_logged_in')
+        !== 'true'
+    ) {
+
+        window.location.href =
+            'login.html';
+
+    }
+
+
+    /* ================= LOGOUT ================= */
+
+    function handleLogout() {
+
+        if (
+            confirm(
+                'Apakah Anda yakin ingin keluar?'
+            )
+        ) {
+
+            localStorage.removeItem(
+                'admin_logged_in'
+            );
+
+            window.location.href =
+                'login.html';
+
+        }
+
+    }
+
+
+    /* ================= FILTER ================= */
+
+    function filterActivity() {
+
+        const selected =
+            document
+            .getElementById('activityType')
+            .value;
+
+
+        const items =
+            document.querySelectorAll(
+                '.activity-item'
+            );
+
+
+        items.forEach(function(item) {
+
+            const type =
+                item.dataset.type;
+
+
+            if (
+                selected === 'all'
+                ||
+                type === selected
+            ) {
+
+                item.style.display =
+                    'grid';
+
+            }
+
+            else {
+
+                item.style.display =
+                    'none';
+
+            }
+
+        });
+
+    }
+
+
+    /* ================= SEARCH ================= */
+
+    function searchActivity() {
+
+        const keyword =
+            document
+            .getElementById('searchActivity')
+            .value
+            .toLowerCase();
+
+
+        const items =
+            document.querySelectorAll(
+                '.activity-item'
+            );
+
+
+        items.forEach(function(item) {
+
+            const text =
+                item.dataset.search
+                .toLowerCase();
+
+
+            if (
+                text.includes(keyword)
+            ) {
+
+                item.style.display =
+                    'grid';
+
+            }
+
+            else {
+
+                item.style.display =
+                    'none';
+
+            }
+
+        });
+
+    }
+
+
+    /* ================= RESET ================= */
+
+    function clearFilter() {
+
+        document
+            .getElementById('activityType')
+            .value = 'all';
+
+
+        document
+            .getElementById('searchActivity')
+            .value = '';
+
+
+        const items =
+            document.querySelectorAll(
+                '.activity-item'
+            );
+
+
+        items.forEach(function(item) {
+
+            item.style.display =
+                'grid';
+
+        });
+
+    }
+
+</script>
+
+
+</body>
+</html>

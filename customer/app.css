@@ -1,116 +1,813 @@
 /* === RESET & BASE === */
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:80px}
-body{font-family:'Open Sans',sans-serif;color:#34251e;line-height:1.6;overflow-x:hidden}
-h1,h2,h3,h4,h5,h6{font-family:'Montserrat',sans-serif;font-weight:900}
-a{text-decoration:none;color:inherit}
-button{cursor:pointer;font-family:inherit}
-a:focus-visible,button:focus-visible{outline:2px solid #bd3d2f;outline-offset:2px}
-img{max-width:100%;height:auto}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-/* === NAVBAR === */
-.customer-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 6%;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:padding 0.3s}
-.customer-nav.scrolled{padding:14px 6%}
-.nav-logo{width:120px;height:auto;transition:width 0.3s}
-.customer-nav.scrolled .nav-logo{width:100px}
-.hamburger{display:none;flex-direction:column;gap:4px;background:none;border:0;padding:8px}
-.hamburger span{width:24px;height:3px;background:#4b2e22;border-radius:2px;transition:all 0.3s}
-.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
-.hamburger.active span:nth-child(2){opacity:0}
-.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(7px,-6px)}
-.customer-links{display:flex;align-items:center;gap:20px;font:600 13px 'Open Sans',sans-serif;color:#4b2e22}
-.customer-links a{transition:color 0.2s,border-color 0.2s;border-bottom:2px solid transparent;padding-bottom:2px}
-.customer-links a:hover,.customer-links a.active{color:#bd3d2f;border-bottom-color:#bd3d2f}
-.customer-account{display:flex;align-items:center;gap:10px;font:600 13px 'Open Sans',sans-serif}
-.customer-account a,.customer-account button{border:0;background:none;color:#4b2e22;padding:8px;transition:color 0.2s}
-.customer-account a:hover,.customer-account button:hover{color:#bd3d2f}
-.customer-account .primary{background:#bd3d2f;color:#fff;border-radius:4px;padding:8px 16px}
-.customer-account .primary:hover{background:#a53527}
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
 
-/* === HERO === */
-.hero-section{position:relative;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.hero-video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:1}
-.hero-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,rgba(50,31,24,0.85),rgba(50,31,24,0.65));z-index:2}
-.hero-content{position:relative;z-index:3;text-align:center;color:#fff;padding:0 5%;max-width:800px}
-.hero-content h1{font-size:clamp(48px,8vw,86px);margin:0 0 20px;text-transform:uppercase;letter-spacing:2px;line-height:0.95}
-.hero-content p{font-size:clamp(16px,2vw,20px);margin:0 0 36px;opacity:0.95;line-height:1.6}
-.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-.hero-btn{padding:16px 36px;border-radius:6px;font:700 14px 'Montserrat',sans-serif;text-transform:uppercase;transition:all 0.3s;display:inline-block}
-.primary-btn{background:#bd3d2f;color:#fff;border:2px solid #bd3d2f}
-.primary-btn:hover{background:#a53527;border-color:#a53527;transform:translateY(-2px)}
-.secondary-btn{background:transparent;color:#fff;border:2px solid #fff}
-.secondary-btn:hover{background:#fff;color:#4b2e22}
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: #34251e;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background-color: #fcfbfa;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    font-family: inherit;
+}
+
+a:focus-visible, button:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ==========================================
+   NAVBAR & HEADER (SESUAI REFERENSI JAGO)
+   ========================================== */
+.customer-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: transparent; /* Ubah ke transparan */
+    box-shadow: none; /* Hapus bayangan awal */
+    padding: 22px 0;
+    transition: background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+}
+
+.customer-nav.scrolled {
+    background-color: #e31b23; /* Merah pas di-scroll */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    padding: 24px 0;
+}
+
+.nav-container {
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.nav-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+/* Navigasi Tengah */
+.customer-links {
+    display: flex;
+    align-items: center; /* Memastikan sejajar secara vertikal */
+    gap: 32px;           /* Memberi jarak antar menu */
+}
+
+.customer-links a {
+    color: #ffffff;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 13px;     /* Diperbesar dari 13px agar pas dengan contoh */
+    letter-spacing: 1px;
+    line-height: 1;      /* Menjaga teks sejajar di tengah garis */
+    white-space: nowrap;
+}
+
+.customer-links a:hover,
+.customer-links a.active {
+    opacity: 0.8;
+    color: #ffffff;
+    border-bottom: none;
+}
+
+/* Area Akun / Tombol Kanan */
+.customer-account {
+    display: flex;
+    align-items: center; /* Memastikan sejajar dengan logo dan menu tengah */
+    gap: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 13px;     /* Ukuran teks disamakan */
+}
+
+.customer-account a,
+.customer-account button {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    background: transparent;
+    border: none;
+}
+
+.customer-account a:hover,
+.customer-account button:hover {
+    opacity: 0.8;
+    color: #ffffff;
+}
+
+/* Tombol Kapsul / Pill (Register / Profile) */
+.customer-account a.btn-register,
+.customer-account a.primary,
+.customer-account .nav-pill-btn {
+    border: 2px solid #ffffff !important;
+    border-radius: 50px !important;
+    padding: 6px 20px !important;
+    background: transparent !important;
+    color: #ffffff !important;
+    transition: all 0.2s ease !important;
+    opacity: 1 !important;
+}
+
+.customer-account a.btn-register:hover,
+.customer-account a.primary:hover,
+.customer-account .nav-pill-btn:hover {
+    background: #ffffff !important;
+    color: #e31b23 !important;
+}
+
+/* Hamburger Menu (Mobile) */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: transparent;
+    border: 0;
+    padding: 4px;
+}
+
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background-color: #ffffff;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* === HERO SECTION === */
+.hero-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.25));
+    z-index: 2;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: #ffffff;
+    padding: 0 5%;
+    max-width: 800px;
+    margin-top: 60px; /* Jarak dari navbar */
+}
+
+/* Jika tulisan "JAGO COFFEE" di Hero dirasa mengganggu, hilangkan baris 'display: none' di bawah ini */
+.hero-content h1 {
+    font-size: clamp(36px, 6vw, 64px);
+    margin: 0 0 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    font-weight: 900;
+}
+
+.hero-content p {
+    font-size: clamp(15px, 1.8vw, 18px);
+    margin: 0 0 32px;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-btn {
+    padding: 12px 30px;
+    border-radius: 50px;
+    font: 800 13px 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.primary-btn {
+    background: #e31b23;
+    color: #ffffff;
+    border: 2px solid #e31b23;
+}
+
+.primary-btn:hover {
+    background: #c1131a;
+    border-color: #c1131a;
+    transform: translateY(-2px);
+}
+
+.secondary-btn {
+    background: transparent;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+.secondary-btn:hover {
+    background: #ffffff;
+    color: #e31b23;
+}
 
 /* === MENU SECTION === */
-.menu-section{background:#f8f3ee;padding:80px 0}
-.menu-wrapper{max-width:1200px;margin:0 auto;padding:0 6%}
-.section-heading{text-align:center;margin-bottom:48px}
-.section-heading h2{font-size:clamp(28px,4vw,36px);color:#4b2e22;margin:0 0 12px;text-transform:uppercase}
-.section-heading p{font-size:clamp(15px,2vw,18px);color:#806d62;margin:0}
-.category-filter{display:flex;justify-content:center;gap:12px;margin-bottom:40px;flex-wrap:wrap}
-.category-filter button{border:1px solid #bd3d2f;background:#fff;color:#bd3d2f;padding:10px 20px;border-radius:20px;font:600 12px 'Montserrat',sans-serif;transition:all 0.2s}
-.category-filter button:hover{background:#fef5f3}
-.category-filter button.active{background:#bd3d2f;color:#fff}
-.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px}
-.drink-card{background:#fff;box-shadow:0 5px 18px rgba(75,46,34,0.08);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;transition:transform 0.3s,box-shadow 0.3s}
-.drink-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(75,46,34,0.12)}
-.drink-image{height:200px;background:#f1e4d8;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.drink-image img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s}
-.drink-card:hover .drink-image img{transform:scale(1.05)}
-.drink-body{padding:20px;display:flex;flex-direction:column;flex:1}
-.drink-body h3{margin:0 0 7px;font:700 18px 'Montserrat',sans-serif;color:#4b2e22}
-.drink-category{margin:0 0 12px;color:#8b7568;font-size:12px;text-transform:uppercase;font-weight:600}
-.drink-desc{margin:0 0 16px;font-size:13px;color:#6d5d52;line-height:1.4}
-.size-selector{margin-bottom:14px}
-.size-label{display:block;margin-bottom:8px;font:600 13px 'Montserrat',sans-serif;color:#4b2e22}
-.size-options{display:flex;gap:8px}
-.size-btn{flex:1;border:1px solid #ddd;background:#fff;padding:8px;border-radius:4px;font:600 11px 'Montserrat',sans-serif;color:#6d5d52;text-align:center;transition:all 0.2s}
-.size-btn:hover{border-color:#bd3d2f}
-.size-btn.active{background:#bd3d2f;color:#fff;border-color:#bd3d2f}
-.drink-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
-.drink-price{font:700 16px 'Montserrat',sans-serif;color:#bd3d2f}
-.drink-actions{display:flex;gap:8px}
-.drink-button{border:0;background:#bd3d2f;color:#fff;border-radius:4px;padding:10px 16px;font:600 12px 'Montserrat',sans-serif;transition:background 0.2s}
-.drink-button:hover{background:#a53527}
-.drink-button:disabled{opacity:0.6;cursor:wait}
-.wishlist-btn{border:1px solid #bd3d2f;background:#fff;color:#bd3d2f;padding:10px;border-radius:4px;line-height:1;transition:all 0.2s}
-.wishlist-btn:hover{background:#fef5f3}
-.wishlist-btn.active{background:#bd3d2f;color:#fff}
-.status-message{min-height:24px;margin:18px 0;text-align:center;color:#bd3d2f;font-size:14px}
-.error-state,.empty-state{text-align:center;padding:60px 20px;background:#fff;border-radius:8px;margin:20px 0}
-.error-state h3,.empty-state h2{color:#4b2e22;margin:0 0 12px;font-size:22px}
-.error-state p,.empty-state p{color:#6d5d52;margin:0 0 24px;font-size:15px}
-.error-state button,.empty-state a{background:#bd3d2f;color:#fff;border:0;padding:12px 24px;border-radius:6px;font:600 14px 'Montserrat',sans-serif;display:inline-block;transition:background 0.2s}
-.error-state button:hover,.empty-state a:hover{background:#a53527}
-.customer-footer{padding:40px 6%;background:#321f18;color:#fff;text-align:center;font-size:13px}
+.menu-section {
+    background: #fcfbfa;
+    padding: 80px 0;
+}
 
-/* === RESPONSIVE === */
-@media(max-width:1024px){
-    .menu-wrapper{padding:0 4%}
-    .product-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.menu-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 6%;
 }
-@media(max-width:768px){
-    html{scroll-padding-top:70px}
-    .hamburger{display:flex}
-    .customer-links{position:fixed;top:70px;left:0;right:0;flex-direction:column;background:#fff;padding:20px;box-shadow:0 8px 16px rgba(0,0,0,0.1);gap:12px;transform:translateY(-100%);opacity:0;visibility:hidden;transition:all 0.3s}
-    .customer-links.active{transform:translateY(0);opacity:1;visibility:visible}
-    .customer-links a{width:100%;padding:12px;border:0;border-bottom:1px solid #eadfd7}
-    .customer-account{margin-left:auto}
-    .hero-content h1{font-size:clamp(36px,10vw,60px)}
-    .hero-content{padding:0 4%}
-    .menu-wrapper{padding:0 4%}
-    .product-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
-    .drink-image{height:160px}
-    .section-heading h2{font-size:clamp(24px,5vw,32px)}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 48px;
 }
-@media(max-width:390px){
-    .product-grid{grid-template-columns:1fr;gap:16px}
-    .size-options{flex-direction:column}
-    .size-btn{padding:10px}
-    .hero-actions{flex-direction:column}
-    .hero-btn{width:100%;max-width:280px}
+
+.section-heading h2 {
+    font-size: clamp(28px, 4vw, 36px);
+    color: #222222;
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    font-weight: 900;
 }
-@media(prefers-reduced-motion:reduce){
-    html{scroll-behavior:auto}
-    *{transition:none!important}
+
+.section-heading p {
+    font-size: clamp(15px, 2vw, 18px);
+    color: #666666;
+    margin: 0;
+}
+
+.category-filter {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.category-filter button {
+    border: 1px solid #e31b23;
+    background: #ffffff;
+    color: #e31b23;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font: 700 12px 'Montserrat', sans-serif;
+    transition: all 0.2s ease;
+}
+
+.category-filter button:hover {
+    background: #fef5f3;
+}
+
+.category-filter button.active {
+    background: #e31b23;
+    color: #ffffff;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 28px;
+}
+
+.drink-card {
+    background: #ffffff;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.drink-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.drink-image {
+    height: 200px;
+    background: #f8f8f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.drink-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.drink-card:hover .drink-image img {
+    transform: scale(1.05);
+}
+
+.drink-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.drink-body h3 {
+    margin: 0 0 7px;
+    font: 700 18px 'Montserrat', sans-serif;
+    color: #222222;
+}
+
+.drink-category {
+    margin: 0 0 12px;
+    color: #888888;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.drink-desc {
+    margin: 0 0 16px;
+    font-size: 13px;
+    color: #666666;
+    line-height: 1.4;
+}
+
+.size-selector {
+    margin-bottom: 14px;
+}
+
+.size-label {
+    display: block;
+    margin-bottom: 8px;
+    font: 600 13px 'Montserrat', sans-serif;
+    color: #222222;
+}
+
+.size-options {
+    display: flex;
+    gap: 8px;
+}
+
+.size-btn {
+    flex: 1;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    padding: 8px;
+    border-radius: 6px;
+    font: 600 11px 'Montserrat', sans-serif;
+    color: #666666;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.size-btn:hover {
+    border-color: #e31b23;
+}
+
+.size-btn.active {
+    background: #e31b23;
+    color: #ffffff;
+    border-color: #e31b23;
+}
+
+.drink-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.drink-price {
+    font: 800 16px 'Montserrat', sans-serif;
+    color: #e31b23;
+}
+
+.drink-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.drink-button {
+    border: 0;
+    background: #e31b23;
+    color: #ffffff;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font: 700 12px 'Montserrat', sans-serif;
+    transition: background 0.2s ease;
+}
+
+.drink-button:hover {
+    background: #c1131a;
+}
+
+.drink-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.wishlist-btn {
+    border: 1px solid #e31b23;
+    background: #ffffff;
+    color: #e31b23;
+    padding: 10px;
+    border-radius: 6px;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+
+.wishlist-btn:hover {
+    background: #fef5f3;
+}
+
+.wishlist-btn.active {
+    background: #e31b23;
+    color: #ffffff;
+}
+
+.status-message {
+    min-height: 24px;
+    margin: 18px 0;
+    text-align: center;
+    color: #e31b23;
+    font-size: 14px;
+}
+
+.error-state, .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.error-state h3, .empty-state h2 {
+    color: #222222;
+    margin: 0 0 12px;
+    font-size: 22px;
+}
+
+.error-state p, .empty-state p {
+    color: #666666;
+    margin: 0 0 24px;
+    font-size: 15px;
+}
+
+.error-state button, .empty-state a {
+    background: #e31b23;
+    color: #ffffff;
+    border: 0;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font: 700 14px 'Montserrat', sans-serif;
+    display: inline-block;
+    transition: background 0.2s ease;
+}
+
+.error-state button:hover, .empty-state a:hover {
+    background: #c1131a;
+}
+
+/* === FLOATING LIVE CHAT BUTTON === */
+.floating-chat-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 52px;
+    height: 52px;
+    background-color: #e31b23;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(227, 27, 35, 0.4);
+    z-index: 999;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.floating-chat-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(227, 27, 35, 0.6);
+}
+
+.customer-footer {
+    padding: 40px 6%;
+    background: #1a1a1a;
+    color: #ffffff;
+    text-align: center;
+    font-size: 13px;
+}
+
+/* === RESPONSIVE STYLING === */
+@media (max-width: 1024px) {
+    .menu-wrapper {
+        padding: 0 4%;
+    }
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .hamburger {
+        display: flex;
+    }
+
+    .customer-links {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: #e31b23;
+        padding: 24px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        gap: 16px;
+        transform: translateY(-120%);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .customer-links.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .customer-links a {
+        width: 100%;
+        padding: 10px 0;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .customer-account {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .size-options {
+        flex-direction: column;
+    }
+    .hero-actions {
+        flex-direction: column;
+    }
+    .hero-btn {
+        width: 100%;
+    }
+}
+
+/* === CART STORY SECTION === */
+.cart-story-section {
+    background-color: #ffffff;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.cart-story-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.cart-story-section h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: clamp(22px, 3.5vw, 32px);
+    color: #000000;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+}
+
+.cart-image-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cart-image-wrapper img {
+    max-width: 650px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* === RE-STYLE JUDUL KATEGORI (Sesuai Referensi) === */
+.section-heading {
+    text-align: left;
+    border-bottom: 2px solid #111111; /* Garis hitam tegas di bawah judul */
+    padding-bottom: 12px;
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+.section-heading h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #111111;
+    margin: 0 0 4px 0;
+}
+
+.section-heading p {
+    font-size: 0.9rem;
+    color: #666666;
+    margin: 0;
+}
+
+/* === RE-STYLE KARTU PRODUK === */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 32px;
+}
+
+.product-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px 20px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07);
+}
+
+/* Gambar Produk Fokus & Bersih */
+/* Paksa aturan CSS gambar produk agar tidak tertimpa JS */
+.product-grid img,
+.product-card img,
+#featured-grid img,
+#menu-grid img {
+    width: 100% !important;
+    max-height: 160px !important; /* Batasi tinggi gambar biar ada ruang di atas/bawah */
+    object-fit: contain !important; /* Biar gambar utuh dari atas sampai bawah */
+    margin: 0 auto 15px auto !important;
+    display: block !important;
+    padding-top: 10px !important; /* Memberi jarak manis dari tepi atas kartu */
+}
+
+/* Pastikan kartu produknya punya ruang di atas */
+.product-card {
+    padding: 20px 15px !important;
+    overflow: hidden !important;
+}
+/* Nama & Deskripsi Produk */
+.product-card h3, .product-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #111111;
+    text-align: center;
+    margin: 0 0 8px 0;
+}
+
+.product-card p, .product-description {
+    font-size: 0.85rem;
+    color: #666666;
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 16px;
+}
+
+/* Tombol Pilihan Ukuran */
+.size-selector {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.size-btn {
+    border: 1px solid #e0e0e0;
+    background: #f9f9f9;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.size-btn.active, .size-btn:hover {
+    background: #e52c2a;
+    color: #ffffff;
+    border-color: #e52c2a;
+}
+
+/* Area Harga & Tombol Tambah */
+.product-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid #f5f5f5;
+}
+
+.product-price {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #111111;
+}
+
+.add-to-cart-btn {
+    background: #e52c2a;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.add-to-cart-btn:hover {
+    background: #c61d23;
 }

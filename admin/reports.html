@@ -1,1 +1,2227 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Admin - Laporan</title><link rel="stylesheet" href="../style.css"></head><body><main class="container"><h1>Laporan</h1><p>Laporan operasional Kopi Jago.</p><a href="dashboard.html">Kembali ke dashboard</a></main></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Laporan Penjualan - Kopi Jago</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        :root {
+            --jago-red: #ea1d43;
+            --jago-red-dark: #c41233;
+            --sidebar-bg: #ea1d43;
+            --sidebar-active: #c41233;
+            --sidebar-hover: rgba(0,0,0,0.12);
+
+            --bg-main: #f4f6f9;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+
+            --green: #21b66f;
+            --blue: #3498db;
+            --orange: #f39c12;
+            --purple: #8e5bd9;
+
+            --card-shadow: 0 4px 14px rgba(0,0,0,0.05);
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            width: 250px;
+            background: var(--sidebar-bg);
+            color: #fff;
+
+            display: flex;
+            flex-direction: column;
+
+            flex-shrink: 0;
+
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+
+            z-index: 100;
+        }
+
+
+        .sidebar-brand {
+            padding: 22px 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+
+        .brand-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+
+            font-size: 26px;
+            letter-spacing: 1px;
+
+            color: #fff;
+
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+
+        .sidebar-menu {
+            list-style: none;
+
+            padding: 15px 10px;
+
+            flex: 1;
+
+            overflow-y: auto;
+        }
+
+
+        .sidebar-menu li {
+            margin-bottom: 4px;
+        }
+
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px 16px;
+
+            color: rgba(255,255,255,0.9);
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            transition: all 0.2s;
+        }
+
+
+        .sidebar-menu a:hover {
+            background: var(--sidebar-hover);
+            color: #fff;
+        }
+
+
+        .sidebar-menu a.active {
+            background: var(--sidebar-active);
+
+            color: #fff;
+
+            font-weight: 700;
+
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+
+        .sidebar-menu a i {
+            width: 20px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        .sidebar-footer {
+            padding: 15px;
+
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+
+        .logout-btn {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 10px 15px;
+
+            background: rgba(0,0,0,0.15);
+
+            border: 0;
+
+            color: #fff;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            border-radius: 6px;
+
+            transition: 0.2s;
+        }
+
+
+        .logout-btn:hover {
+            background: rgba(0,0,0,0.3);
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .main-wrapper {
+            margin-left: 250px;
+
+            flex: 1;
+
+            display: flex;
+            flex-direction: column;
+
+            min-width: 0;
+        }
+
+
+        /* ================= NAVBAR ================= */
+
+        .top-navbar {
+            height: 65px;
+
+            background: #fff;
+
+            padding: 0 30px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+
+            position: sticky;
+            top: 0;
+
+            z-index: 99;
+        }
+
+
+        .search-box {
+            display: flex;
+            align-items: center;
+
+            background: #f4f6f9;
+
+            padding: 8px 16px;
+
+            border-radius: 8px;
+
+            width: 350px;
+        }
+
+
+        .search-box input {
+            border: 0;
+
+            background: transparent;
+
+            outline: none;
+
+            margin-left: 10px;
+
+            width: 100%;
+
+            font-size: 13px;
+
+            font-family: 'Open Sans', sans-serif;
+        }
+
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+
+            border-radius: 50%;
+
+            background: var(--jago-red);
+
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 700;
+
+            font-size: 14px;
+        }
+
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 30px;
+        }
+
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 24px;
+        }
+
+
+        .page-header h1 {
+            font-family: 'Montserrat', sans-serif;
+
+            font-size: 24px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+        }
+
+
+        .page-header p {
+            color: var(--text-muted);
+
+            font-size: 13px;
+        }
+
+
+        /* ================= HEADER ACTION ================= */
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+
+        .period-select {
+            background: #fff;
+
+            border: 1px solid #e1e5e9;
+
+            padding: 10px 13px;
+
+            border-radius: 7px;
+
+            font-size: 12px;
+
+            font-family: 'Open Sans', sans-serif;
+
+            color: var(--text-dark);
+
+            outline: none;
+
+            cursor: pointer;
+        }
+
+
+        .print-btn {
+            border: none;
+
+            background: var(--jago-red);
+
+            color: #fff;
+
+            padding: 10px 15px;
+
+            border-radius: 7px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            transition: 0.2s;
+        }
+
+
+        .print-btn:hover {
+            background: var(--jago-red-dark);
+        }
+
+
+        /* ================= SUMMARY ================= */
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns: repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .summary-card {
+            background: #fff;
+
+            border-radius: 12px;
+
+            padding: 19px;
+
+            box-shadow: var(--card-shadow);
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .summary-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 75px;
+            height: 75px;
+
+            border-radius: 50%;
+
+            right: -25px;
+            bottom: -30px;
+
+            opacity: 0.08;
+
+            background: currentColor;
+        }
+
+
+        .summary-top {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 14px;
+        }
+
+
+        .summary-icon {
+            width: 43px;
+            height: 43px;
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 17px;
+        }
+
+
+        .red-icon {
+            background: #ffe7ed;
+            color: var(--jago-red);
+        }
+
+
+        .green-icon {
+            background: #e5f8ef;
+            color: var(--green);
+        }
+
+
+        .blue-icon {
+            background: #e7f3ff;
+            color: var(--blue);
+        }
+
+
+        .orange-icon {
+            background: #fff2df;
+            color: var(--orange);
+        }
+
+
+        .growth {
+            font-size: 10px;
+
+            font-weight: 700;
+
+            padding: 4px 7px;
+
+            border-radius: 20px;
+
+            background: #e9f8f0;
+
+            color: var(--green);
+        }
+
+
+        .summary-card small {
+            display: block;
+
+            color: var(--text-muted);
+
+            font-size: 11px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .summary-card h2 {
+            font-family: 'Montserrat', sans-serif;
+
+            font-size: 21px;
+
+            margin-bottom: 4px;
+        }
+
+
+        .summary-card .description {
+            color: var(--text-muted);
+
+            font-size: 10px;
+        }
+
+
+        /* ================= CHART GRID ================= */
+
+        .chart-grid {
+            display: grid;
+
+            grid-template-columns: 2fr 1fr;
+
+            gap: 18px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .card {
+            background: #fff;
+
+            border-radius: 12px;
+
+            box-shadow: var(--card-shadow);
+
+            padding: 20px;
+        }
+
+
+        .card-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            margin-bottom: 18px;
+        }
+
+
+        .card-header h3 {
+            font-family: 'Montserrat', sans-serif;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            margin-bottom: 4px;
+        }
+
+
+        .card-header p {
+            font-size: 11px;
+
+            color: var(--text-muted);
+        }
+
+
+        .chart-wrapper {
+            height: 290px;
+
+            position: relative;
+        }
+
+
+        /* ================= CATEGORY ================= */
+
+        .category-chart {
+            height: 235px;
+
+            position: relative;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .category-legend {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 10px;
+
+            margin-top: 8px;
+        }
+
+
+        .legend-item {
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            font-size: 11px;
+
+            color: var(--text-muted);
+        }
+
+
+        .legend-dot {
+            width: 9px;
+            height: 9px;
+
+            border-radius: 3px;
+        }
+
+
+        /* ================= LOWER GRID ================= */
+
+        .lower-grid {
+            display: grid;
+
+            grid-template-columns: 1.3fr 1fr;
+
+            gap: 18px;
+        }
+
+
+        /* ================= PRODUCT ================= */
+
+        .product-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 14px;
+        }
+
+
+        .product-item {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .rank {
+            width: 25px;
+            height: 25px;
+
+            border-radius: 7px;
+
+            background: #f1f3f5;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+
+        .product-icon {
+            width: 40px;
+            height: 40px;
+
+            border-radius: 9px;
+
+            background: #fff0f3;
+
+            color: var(--jago-red);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .product-info {
+            flex: 1;
+        }
+
+
+        .product-info strong {
+            font-size: 12px;
+
+            display: block;
+
+            margin-bottom: 4px;
+        }
+
+
+        .product-info span {
+            color: var(--text-muted);
+
+            font-size: 10px;
+        }
+
+
+        .product-sales {
+            text-align: right;
+        }
+
+
+        .product-sales strong {
+            font-size: 12px;
+
+            display: block;
+        }
+
+
+        .product-sales span {
+            color: var(--green);
+
+            font-size: 10px;
+        }
+
+
+        /* ================= TRANSACTION ================= */
+
+        .transaction-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 11px;
+        }
+
+
+        .transaction-table th {
+            color: var(--text-muted);
+
+            text-align: left;
+
+            font-weight: 600;
+
+            padding: 10px 7px;
+
+            border-bottom: 1px solid #f0f1f3;
+        }
+
+
+        .transaction-table td {
+            padding: 12px 7px;
+
+            border-bottom: 1px solid #f0f1f3;
+        }
+
+
+        .transaction-table tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        .customer {
+            font-weight: 700;
+        }
+
+
+        .order-id {
+            color: var(--text-muted);
+
+            font-size: 9px;
+
+            margin-top: 3px;
+        }
+
+
+        .amount {
+            font-weight: 700;
+        }
+
+
+        .status {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+            padding: 4px 8px;
+
+            border-radius: 15px;
+
+            font-size: 9px;
+
+            font-weight: 700;
+        }
+
+
+        .status-success {
+            color: #20a464;
+
+            background: #e7f8ef;
+        }
+
+
+        .status-process {
+            color: #e59417;
+
+            background: #fff3df;
+        }
+
+
+        /* ================= PRINT ================= */
+
+        @media print {
+
+            .sidebar,
+            .top-navbar,
+            .header-actions {
+                display: none !important;
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+            }
+
+            .content {
+                padding: 10px;
+            }
+
+            body {
+                background: white;
+            }
+
+            .card,
+            .summary-card {
+                box-shadow: none;
+
+                border: 1px solid #eee;
+            }
+
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1100px) {
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lower-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 750px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main-wrapper {
+                margin-left: 220px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .top-navbar {
+                padding: 0 15px;
+            }
+
+            .search-box {
+                width: 230px;
+            }
+
+            .page-header {
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 15px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-brand">
+        <span class="brand-logo">JAGO</span>
+    </div>
+
+
+    <ul class="sidebar-menu">
+
+        <li>
+            <a href="dashboard.html">
+                <i class="fa-solid fa-chart-pie"></i>
+                Dashboard
+            </a>
+        </li>
+
+
+        <li>
+            <a href="menu.html">
+                <i class="fa-solid fa-utensils"></i>
+                Menu
+            </a>
+        </li>
+
+
+        <li>
+            <a href="orders.html">
+                <i class="fa-solid fa-receipt"></i>
+                Pesanan
+            </a>
+        </li>
+
+
+        <li>
+            <a href="customers.html">
+                <i class="fa-solid fa-users"></i>
+                Pelanggan
+            </a>
+        </li>
+
+
+        <li>
+            <a href="inventory.html">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                Stok Bahan Baku
+            </a>
+        </li>
+
+
+        <li>
+            <a href="suppliers.html">
+                <i class="fa-solid fa-truck"></i>
+                Supplier
+            </a>
+        </li>
+
+
+        <li>
+            <a href="promos.html">
+                <i class="fa-solid fa-tags"></i>
+                Promo & Diskon
+            </a>
+        </li>
+
+
+        <!-- ACTIVE -->
+
+        <li>
+            <a href="reports.html" class="active">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                Laporan
+            </a>
+        </li>
+
+
+        <li>
+            <a href="activity-log.html">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Log Aktivitas
+            </a>
+        </li>
+
+
+        <li>
+            <a href="settings.html">
+                <i class="fa-solid fa-gear"></i>
+                Pengaturan Toko
+            </a>
+        </li>
+
+    </ul>
+
+
+    <div class="sidebar-footer">
+
+        <button class="logout-btn"
+                onclick="handleLogout()">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            Logout
+
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="main-wrapper">
+
+
+    <!-- TOP NAVBAR -->
+
+    <header class="top-navbar">
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"
+               style="color: var(--text-muted);">
+            </i>
+
+            <input
+                type="text"
+                placeholder="Cari laporan atau transaksi..."
+            >
+
+        </div>
+
+
+        <div class="user-profile">
+
+            <div class="user-avatar">
+                A
+            </div>
+
+            <div style="font-size: 13px;">
+
+                <strong>Admin Jago</strong>
+
+                <div style="
+                    color: var(--text-muted);
+                    font-size: 11px;">
+                    Administrator
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =================================================
+         CONTENT
+    ================================================= -->
+
+    <main class="content">
+
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>Laporan Penjualan</h1>
+
+                <p>
+                    Pantau performa penjualan dan analitik bisnis Kopi Jago.
+                </p>
+
+            </div>
+
+
+            <div class="header-actions">
+
+                <select
+                    class="period-select"
+                    id="periodSelect"
+                    onchange="changePeriod()">
+
+                    <option value="today">
+                        Hari Ini
+                    </option>
+
+                    <option value="7days" selected>
+                        7 Hari Terakhir
+                    </option>
+
+                    <option value="month">
+                        Bulan Ini
+                    </option>
+
+                    <option value="year">
+                        Tahun Ini
+                    </option>
+
+                </select>
+
+
+                <button
+                    class="print-btn"
+                    onclick="printReport()">
+
+                    <i class="fa-solid fa-print"></i>
+
+                    Cetak Laporan
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SUMMARY
+        ================================================= -->
+
+        <div class="summary-grid">
+
+
+            <!-- PENDAPATAN -->
+
+            <div class="summary-card">
+
+                <div class="summary-top">
+
+                    <div class="summary-icon red-icon">
+
+                        <i class="fa-solid fa-wallet"></i>
+
+                    </div>
+
+                    <span class="growth">
+                        +12.4%
+                    </span>
+
+                </div>
+
+
+                <small>
+                    Total Pendapatan
+                </small>
+
+                <h2 id="revenue">
+                    Rp 12.450.000
+                </h2>
+
+                <span class="description">
+                    dibanding periode sebelumnya
+                </span>
+
+            </div>
+
+
+            <!-- TRANSAKSI -->
+
+            <div class="summary-card">
+
+                <div class="summary-top">
+
+                    <div class="summary-icon green-icon">
+
+                        <i class="fa-solid fa-receipt"></i>
+
+                    </div>
+
+                    <span class="growth">
+                        +8.7%
+                    </span>
+
+                </div>
+
+
+                <small>
+                    Total Transaksi
+                </small>
+
+                <h2 id="transactions">
+                    248
+                </h2>
+
+                <span class="description">
+                    transaksi berhasil
+                </span>
+
+            </div>
+
+
+            <!-- RATA-RATA -->
+
+            <div class="summary-card">
+
+                <div class="summary-top">
+
+                    <div class="summary-icon blue-icon">
+
+                        <i class="fa-solid fa-chart-line"></i>
+
+                    </div>
+
+                    <span class="growth">
+                        +3.2%
+                    </span>
+
+                </div>
+
+
+                <small>
+                    Rata-rata Transaksi
+                </small>
+
+                <h2>
+                    Rp 50.202
+                </h2>
+
+                <span class="description">
+                    nilai rata-rata per transaksi
+                </span>
+
+            </div>
+
+
+            <!-- PRODUK -->
+
+            <div class="summary-card">
+
+                <div class="summary-top">
+
+                    <div class="summary-icon orange-icon">
+
+                        <i class="fa-solid fa-mug-hot"></i>
+
+                    </div>
+
+                    <span class="growth">
+                        +15.8%
+                    </span>
+
+                </div>
+
+
+                <small>
+                    Produk Terjual
+                </small>
+
+                <h2>
+                    1.248
+                </h2>
+
+                <span class="description">
+                    total item terjual
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CHARTS
+        ================================================= -->
+
+        <div class="chart-grid">
+
+
+            <!-- SALES CHART -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h3>
+                            Grafik Penjualan
+                        </h3>
+
+                        <p>
+                            Performa pendapatan 7 hari terakhir
+                        </p>
+
+                    </div>
+
+                    <span
+                        style="
+                        font-size:11px;
+                        color:#20a464;
+                        font-weight:700;">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        12.4%
+                    </span>
+
+                </div>
+
+
+                <div class="chart-wrapper">
+
+                    <canvas id="salesChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- CATEGORY CHART -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h3>
+                            Kategori Produk
+                        </h3>
+
+                        <p>
+                            Distribusi penjualan
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="category-chart">
+
+                    <canvas id="categoryChart"></canvas>
+
+                </div>
+
+
+<div class="category-legend">
+
+    <div class="legend-item">
+        <span
+            class="legend-dot"
+            style="background:#ea1d43;">
+        </span>
+
+        Coffee
+        <strong>58%</strong>
+    </div>
+
+    <div class="legend-item">
+        <span
+            class="legend-dot"
+            style="background:#3498db;">
+        </span>
+
+        Non Coffee
+        <strong>42%</strong>
+    </div>
+
+</div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             LOWER SECTION
+        ================================================= -->
+
+        <div class="lower-grid">
+
+
+            <!-- PRODUK TERLARIS -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h3>
+                            Produk Terlaris
+                        </h3>
+
+                        <p>
+                            Menu dengan penjualan tertinggi
+                        </p>
+
+                    </div>
+
+
+                    <span style="
+                        color:var(--jago-red);
+                        font-size:11px;
+                        font-weight:700;
+                        cursor:pointer;">
+
+                        Lihat Semua
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </span>
+
+                </div>
+
+
+<div class="product-list">
+
+    <!-- PRODUCT 1 -->
+    <div class="product-item">
+
+        <div class="rank">
+            1
+        </div>
+
+        <div class="product-icon">
+            <i class="fa-solid fa-mug-hot"></i>
+        </div>
+
+        <div class="product-info">
+
+            <strong>
+                Jago Americano
+            </strong>
+
+            <span>
+                Coffee
+            </span>
+
+        </div>
+
+        <div class="product-sales">
+
+            <strong>
+                1.248 cup
+            </strong>
+
+            <span>
+                +18.2%
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- PRODUCT 2 -->
+    <div class="product-item">
+
+        <div class="rank">
+            2
+        </div>
+
+        <div class="product-icon">
+            <i class="fa-solid fa-mug-hot"></i>
+        </div>
+
+        <div class="product-info">
+
+            <strong>
+                Kopi Susu Jago
+            </strong>
+
+            <span>
+                Coffee
+            </span>
+
+        </div>
+
+        <div class="product-sales">
+
+            <strong>
+                962 cup
+            </strong>
+
+            <span>
+                +14.6%
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- PRODUCT 3 -->
+    <div class="product-item">
+
+        <div class="rank">
+            3
+        </div>
+
+        <div class="product-icon">
+
+            <i class="fa-solid fa-mug-hot"></i>
+
+        </div>
+
+        <div class="product-info">
+
+            <strong>
+                Matcha Latte
+            </strong>
+
+            <span>
+                Non Coffee
+            </span>
+
+        </div>
+
+        <div class="product-sales">
+
+            <strong>
+                764 cup
+            </strong>
+
+            <span>
+                +11.4%
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- PRODUCT 4 -->
+    <div class="product-item">
+
+        <div class="rank">
+            4
+        </div>
+
+        <div class="product-icon">
+
+            <i class="fa-solid fa-mug-hot"></i>
+
+        </div>
+
+        <div class="product-info">
+
+            <strong>
+                Pink Coco
+            </strong>
+
+            <span>
+                Non Coffee
+            </span>
+
+        </div>
+
+        <div class="product-sales">
+
+            <strong>
+                531 cup
+            </strong>
+
+            <span>
+                +8.7%
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- PRODUCT 5 -->
+    <div class="product-item">
+
+        <div class="rank">
+            5
+        </div>
+
+        <div class="product-icon">
+
+            <i class="fa-solid fa-mug-hot"></i>
+
+        </div>
+
+        <div class="product-info">
+
+            <strong>
+                Mont Blanc Shake
+            </strong>
+
+            <span>
+                Non Coffee
+            </span>
+
+        </div>
+
+        <div class="product-sales">
+
+            <strong>
+                428 cup
+            </strong>
+
+            <span>
+                +6.3%
+            </span>
+
+        </div>
+
+    </div>
+
+</div>  
+
+            </div>
+
+
+            <!-- TRANSAKSI TERBARU -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h3>
+                            Transaksi Terbaru
+                        </h3>
+
+                        <p>
+                            Transaksi penjualan terbaru
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <table class="transaction-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Pelanggan
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        <tr>
+
+                            <td>
+
+                                <div class="customer">
+                                    Rizky A.
+                                </div>
+
+                                <div class="order-id">
+                                    #JK-001245
+                                </div>
+
+                            </td>
+
+                            <td class="amount">
+                                Rp 75.000
+                            </td>
+
+                            <td>
+
+                                <span class="status status-success">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Selesai
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+
+                                <div class="customer">
+                                    Siti N.
+                                </div>
+
+                                <div class="order-id">
+                                    #JK-001244
+                                </div>
+
+                            </td>
+
+                            <td class="amount">
+                                Rp 52.000
+                            </td>
+
+                            <td>
+
+                                <span class="status status-success">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Selesai
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+
+                                <div class="customer">
+                                    Andi P.
+                                </div>
+
+                                <div class="order-id">
+                                    #JK-001243
+                                </div>
+
+                            </td>
+
+                            <td class="amount">
+                                Rp 91.000
+                            </td>
+
+                            <td>
+
+                                <span class="status status-process">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Diproses
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+
+                                <div class="customer">
+                                    Dimas R.
+                                </div>
+
+                                <div class="order-id">
+                                    #JK-001242
+                                </div>
+
+                            </td>
+
+                            <td class="amount">
+                                Rp 43.000
+                            </td>
+
+                            <td>
+
+                                <span class="status status-success">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Selesai
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+
+                                <div class="customer">
+                                    Fajar S.
+                                </div>
+
+                                <div class="order-id">
+                                    #JK-001241
+                                </div>
+
+                            </td>
+
+                            <td class="amount">
+                                Rp 68.000
+                            </td>
+
+                            <td>
+
+                                <span class="status status-success">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Selesai
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+    /* ================= LOGIN ================= */
+
+    if (
+        localStorage.getItem('admin_logged_in')
+        !== 'true'
+    ) {
+
+        window.location.href = 'login.html';
+
+    }
+
+
+    /* ================= LOGOUT ================= */
+
+    function handleLogout() {
+
+        if (
+            confirm(
+                'Apakah Anda yakin ingin keluar?'
+            )
+        ) {
+
+            localStorage.removeItem(
+                'admin_logged_in'
+            );
+
+            window.location.href =
+                'login.html';
+
+        }
+
+    }
+
+
+    /* ================= SALES CHART ================= */
+
+    const salesCtx =
+        document
+        .getElementById('salesChart')
+        .getContext('2d');
+
+
+    const gradient =
+        salesCtx.createLinearGradient(
+            0,
+            0,
+            0,
+            300
+        );
+
+
+    gradient.addColorStop(
+        0,
+        'rgba(234,29,67,0.25)'
+    );
+
+
+    gradient.addColorStop(
+        1,
+        'rgba(234,29,67,0)'
+    );
+
+
+    const salesChart =
+        new Chart(
+            salesCtx,
+            {
+
+                type: 'line',
+
+                data: {
+
+                    labels: [
+                        '4 Jun',
+                        '5 Jun',
+                        '6 Jun',
+                        '7 Jun',
+                        '8 Jun',
+                        '9 Jun',
+                        '10 Jun'
+                    ],
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                'Pendapatan',
+
+                            data: [
+                                1250000,
+                                1580000,
+                                1850000,
+                                1420000,
+                                2100000,
+                                1950000,
+                                2300000
+                            ],
+
+                            borderColor:
+                                '#ea1d43',
+
+                            backgroundColor:
+                                gradient,
+
+                            borderWidth: 3,
+
+                            pointRadius: 4,
+
+                            pointHoverRadius: 6,
+
+                            fill: true,
+
+                            tension: 0.4
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+
+                            backgroundColor:
+                                '#2c3e50',
+
+                            padding: 10,
+
+                            callbacks: {
+
+                                label:
+                                    function(context) {
+
+                                        return ' Rp ' +
+                                            context.raw
+                                            .toLocaleString(
+                                                'id-ID'
+                                            );
+
+                                    }
+
+                            }
+
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: false,
+
+                            grid: {
+                                color: '#f0f1f3'
+                            },
+
+                            ticks: {
+
+                                font: {
+                                    size: 10
+                                },
+
+                                callback:
+                                    function(value) {
+
+                                        return 'Rp ' +
+                                            (
+                                                value / 1000000
+                                            ).toFixed(1)
+                                            + ' jt';
+
+                                    }
+
+                            }
+
+                        },
+
+                        x: {
+
+                            grid: {
+                                display: false
+                            },
+
+                            ticks: {
+
+                                font: {
+                                    size: 10
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+
+    /* ================= CATEGORY CHART ================= */
+
+    const categoryCtx =
+        document
+        .getElementById('categoryChart')
+        .getContext('2d');
+
+
+    new Chart(
+        categoryCtx,
+        {
+
+            type: 'doughnut',
+
+            data: {
+
+               labels: [
+    'Coffee',
+    'Non Coffee'
+],
+
+                datasets: [
+
+                    {
+
+                       data: [
+    58,
+    42
+],
+                        backgroundColor: [
+    '#ea1d43',
+    '#3498db'
+],
+                        borderWidth: 3,
+
+                        borderColor: '#fff'
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                cutout: '68%',
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    /* ================= PERIOD ================= */
+
+    function changePeriod() {
+
+        const period =
+            document
+            .getElementById('periodSelect')
+            .value;
+
+
+        const revenue =
+            document
+            .getElementById('revenue');
+
+
+        const transactions =
+            document
+            .getElementById('transactions');
+
+
+        if (period === 'today') {
+
+            revenue.innerText =
+                'Rp 1.850.000';
+
+            transactions.innerText =
+                '42';
+
+        }
+
+
+        else if (period === '7days') {
+
+            revenue.innerText =
+                'Rp 12.450.000';
+
+            transactions.innerText =
+                '248';
+
+        }
+
+
+        else if (period === 'month') {
+
+            revenue.innerText =
+                'Rp 48.720.000';
+
+            transactions.innerText =
+                '986';
+
+        }
+
+
+        else if (period === 'year') {
+
+            revenue.innerText =
+                'Rp 542.850.000';
+
+            transactions.innerText =
+                '10.842';
+
+        }
+
+    }
+
+
+    /* ================= PRINT ================= */
+
+    function printReport() {
+
+        window.print();
+
+    }
+
+</script>
+
+
+</body>
+</html>

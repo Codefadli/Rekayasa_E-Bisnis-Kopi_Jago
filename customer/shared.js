@@ -51,10 +51,10 @@ const imageByName = {
     'Kopi Susu Vanilla':'../Salted%20Caramel%20Latte.png',
     'Americano':'../americano%20koja.jfif',
     'Chocolate Latte':'../jago%20coklat.jfif',
-    'Pink Latte':'../pink%20coco.jfif',
-    'Hazelnut Latte':'../mont%20blanck%20kopi.jfif',
+    'Pink Coco':'../pink%20coco.jfif',
+    'Mont Blanc Shake':'../mont%20blanck%20kopi.jfif',
     'Red Velvet Latte':'../jago%20coklat.jfif',
-    'Matcha Green Tea Latte':'../macha%20latte.jfif',
+    'Matcha Latte':'../macha%20latte.jfif',
     'Citrus Cold Brew':'../citrus%20cold.jfif'
 };
 

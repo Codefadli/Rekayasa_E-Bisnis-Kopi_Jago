@@ -1,1 +1,1927 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Admin - Pengaturan</title><link rel="stylesheet" href="../style.css"></head><body><main class="container"><h1>Pengaturan</h1><p>Pengaturan sistem Kopi Jago.</p><a href="dashboard.html">Kembali ke dashboard</a></main></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Pengaturan Toko - Kopi Jago</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        :root {
+            --jago-red: #ea1d43;
+            --jago-red-dark: #c41233;
+
+            --sidebar-bg: #ea1d43;
+            --sidebar-active: #c41233;
+            --sidebar-hover: rgba(0,0,0,0.12);
+
+            --bg-main: #f4f6f9;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+
+            --green: #20b26b;
+
+            --card-shadow:
+                0 4px 12px rgba(0,0,0,0.05);
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+
+            background: var(--bg-main);
+
+            color: var(--text-dark);
+
+            display: flex;
+
+            min-height: 100vh;
+        }
+
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            width: 250px;
+
+            background: var(--sidebar-bg);
+
+            color: #fff;
+
+            display: flex;
+
+            flex-direction: column;
+
+            flex-shrink: 0;
+
+            position: fixed;
+
+            top: 0;
+            bottom: 0;
+            left: 0;
+
+            z-index: 100;
+        }
+
+
+        .sidebar-brand {
+            padding: 22px 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.2);
+        }
+
+
+        .brand-logo {
+            font-family: 'Montserrat', sans-serif;
+
+            font-weight: 900;
+
+            font-style: italic;
+
+            font-size: 26px;
+
+            letter-spacing: 1px;
+
+            color: #fff;
+
+            text-transform: uppercase;
+        }
+
+
+        .sidebar-menu {
+            list-style: none;
+
+            padding: 15px 10px;
+
+            flex: 1;
+
+            overflow-y: auto;
+        }
+
+
+        .sidebar-menu li {
+            margin-bottom: 4px;
+        }
+
+
+        .sidebar-menu a {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px 16px;
+
+            color:
+                rgba(255,255,255,0.9);
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            transition: all 0.2s;
+        }
+
+
+        .sidebar-menu a:hover {
+            background:
+                var(--sidebar-hover);
+
+            color: #fff;
+        }
+
+
+        .sidebar-menu a.active {
+            background:
+                var(--sidebar-active);
+
+            color: #fff;
+
+            font-weight: 700;
+
+            box-shadow:
+                0 2px 6px rgba(0,0,0,0.15);
+        }
+
+
+        .sidebar-menu a i {
+            width: 20px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        .sidebar-footer {
+            padding: 15px;
+
+            border-top:
+                1px solid rgba(255,255,255,0.2);
+        }
+
+
+        .logout-btn {
+            width: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 10px 15px;
+
+            background:
+                rgba(0,0,0,0.15);
+
+            border: 0;
+
+            color: #fff;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            border-radius: 6px;
+
+            transition: 0.2s;
+        }
+
+
+        .logout-btn:hover {
+            background:
+                rgba(0,0,0,0.3);
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .main-wrapper {
+            margin-left: 250px;
+
+            flex: 1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            min-width: 0;
+        }
+
+
+        /* ================= NAVBAR ================= */
+
+        .top-navbar {
+            height: 65px;
+
+            background: #fff;
+
+            padding: 0 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            box-shadow:
+                0 2px 10px rgba(0,0,0,0.03);
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 99;
+        }
+
+
+        .search-box {
+            display: flex;
+
+            align-items: center;
+
+            background: #f4f6f9;
+
+            padding: 8px 16px;
+
+            border-radius: 8px;
+
+            width: 350px;
+        }
+
+
+        .search-box input {
+            border: 0;
+
+            background: transparent;
+
+            outline: none;
+
+            margin-left: 10px;
+
+            width: 100%;
+
+            font-size: 13px;
+
+            font-family:
+                'Open Sans', sans-serif;
+        }
+
+
+        .user-profile {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+
+            border-radius: 50%;
+
+            background: var(--jago-red);
+
+            color: #fff;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: 700;
+
+            font-size: 14px;
+        }
+
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 30px;
+        }
+
+
+        .page-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 24px;
+        }
+
+
+        .page-header h1 {
+            font-family:
+                'Montserrat', sans-serif;
+
+            font-weight: 700;
+
+            font-size: 24px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .page-header p {
+            color: var(--text-muted);
+
+            font-size: 13px;
+        }
+
+
+        /* ================= SETTINGS LAYOUT ================= */
+
+        .settings-layout {
+            display: grid;
+
+            grid-template-columns:
+                220px 1fr;
+
+            gap: 20px;
+
+            align-items: start;
+        }
+
+
+        /* ================= SETTINGS MENU ================= */
+
+        .settings-menu {
+            background: #fff;
+
+            border-radius: 12px;
+
+            padding: 10px;
+
+            box-shadow: var(--card-shadow);
+        }
+
+
+        .settings-menu button {
+            width: 100%;
+
+            border: none;
+
+            background: transparent;
+
+            padding: 12px 13px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+
+            color: var(--text-dark);
+
+            cursor: pointer;
+
+            text-align: left;
+
+            margin-bottom: 3px;
+        }
+
+
+        .settings-menu button i {
+            width: 18px;
+
+            text-align: center;
+
+            color: var(--text-muted);
+        }
+
+
+        .settings-menu button:hover {
+            background: #f6f7f9;
+        }
+
+
+        .settings-menu button.active {
+            background: #ffe8ed;
+
+            color: var(--jago-red);
+
+            font-weight: 700;
+        }
+
+
+        .settings-menu button.active i {
+            color: var(--jago-red);
+        }
+
+
+        /* ================= SETTINGS CONTENT ================= */
+
+        .settings-content {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 18px;
+        }
+
+
+        .setting-card {
+            background: #fff;
+
+            border-radius: 12px;
+
+            padding: 22px;
+
+            box-shadow: var(--card-shadow);
+        }
+
+
+        .setting-card-header {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+
+            padding-bottom: 15px;
+
+            border-bottom:
+                1px solid #f0f1f3;
+        }
+
+
+        .header-icon {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 9px;
+
+            background: #ffe8ed;
+
+            color: var(--jago-red);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+
+        .setting-card-header h3 {
+            font-family:
+                'Montserrat', sans-serif;
+
+            font-size: 15px;
+
+            margin-bottom: 3px;
+        }
+
+
+        .setting-card-header p {
+            font-size: 10px;
+
+            color: var(--text-muted);
+        }
+
+
+        /* ================= FORM ================= */
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 17px;
+        }
+
+
+        .form-group {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+
+        .form-group label {
+            font-size: 11px;
+
+            font-weight: 700;
+
+            color: var(--text-dark);
+        }
+
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+
+            border: 1px solid #e1e5e9;
+
+            background: #fff;
+
+            padding: 10px 12px;
+
+            border-radius: 7px;
+
+            outline: none;
+
+            font-family:
+                'Open Sans', sans-serif;
+
+            font-size: 12px;
+
+            color: var(--text-dark);
+
+            transition: 0.2s;
+        }
+
+
+        .form-group textarea {
+            min-height: 80px;
+
+            resize: vertical;
+        }
+
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color:
+                var(--jago-red);
+
+            box-shadow:
+                0 0 0 3px rgba(234,29,67,0.08);
+        }
+
+
+        .form-help {
+            color: var(--text-muted);
+
+            font-size: 9px;
+        }
+
+
+        /* ================= HOURS ================= */
+
+        .hours-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 9px;
+        }
+
+
+        .hours-row {
+            display: grid;
+
+            grid-template-columns:
+                110px 1fr 1fr 70px;
+
+            gap: 10px;
+
+            align-items: center;
+        }
+
+
+        .day-name {
+            font-size: 11px;
+
+            font-weight: 600;
+        }
+
+
+        .time-input {
+            border: 1px solid #e1e5e9;
+
+            padding: 8px;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            outline: none;
+        }
+
+
+        .closed-text {
+            color: var(--text-muted);
+
+            font-size: 10px;
+
+            text-align: center;
+        }
+
+
+        /* ================= TOGGLE ================= */
+
+        .toggle-row {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 13px 0;
+
+            border-bottom:
+                1px solid #f0f1f3;
+        }
+
+
+        .toggle-row:last-child {
+            border-bottom: none;
+
+            padding-bottom: 0;
+        }
+
+
+        .toggle-info strong {
+            display: block;
+
+            font-size: 12px;
+
+            margin-bottom: 3px;
+        }
+
+
+        .toggle-info span {
+            color: var(--text-muted);
+
+            font-size: 10px;
+        }
+
+
+        .switch {
+            position: relative;
+
+            width: 42px;
+            height: 23px;
+
+            flex-shrink: 0;
+        }
+
+
+        .switch input {
+            opacity: 0;
+
+            width: 0;
+            height: 0;
+        }
+
+
+        .slider {
+            position: absolute;
+
+            cursor: pointer;
+
+            inset: 0;
+
+            background: #d8dce1;
+
+            border-radius: 20px;
+
+            transition: 0.3s;
+        }
+
+
+        .slider:before {
+            content: "";
+
+            position: absolute;
+
+            width: 17px;
+            height: 17px;
+
+            left: 3px;
+            top: 3px;
+
+            background: #fff;
+
+            border-radius: 50%;
+
+            transition: 0.3s;
+
+            box-shadow:
+                0 1px 3px rgba(0,0,0,0.2);
+        }
+
+
+        .switch input:checked + .slider {
+            background:
+                var(--jago-red);
+        }
+
+
+        .switch input:checked + .slider:before {
+            transform:
+                translateX(19px);
+        }
+
+
+        /* ================= PAYMENT ================= */
+
+        .payment-options {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+        }
+
+
+        .payment-option {
+            border: 1px solid #e5e7eb;
+
+            border-radius: 9px;
+
+            padding: 14px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .payment-option:hover {
+            border-color:
+                var(--jago-red);
+        }
+
+
+        .payment-option input {
+            accent-color:
+                var(--jago-red);
+        }
+
+
+        .payment-option i {
+            color:
+                var(--jago-red);
+
+            font-size: 16px;
+        }
+
+
+        .payment-option span {
+            font-size: 11px;
+
+            font-weight: 600;
+        }
+
+
+        /* ================= SAVE BUTTON ================= */
+
+        .save-area {
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            padding-top: 2px;
+        }
+
+
+        .btn {
+            border: none;
+
+            padding: 10px 17px;
+
+            border-radius: 7px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .btn-cancel {
+            background: #eef0f2;
+
+            color: #687078;
+        }
+
+
+        .btn-cancel:hover {
+            background: #e2e5e8;
+        }
+
+
+        .btn-save {
+            background:
+                var(--jago-red);
+
+            color: #fff;
+
+            box-shadow:
+                0 3px 8px
+                rgba(234,29,67,0.22);
+        }
+
+
+        .btn-save:hover {
+            background:
+                var(--jago-red-dark);
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 950px) {
+
+            .settings-layout {
+                grid-template-columns: 1fr;
+            }
+
+
+            .settings-menu {
+                display: grid;
+
+                grid-template-columns:
+                    repeat(4, 1fr);
+
+                gap: 4px;
+            }
+
+
+            .settings-menu button {
+                justify-content: center;
+
+                flex-direction: column;
+
+                text-align: center;
+            }
+
+
+            .payment-options {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+
+            .main-wrapper {
+                margin-left: 220px;
+            }
+
+
+            .content {
+                padding: 20px;
+            }
+
+
+            .search-box {
+                width: 220px;
+            }
+
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+
+            .hours-row {
+                grid-template-columns:
+                    90px 1fr 1fr;
+            }
+
+
+            .closed-text {
+                display: none;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-brand">
+
+        <span class="brand-logo">
+            JAGO
+        </span>
+
+    </div>
+
+
+    <ul class="sidebar-menu">
+
+        <li>
+            <a href="dashboard.html">
+                <i class="fa-solid fa-chart-pie"></i>
+                Dashboard
+            </a>
+        </li>
+
+
+        <li>
+            <a href="menu.html">
+                <i class="fa-solid fa-utensils"></i>
+                Menu
+            </a>
+        </li>
+
+
+        <li>
+            <a href="orders.html">
+                <i class="fa-solid fa-receipt"></i>
+                Pesanan
+            </a>
+        </li>
+
+
+        <li>
+            <a href="customers.html">
+                <i class="fa-solid fa-users"></i>
+                Pelanggan
+            </a>
+        </li>
+
+
+        <li>
+            <a href="inventory.html">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                Stok Bahan Baku
+            </a>
+        </li>
+
+
+        <li>
+            <a href="suppliers.html">
+                <i class="fa-solid fa-truck"></i>
+                Supplier
+            </a>
+        </li>
+
+
+        <li>
+            <a href="promos.html">
+                <i class="fa-solid fa-tags"></i>
+                Promo & Diskon
+            </a>
+        </li>
+
+
+        <li>
+            <a href="reports.html">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                Laporan
+            </a>
+        </li>
+
+
+        <li>
+            <a href="activity-log.html">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Log Aktivitas
+            </a>
+        </li>
+
+
+        <!-- ACTIVE -->
+
+        <li>
+            <a href="settings.html"
+               class="active">
+
+                <i class="fa-solid fa-gear"></i>
+
+                Pengaturan Toko
+
+            </a>
+        </li>
+
+    </ul>
+
+
+    <div class="sidebar-footer">
+
+        <button
+            class="logout-btn"
+            onclick="handleLogout()">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            Logout
+
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="main-wrapper">
+
+
+    <!-- TOP NAVBAR -->
+
+    <header class="top-navbar">
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"
+               style="color:var(--text-muted);">
+            </i>
+
+            <input
+                type="text"
+                placeholder="Cari pengaturan...">
+
+        </div>
+
+
+        <div class="user-profile">
+
+            <div class="user-avatar">
+                A
+            </div>
+
+
+            <div style="font-size:13px;">
+
+                <strong>
+                    Admin Jago
+                </strong>
+
+                <div style="
+                    color:var(--text-muted);
+                    font-size:11px;">
+
+                    Administrator
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =================================================
+         CONTENT
+    ================================================= -->
+
+    <main class="content">
+
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    Pengaturan Toko
+                </h1>
+
+                <p>
+                    Kelola informasi, operasional, pembayaran,
+                    dan preferensi toko Kopi Jago.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- SETTINGS -->
+
+        <div class="settings-layout">
+
+
+            <!-- ================= MENU ================= -->
+
+            <div class="settings-menu">
+
+
+                <button
+                    class="active"
+                    onclick="scrollToSection('store-info')">
+
+                    <i class="fa-solid fa-store"></i>
+
+                    Informasi Toko
+
+                </button>
+
+
+                <button
+                    onclick="scrollToSection('operational')">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                    Operasional
+
+                </button>
+
+
+                <button
+                    onclick="scrollToSection('payment')">
+
+                    <i class="fa-solid fa-wallet"></i>
+
+                    Pembayaran
+
+                </button>
+
+
+                <button
+                    onclick="scrollToSection('notification')">
+
+                    <i class="fa-solid fa-bell"></i>
+
+                    Notifikasi
+
+                </button>
+
+
+            </div>
+
+
+            <!-- ================= CONTENT ================= -->
+
+            <div class="settings-content">
+
+
+                <!-- =========================================
+                     INFORMASI TOKO
+                ========================================== -->
+
+                <div
+                    class="setting-card"
+                    id="store-info">
+
+
+                    <div class="setting-card-header">
+
+                        <div class="header-icon">
+
+                            <i class="fa-solid fa-store"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Informasi Toko
+                            </h3>
+
+                            <p>
+                                Informasi dasar mengenai toko Kopi Jago.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Nama Toko
+                            </label>
+
+                            <input
+                                type="text"
+                                value="Kopi Jago">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Nomor Telepon
+                            </label>
+
+                            <input
+                                type="text"
+                                value="0812-3456-7890">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Email Toko
+                            </label>
+
+                            <input
+                                type="email"
+                                value="admin@kopijago.com">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Website
+                            </label>
+
+                            <input
+                                type="text"
+                                value="www.kopijago.com">
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label>
+                                Alamat Toko
+                            </label>
+
+                            <textarea>Jl. Jago Coffee No. 15, Jakarta Selatan, DKI Jakarta</textarea>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Kota
+                            </label>
+
+                            <input
+                                type="text"
+                                value="Jakarta Selatan">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Kode Pos
+                            </label>
+
+                            <input
+                                type="text"
+                                value="12510">
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     OPERASIONAL
+                ========================================== -->
+
+                <div
+                    class="setting-card"
+                    id="operational">
+
+
+                    <div class="setting-card-header">
+
+                        <div class="header-icon">
+
+                            <i class="fa-solid fa-clock"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Jam Operasional
+                            </h3>
+
+                            <p>
+                                Atur jam buka dan tutup toko setiap hari.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="hours-list">
+
+
+                        <div class="hours-row">
+
+                            <span class="day-name">
+                                Senin
+                            </span>
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="08:00">
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="22:00">
+
+                            <span class="closed-text">
+                                Buka
+                            </span>
+
+                        </div>
+
+
+                        <div class="hours-row">
+
+                            <span class="day-name">
+                                Selasa
+                            </span>
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="08:00">
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="22:00">
+
+                            <span class="closed-text">
+                                Buka
+                            </span>
+
+                        </div>
+
+
+                        <div class="hours-row">
+
+                            <span class="day-name">
+                                Rabu
+                            </span>
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="08:00">
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="22:00">
+
+                            <span class="closed-text">
+                                Buka
+                            </span>
+
+                        </div>
+
+
+                        <div class="hours-row">
+
+                            <span class="day-name">
+                                Kamis
+                            </span>
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="08:00">
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="22:00">
+
+                            <span class="closed-text">
+                                Buka
+                            </span>
+
+                        </div>
+
+
+                        <div class="hours-row">
+
+                            <span class="day-name">
+                                Jumat
+                            </span>
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="08:00">
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="23:00">
+
+                            <span class="closed-text">
+                                Buka
+                            </span>
+
+                        </div>
+
+
+                        <div class="hours-row">
+
+                            <span class="day-name">
+                                Sabtu
+                            </span>
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="08:00">
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="23:00">
+
+                            <span class="closed-text">
+                                Buka
+                            </span>
+
+                        </div>
+
+
+                        <div class="hours-row">
+
+                            <span class="day-name">
+                                Minggu
+                            </span>
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="09:00">
+
+                            <input
+                                class="time-input"
+                                type="time"
+                                value="21:00">
+
+                            <span class="closed-text">
+                                Buka
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     PEMBAYARAN
+                ========================================== -->
+
+                <div
+                    class="setting-card"
+                    id="payment">
+
+
+                    <div class="setting-card-header">
+
+                        <div class="header-icon">
+
+                            <i class="fa-solid fa-wallet"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Metode Pembayaran
+                            </h3>
+
+                            <p>
+                                Pilih metode pembayaran yang tersedia di toko.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="payment-options">
+
+
+                        <label class="payment-option">
+
+                            <input
+                                type="checkbox"
+                                checked>
+
+                            <i class="fa-solid fa-money-bill-wave"></i>
+
+                            <span>
+                                Tunai
+                            </span>
+
+                        </label>
+
+
+                        <label class="payment-option">
+
+                            <input
+                                type="checkbox"
+                                checked>
+
+                            <i class="fa-solid fa-qrcode"></i>
+
+                            <span>
+                                QRIS
+                            </span>
+
+                        </label>
+
+
+                        <label class="payment-option">
+
+                            <input
+                                type="checkbox"
+                                checked>
+
+                            <i class="fa-solid fa-credit-card"></i>
+
+                            <span>
+                                Kartu
+                            </span>
+
+                        </label>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     NOTIFIKASI
+                ========================================== -->
+
+                <div
+                    class="setting-card"
+                    id="notification">
+
+
+                    <div class="setting-card-header">
+
+                        <div class="header-icon">
+
+                            <i class="fa-solid fa-bell"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Notifikasi
+                            </h3>
+
+                            <p>
+                                Atur notifikasi yang diterima oleh administrator.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="toggle-row">
+
+                        <div class="toggle-info">
+
+                            <strong>
+                                Pesanan Baru
+                            </strong>
+
+                            <span>
+                                Tampilkan notifikasi ketika ada pesanan baru.
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input
+                                type="checkbox"
+                                checked>
+
+                            <span class="slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="toggle-row">
+
+                        <div class="toggle-info">
+
+                            <strong>
+                                Stok Menipis
+                            </strong>
+
+                            <span>
+                                Berikan peringatan ketika stok bahan baku hampir habis.
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input
+                                type="checkbox"
+                                checked>
+
+                            <span class="slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="toggle-row">
+
+                        <div class="toggle-info">
+
+                            <strong>
+                                Reservasi Baru
+                            </strong>
+
+                            <span>
+                                Tampilkan notifikasi ketika ada reservasi meja baru.
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input
+                                type="checkbox"
+                                checked>
+
+                            <span class="slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="toggle-row">
+
+                        <div class="toggle-info">
+
+                            <strong>
+                                Laporan Harian
+                            </strong>
+
+                            <span>
+                                Kirim ringkasan laporan penjualan setiap hari.
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input type="checkbox">
+
+                            <span class="slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =========================================
+                     SAVE
+                ========================================== -->
+
+                <div class="save-area">
+
+                    <button
+                        class="btn btn-cancel"
+                        onclick="resetSettings()">
+
+                        Batal
+
+                    </button>
+
+
+                    <button
+                        class="btn btn-save"
+                        onclick="saveSettings()">
+
+                        <i class="fa-solid fa-check"></i>
+
+                        Simpan Perubahan
+
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+    /* ================= LOGIN ================= */
+
+    if (
+        localStorage.getItem('admin_logged_in')
+        !== 'true'
+    ) {
+
+        window.location.href =
+            'login.html';
+
+    }
+
+
+    /* ================= LOGOUT ================= */
+
+    function handleLogout() {
+
+        if (
+            confirm(
+                'Apakah Anda yakin ingin keluar?'
+            )
+        ) {
+
+            localStorage.removeItem(
+                'admin_logged_in'
+            );
+
+            window.location.href =
+                'login.html';
+
+        }
+
+    }
+
+
+    /* ================= SAVE ================= */
+
+    function saveSettings() {
+
+        alert(
+            'Pengaturan toko berhasil disimpan!'
+        );
+
+    }
+
+
+    /* ================= RESET ================= */
+
+    function resetSettings() {
+
+        if (
+            confirm(
+                'Batalkan perubahan pengaturan?'
+            )
+        ) {
+
+            location.reload();
+
+        }
+
+    }
+
+
+    /* ================= SCROLL ================= */
+
+    function scrollToSection(id) {
+
+        const section =
+            document.getElementById(id);
+
+        if (section) {
+
+            section.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+
+        }
+
+    }
+
+</script>
+
+
+</body>
+</html>

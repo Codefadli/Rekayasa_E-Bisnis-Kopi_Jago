@@ -1,1 +1,2374 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Admin - Stok</title><link rel="stylesheet" href="../style.css"></head><body><main class="container"><h1>Stok</h1><p>Kelola stok minuman.</p><a href="dashboard.html">Kembali ke dashboard</a></main></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Stok Bahan Baku - Kopi Jago</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        :root {
+            --jago-red: #ea1d43;
+            --jago-red-dark: #c41233;
+            --sidebar-bg: #ea1d43;
+            --sidebar-active: #c41233;
+            --sidebar-hover: rgba(0,0,0,0.12);
+
+            --bg-main: #f4f6f9;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            width: 250px;
+            background: var(--sidebar-bg);
+            color: #fff;
+
+            display: flex;
+            flex-direction: column;
+
+            flex-shrink: 0;
+
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 22px 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .brand-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+
+            font-size: 26px;
+            letter-spacing: 1px;
+
+            color: #fff;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+
+            padding: 15px 10px;
+
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px 16px;
+
+            color: rgba(255,255,255,0.9);
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            transition: all 0.2s;
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--sidebar-hover);
+            color: #fff;
+        }
+
+        .sidebar-menu a.active {
+            background: var(--sidebar-active);
+            color: #fff;
+
+            font-weight: 700;
+
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .sidebar-menu a i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-footer {
+            padding: 15px;
+
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .logout-btn {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 10px 15px;
+
+            background: rgba(0,0,0,0.15);
+
+            border: 0;
+
+            color: #fff;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            border-radius: 6px;
+
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(0,0,0,0.3);
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .main-wrapper {
+            margin-left: 250px;
+
+            flex: 1;
+
+            display: flex;
+            flex-direction: column;
+
+            min-width: 0;
+        }
+
+
+        /* ================= NAVBAR ================= */
+
+        .top-navbar {
+            height: 65px;
+
+            background: #fff;
+
+            padding: 0 30px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+
+            position: sticky;
+            top: 0;
+
+            z-index: 99;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+
+            background: #f4f6f9;
+
+            padding: 8px 16px;
+
+            border-radius: 8px;
+
+            width: 350px;
+        }
+
+        .search-box input {
+            border: 0;
+
+            background: transparent;
+
+            outline: none;
+
+            margin-left: 10px;
+
+            width: 100%;
+
+            font-size: 13px;
+
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+
+            border-radius: 50%;
+
+            background: var(--jago-red);
+
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 700;
+
+            font-size: 14px;
+        }
+
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-family: 'Montserrat', sans-serif;
+
+            font-weight: 700;
+
+            font-size: 24px;
+
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+
+        /* ================= BUTTON ================= */
+
+        .btn-primary {
+            background: var(--jago-red);
+
+            border: none;
+
+            color: white;
+
+            padding: 11px 17px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            transition: 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--jago-red-dark);
+        }
+
+
+        /* ================= SUMMARY CARD ================= */
+
+        .summary-container {
+            display: grid;
+
+            grid-template-columns: repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: #fff;
+
+            border-radius: 10px;
+
+            padding: 18px;
+
+            box-shadow: var(--card-shadow);
+
+            display: flex;
+            align-items: center;
+
+            gap: 14px;
+        }
+
+        .summary-icon {
+            width: 45px;
+            height: 45px;
+
+            border-radius: 9px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 18px;
+        }
+
+        .icon-blue {
+            background: #e5f2ff;
+            color: #2589d9;
+        }
+
+        .icon-green {
+            background: #e5f8ef;
+            color: #24a865;
+        }
+
+        .icon-orange {
+            background: #fff3df;
+            color: #ed9517;
+        }
+
+        .icon-red {
+            background: #ffe6eb;
+            color: var(--jago-red);
+        }
+
+        .summary-text small {
+            display: block;
+
+            color: var(--text-muted);
+
+            font-size: 11px;
+
+            margin-bottom: 4px;
+        }
+
+        .summary-text strong {
+            font-size: 20px;
+        }
+
+
+        /* ================= TABLE CARD ================= */
+
+        .card-container {
+            background: #fff;
+
+            border-radius: 12px;
+
+            box-shadow: var(--card-shadow);
+
+            padding: 20px;
+        }
+
+        .table-top {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 18px;
+        }
+
+        .table-top h2 {
+            font-family: 'Montserrat', sans-serif;
+
+            font-size: 17px;
+
+            font-weight: 700;
+        }
+
+        .table-top p {
+            color: var(--text-muted);
+
+            font-size: 12px;
+
+            margin-top: 3px;
+        }
+
+
+        /* ================= FILTER ================= */
+
+        .filter-box {
+            display: flex;
+
+            gap: 10px;
+        }
+
+        .filter-box select {
+            border: 1px solid #e2e6ea;
+
+            border-radius: 6px;
+
+            padding: 8px 10px;
+
+            outline: none;
+
+            font-family: 'Open Sans', sans-serif;
+
+            font-size: 12px;
+
+            color: var(--text-dark);
+
+            background: #fff;
+        }
+
+
+        /* ================= TABLE ================= */
+
+        .data-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 13px;
+
+            text-align: left;
+        }
+
+        .data-table th {
+            padding: 12px;
+
+            color: var(--text-muted);
+
+            font-weight: 600;
+
+            border-bottom: 1px solid #f1f2f6;
+        }
+
+        .data-table td {
+            padding: 14px 12px;
+
+            border-bottom: 1px solid #f1f2f6;
+
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr:hover {
+            background: #fafbfc;
+        }
+
+
+        /* ================= MATERIAL INFO ================= */
+
+        .material-info {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+        .material-icon {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 8px;
+
+            background: #fff0f3;
+
+            color: var(--jago-red);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .material-name {
+            font-weight: 700;
+
+            color: var(--text-dark);
+        }
+
+        .material-category {
+            font-size: 10px;
+
+            color: var(--text-muted);
+
+            margin-top: 2px;
+        }
+
+
+        /* ================= STOCK ================= */
+
+        .stock-number {
+            font-weight: 700;
+
+            font-size: 14px;
+        }
+
+        .stock-unit {
+            color: var(--text-muted);
+
+            font-size: 11px;
+        }
+
+
+        /* ================= STATUS ================= */
+
+        .status {
+            display: inline-flex;
+
+            align-items: center;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .status i {
+            font-size: 7px;
+
+            margin-right: 6px;
+        }
+
+        .status-safe {
+            background: #e8f8ef;
+            color: #20a464;
+        }
+
+        .status-warning {
+            background: #fff3df;
+            color: #e99a22;
+        }
+
+        .status-danger {
+            background: #ffe8ed;
+            color: #e51c43;
+        }
+
+
+        /* ================= ACTION ================= */
+
+        .action-buttons {
+            display: flex;
+
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+
+            border: none;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transition: 0.2s;
+        }
+
+        .edit-btn {
+            background: #eaf4ff;
+
+            color: #278bd5;
+        }
+
+        .edit-btn:hover {
+            background: #d9ebfc;
+        }
+
+        .delete-btn {
+            background: #ffe9ed;
+
+            color: var(--jago-red);
+        }
+
+        .delete-btn:hover {
+            background: #ffd8df;
+        }
+
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            display: none;
+
+            position: fixed;
+
+            z-index: 1000;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background: rgba(0,0,0,0.45);
+
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            width: 500px;
+
+            max-width: 90%;
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 25px;
+
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-family: 'Montserrat', sans-serif;
+
+            font-size: 18px;
+        }
+
+        .close-btn {
+            border: none;
+
+            background: transparent;
+
+            font-size: 22px;
+
+            color: #888;
+
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+
+            padding: 10px 12px;
+
+            border: 1px solid #dfe3e8;
+
+            border-radius: 7px;
+
+            outline: none;
+
+            font-family: 'Open Sans', sans-serif;
+
+            font-size: 13px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--jago-red);
+        }
+
+        .form-row {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 12px;
+        }
+
+        .modal-footer {
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            background: #eef0f2;
+
+            border: none;
+
+            padding: 10px 16px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+
+            .summary-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 750px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main-wrapper {
+                margin-left: 220px;
+            }
+
+            .summary-container {
+                grid-template-columns: 1fr;
+            }
+
+            .top-navbar {
+                padding: 0 15px;
+            }
+
+            .search-box {
+                width: 230px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .data-table {
+                min-width: 850px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-brand">
+        <span class="brand-logo">JAGO</span>
+    </div>
+
+    <ul class="sidebar-menu">
+
+        <li>
+            <a href="dashboard.html">
+                <i class="fa-solid fa-chart-pie"></i>
+                Dashboard
+            </a>
+        </li>
+
+        <li>
+            <a href="menu.html">
+                <i class="fa-solid fa-utensils"></i>
+                Menu
+            </a>
+        </li>
+
+        <li>
+            <a href="orders.html">
+                <i class="fa-solid fa-receipt"></i>
+                Pesanan
+            </a>
+        </li>
+
+        <li>
+            <a href="customers.html">
+                <i class="fa-solid fa-users"></i>
+                Pelanggan
+            </a>
+        </li>
+
+        <!-- ACTIVE -->
+        <li>
+            <a href="inventory.html" class="active">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                Stok Bahan Baku
+            </a>
+        </li>
+
+        <li>
+            <a href="suppliers.html">
+                <i class="fa-solid fa-truck"></i>
+                Supplier
+            </a>
+        </li>
+
+        <li>
+            <a href="promos.html">
+                <i class="fa-solid fa-tags"></i>
+                Promo & Diskon
+            </a>
+        </li>
+
+        <li>
+            <a href="reports.html">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                Laporan
+            </a>
+        </li>
+
+        <li>
+            <a href="activity-log.html">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Log Aktivitas
+            </a>
+        </li>
+
+        <li>
+            <a href="settings.html">
+                <i class="fa-solid fa-gear"></i>
+                Pengaturan Toko
+            </a>
+        </li>
+
+    </ul>
+
+
+    <div class="sidebar-footer">
+
+        <button class="logout-btn" onclick="handleLogout()">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            Logout
+
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="main-wrapper">
+
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header class="top-navbar">
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"
+               style="color: var(--text-muted);">
+            </i>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Cari bahan baku..."
+                onkeyup="searchMaterial()"
+            >
+
+        </div>
+
+
+        <div class="user-profile">
+
+            <div class="user-avatar">
+                A
+            </div>
+
+            <div style="font-size: 13px;">
+
+                <strong>Admin Jago</strong>
+
+                <div style="
+                    color: var(--text-muted);
+                    font-size: 11px;
+                ">
+                    Administrator
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= CONTENT ================= -->
+
+    <main class="content">
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>Stok Bahan Baku</h1>
+
+                <p>
+                    Kelola persediaan bahan baku dan pantau kondisi stok toko.
+                </p>
+
+            </div>
+
+
+            <button class="btn-primary" onclick="openModal()">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Tambah Bahan
+
+            </button>
+
+        </div>
+
+
+        <!-- ================= SUMMARY ================= -->
+
+        <div class="summary-container">
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon icon-blue">
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                </div>
+
+                <div class="summary-text">
+
+                    <small>Total Bahan</small>
+
+                    <strong id="totalBahan">6</strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon icon-green">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+                <div class="summary-text">
+
+                    <small>Stok Aman</small>
+
+                    <strong id="stokAman">4</strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon icon-orange">
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                </div>
+
+                <div class="summary-text">
+
+                    <small>Stok Menipis</small>
+
+                    <strong id="stokMenipis">1</strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon icon-red">
+
+                    <i class="fa-solid fa-circle-xmark"></i>
+
+                </div>
+
+                <div class="summary-text">
+
+                    <small>Stok Habis</small>
+
+                    <strong id="stokHabis">1</strong>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ================= TABLE ================= -->
+
+        <div class="card-container">
+
+
+            <div class="table-top">
+
+                <div>
+
+                    <h2>Daftar Bahan Baku</h2>
+
+                    <p>
+                        Data persediaan bahan baku Kopi Jago.
+                    </p>
+
+                </div>
+
+
+                <div class="filter-box">
+
+                    <select id="categoryFilter"
+                            onchange="filterCategory()">
+
+                        <option value="all">
+                            Semua Kategori
+                        </option>
+
+                        <option value="Kopi">
+                            Kopi
+                        </option>
+
+                        <option value="Susu">
+                            Susu
+                        </option>
+
+                        <option value="Gula">
+                            Gula
+                        </option>
+
+                        <option value="Topping">
+                            Topping
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table class="data-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Bahan Baku</th>
+
+                            <th>Kategori</th>
+
+                            <th>Stok Saat Ini</th>
+
+                            <th>Satuan</th>
+
+                            <th>Min. Stok</th>
+
+                            <th>Status</th>
+
+                            <th>Aksi</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="inventoryTable">
+
+
+                        <!-- KOPI ARABIKA -->
+
+                        <tr data-category="Kopi">
+
+                            <td>
+
+                                <div class="material-info">
+
+                                    <div class="material-icon">
+                                        <i class="fa-solid fa-mug-hot"></i>
+                                    </div>
+
+                                    <div>
+
+                                        <div class="material-name">
+                                            Kopi Arabika
+                                        </div>
+
+                                        <div class="material-category">
+                                            Biji kopi
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>Kopi</td>
+
+                            <td>
+                                <span class="stock-number">5</span>
+                            </td>
+
+                            <td>
+                                <span class="stock-unit">kg</span>
+                            </td>
+
+                            <td>2 kg</td>
+
+                            <td>
+
+                                <span class="status status-safe">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Aman
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="action-btn edit-btn"
+                                        onclick="editMaterial(this)"
+                                        title="Edit">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="action-btn delete-btn"
+                                        onclick="deleteMaterial(this)"
+                                        title="Hapus">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- GULA -->
+
+                        <tr data-category="Gula">
+
+                            <td>
+
+                                <div class="material-info">
+
+                                    <div class="material-icon">
+                                        <i class="fa-solid fa-cube"></i>
+                                    </div>
+
+                                    <div>
+
+                                        <div class="material-name">
+                                            Gula Pasir
+                                        </div>
+
+                                        <div class="material-category">
+                                            Pemanis
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>Gula</td>
+
+                            <td>
+                                <span class="stock-number">2</span>
+                            </td>
+
+                            <td>
+                                <span class="stock-unit">kg</span>
+                            </td>
+
+                            <td>3 kg</td>
+
+                            <td>
+
+                                <span class="status status-warning">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Menipis
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="action-btn edit-btn"
+                                        onclick="editMaterial(this)">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="action-btn delete-btn"
+                                        onclick="deleteMaterial(this)">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- SUSU -->
+
+                        <tr data-category="Susu">
+
+                            <td>
+
+                                <div class="material-info">
+
+                                    <div class="material-icon">
+                                        <i class="fa-solid fa-bottle-water"></i>
+                                    </div>
+
+                                    <div>
+
+                                        <div class="material-name">
+                                            Fresh Milk
+                                        </div>
+
+                                        <div class="material-category">
+                                            Susu cair
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>Susu</td>
+
+                            <td>
+                                <span class="stock-number">10</span>
+                            </td>
+
+                            <td>
+                                <span class="stock-unit">liter</span>
+                            </td>
+
+                            <td>5 liter</td>
+
+                            <td>
+
+                                <span class="status status-safe">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Aman
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="action-btn edit-btn"
+                                        onclick="editMaterial(this)">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="action-btn delete-btn"
+                                        onclick="deleteMaterial(this)">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- COKLAT -->
+
+                        <tr data-category="Topping">
+
+                            <td>
+
+                                <div class="material-info">
+
+                                    <div class="material-icon">
+                                        <i class="fa-solid fa-cookie-bite"></i>
+                                    </div>
+
+                                    <div>
+
+                                        <div class="material-name">
+                                            Coklat Bubuk
+                                        </div>
+
+                                        <div class="material-category">
+                                            Topping
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>Topping</td>
+
+                            <td>
+                                <span class="stock-number">3</span>
+                            </td>
+
+                            <td>
+                                <span class="stock-unit">kg</span>
+                            </td>
+
+                            <td>2 kg</td>
+
+                            <td>
+
+                                <span class="status status-safe">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Aman
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="action-btn edit-btn"
+                                        onclick="editMaterial(this)">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="action-btn delete-btn"
+                                        onclick="deleteMaterial(this)">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- ES BATU -->
+
+                        <tr data-category="Topping">
+
+                            <td>
+
+                                <div class="material-info">
+
+                                    <div class="material-icon">
+                                        <i class="fa-solid fa-snowflake"></i>
+                                    </div>
+
+                                    <div>
+
+                                        <div class="material-name">
+                                            Es Batu
+                                        </div>
+
+                                        <div class="material-category">
+                                            Pelengkap
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>Topping</td>
+
+                            <td>
+                                <span class="stock-number">20</span>
+                            </td>
+
+                            <td>
+                                <span class="stock-unit">kg</span>
+                            </td>
+
+                            <td>10 kg</td>
+
+                            <td>
+
+                                <span class="status status-safe">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Aman
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="action-btn edit-btn"
+                                        onclick="editMaterial(this)">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="action-btn delete-btn"
+                                        onclick="deleteMaterial(this)">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- VANILLA -->
+
+                        <tr data-category="Topping">
+
+                            <td>
+
+                                <div class="material-info">
+
+                                    <div class="material-icon">
+                                        <i class="fa-solid fa-flask"></i>
+                                    </div>
+
+                                    <div>
+
+                                        <div class="material-name">
+                                            Sirup Vanilla
+                                        </div>
+
+                                        <div class="material-category">
+                                            Perasa
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>Topping</td>
+
+                            <td>
+                                <span class="stock-number">0</span>
+                            </td>
+
+                            <td>
+                                <span class="stock-unit">botol</span>
+                            </td>
+
+                            <td>2 botol</td>
+
+                            <td>
+
+                                <span class="status status-danger">
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                    Habis
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="action-btn edit-btn"
+                                        onclick="editMaterial(this)">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="action-btn delete-btn"
+                                        onclick="deleteMaterial(this)">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL TAMBAH BAHAN
+===================================================== -->
+
+<div class="modal" id="materialModal">
+
+    <div class="modal-content">
+
+
+        <div class="modal-header">
+
+            <h2 id="modalTitle">
+                Tambah Bahan Baku
+            </h2>
+
+            <button class="close-btn"
+                    onclick="closeModal()">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+        <form id="materialForm"
+              onsubmit="saveMaterial(event)">
+
+
+            <div class="form-group">
+
+                <label>
+                    Nama Bahan Baku
+                </label>
+
+                <input
+                    type="text"
+                    id="materialName"
+                    placeholder="Contoh: Kopi Arabika"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Kategori
+                </label>
+
+                <select id="materialCategory" required>
+
+                    <option value="">
+                        Pilih kategori
+                    </option>
+
+                    <option value="Kopi">
+                        Kopi
+                    </option>
+
+                    <option value="Susu">
+                        Susu
+                    </option>
+
+                    <option value="Gula">
+                        Gula
+                    </option>
+
+                    <option value="Topping">
+                        Topping
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Jumlah Stok
+                    </label>
+
+                    <input
+                        type="number"
+                        id="materialStock"
+                        min="0"
+                        placeholder="0"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Satuan
+                    </label>
+
+                    <select id="materialUnit" required>
+
+                        <option value="">
+                            Pilih satuan
+                        </option>
+
+                        <option value="kg">
+                            Kg
+                        </option>
+
+                        <option value="liter">
+                            Liter
+                        </option>
+
+                        <option value="botol">
+                            Botol
+                        </option>
+
+                        <option value="pcs">
+                            Pcs
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Minimum Stok
+                </label>
+
+                <input
+                    type="number"
+                    id="materialMin"
+                    min="0"
+                    placeholder="Contoh: 2"
+                    required
+                >
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn-cancel"
+                    onclick="closeModal()">
+
+                    Batal
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn-primary">
+
+                    <i class="fa-solid fa-save"></i>
+
+                    Simpan
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+    /* ================= LOGIN ================= */
+
+    if (localStorage.getItem('admin_logged_in') !== 'true') {
+
+        window.location.href = 'login.html';
+
+    }
+
+
+    /* ================= LOGOUT ================= */
+
+    function handleLogout() {
+
+        if (confirm('Apakah Anda yakin ingin keluar?')) {
+
+            localStorage.removeItem('admin_logged_in');
+
+            window.location.href = 'login.html';
+
+        }
+
+    }
+
+
+    /* ================= MODAL ================= */
+
+    let editingRow = null;
+
+
+    function openModal() {
+
+        editingRow = null;
+
+        document.getElementById('modalTitle').innerText =
+            'Tambah Bahan Baku';
+
+        document.getElementById('materialForm').reset();
+
+        document.getElementById('materialModal').style.display =
+            'flex';
+
+    }
+
+
+    function closeModal() {
+
+        document.getElementById('materialModal').style.display =
+            'none';
+
+    }
+
+
+    /* ================= SAVE ================= */
+
+    function saveMaterial(event) {
+
+        event.preventDefault();
+
+
+        const name =
+            document.getElementById('materialName').value;
+
+        const category =
+            document.getElementById('materialCategory').value;
+
+        const stock =
+            document.getElementById('materialStock').value;
+
+        const unit =
+            document.getElementById('materialUnit').value;
+
+        const minimum =
+            document.getElementById('materialMin').value;
+
+
+        let status = '';
+        let statusClass = '';
+
+
+        if (Number(stock) === 0) {
+
+            status = 'Habis';
+            statusClass = 'status-danger';
+
+        }
+
+        else if (Number(stock) <= Number(minimum)) {
+
+            status = 'Menipis';
+            statusClass = 'status-warning';
+
+        }
+
+        else {
+
+            status = 'Aman';
+            statusClass = 'status-safe';
+
+        }
+
+
+        /* Jika sedang edit */
+
+        if (editingRow) {
+
+            editingRow.setAttribute(
+                'data-category',
+                category
+            );
+
+            editingRow.cells[0]
+                .querySelector('.material-name')
+                .innerText = name;
+
+            editingRow.cells[1]
+                .innerText = category;
+
+            editingRow.cells[2]
+                .querySelector('.stock-number')
+                .innerText = stock;
+
+            editingRow.cells[3]
+                .querySelector('.stock-unit')
+                .innerText = unit;
+
+            editingRow.cells[4]
+                .innerText =
+                    minimum + ' ' + unit;
+
+            const statusElement =
+                editingRow.cells[5]
+                .querySelector('.status');
+
+            statusElement.className =
+                'status ' + statusClass;
+
+            statusElement.innerHTML =
+                '<i class="fa-solid fa-circle"></i> ' +
+                status;
+
+        }
+
+
+        /* Jika tambah data */
+
+        else {
+
+            const table =
+                document.getElementById('inventoryTable');
+
+
+            const row =
+                document.createElement('tr');
+
+
+            row.setAttribute(
+                'data-category',
+                category
+            );
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    <div class="material-info">
+
+                        <div class="material-icon">
+
+                            <i class="fa-solid fa-box"></i>
+
+                        </div>
+
+                        <div>
+
+                            <div class="material-name">
+                                ${name}
+                            </div>
+
+                            <div class="material-category">
+                                Bahan baku
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+                <td>${category}</td>
+
+                <td>
+                    <span class="stock-number">
+                        ${stock}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="stock-unit">
+                        ${unit}
+                    </span>
+                </td>
+
+                <td>
+                    ${minimum} ${unit}
+                </td>
+
+                <td>
+
+                    <span class="status ${statusClass}">
+
+                        <i class="fa-solid fa-circle"></i>
+
+                        ${status}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    <div class="action-buttons">
+
+                        <button
+                            class="action-btn edit-btn"
+                            onclick="editMaterial(this)">
+
+                            <i class="fa-solid fa-pen"></i>
+
+                        </button>
+
+                        <button
+                            class="action-btn delete-btn"
+                            onclick="deleteMaterial(this)">
+
+                            <i class="fa-solid fa-trash"></i>
+
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        }
+
+
+        closeModal();
+
+        updateSummary();
+
+    }
+
+
+    /* ================= EDIT ================= */
+
+    function editMaterial(button) {
+
+        editingRow =
+            button.closest('tr');
+
+
+        const name =
+            editingRow
+            .querySelector('.material-name')
+            .innerText;
+
+
+        const category =
+            editingRow.cells[1].innerText;
+
+
+        const stock =
+            editingRow
+            .querySelector('.stock-number')
+            .innerText;
+
+
+        const unit =
+            editingRow
+            .querySelector('.stock-unit')
+            .innerText;
+
+
+        const minimumText =
+            editingRow.cells[4].innerText;
+
+
+        const minimum =
+            parseFloat(minimumText);
+
+
+        document.getElementById('modalTitle').innerText =
+            'Edit Bahan Baku';
+
+
+        document.getElementById('materialName').value =
+            name;
+
+        document.getElementById('materialCategory').value =
+            category;
+
+        document.getElementById('materialStock').value =
+            stock;
+
+        document.getElementById('materialUnit').value =
+            unit;
+
+        document.getElementById('materialMin').value =
+            minimum;
+
+
+        document.getElementById('materialModal').style.display =
+            'flex';
+
+    }
+
+
+    /* ================= DELETE ================= */
+
+    function deleteMaterial(button) {
+
+        const row =
+            button.closest('tr');
+
+
+        const name =
+            row.querySelector('.material-name').innerText;
+
+
+        if (
+            confirm(
+                'Apakah Anda yakin ingin menghapus bahan "' +
+                name +
+                '"?'
+            )
+        ) {
+
+            row.remove();
+
+            updateSummary();
+
+        }
+
+    }
+
+
+    /* ================= SEARCH ================= */
+
+    function searchMaterial() {
+
+        const keyword =
+            document
+                .getElementById('searchInput')
+                .value
+                .toLowerCase();
+
+
+        const rows =
+            document
+                .querySelectorAll('#inventoryTable tr');
+
+
+        rows.forEach(function(row) {
+
+            const name =
+                row
+                    .querySelector('.material-name')
+                    .innerText
+                    .toLowerCase();
+
+
+            if (name.includes(keyword)) {
+
+                row.style.display = '';
+
+            }
+
+            else {
+
+                row.style.display = 'none';
+
+            }
+
+        });
+
+    }
+
+
+    /* ================= FILTER ================= */
+
+    function filterCategory() {
+
+        const category =
+            document
+                .getElementById('categoryFilter')
+                .value;
+
+
+        const rows =
+            document
+                .querySelectorAll('#inventoryTable tr');
+
+
+        rows.forEach(function(row) {
+
+            if (
+                category === 'all' ||
+                row.getAttribute('data-category') === category
+            ) {
+
+                row.style.display = '';
+
+            }
+
+            else {
+
+                row.style.display = 'none';
+
+            }
+
+        });
+
+    }
+
+
+    /* ================= SUMMARY ================= */
+
+    function updateSummary() {
+
+        const rows =
+            document.querySelectorAll(
+                '#inventoryTable tr'
+            );
+
+
+        let aman = 0;
+        let menipis = 0;
+        let habis = 0;
+
+
+        rows.forEach(function(row) {
+
+            const status =
+                row.querySelector('.status');
+
+
+            if (!status) return;
+
+
+            if (
+                status.classList.contains(
+                    'status-safe'
+                )
+            ) {
+
+                aman++;
+
+            }
+
+            else if (
+                status.classList.contains(
+                    'status-warning'
+                )
+            ) {
+
+                menipis++;
+
+            }
+
+            else if (
+                status.classList.contains(
+                    'status-danger'
+                )
+            ) {
+
+                habis++;
+
+            }
+
+        });
+
+
+        document.getElementById('totalBahan')
+            .innerText = rows.length;
+
+
+        document.getElementById('stokAman')
+            .innerText = aman;
+
+
+        document.getElementById('stokMenipis')
+            .innerText = menipis;
+
+
+        document.getElementById('stokHabis')
+            .innerText = habis;
+
+    }
+
+
+    /* ================= CLOSE MODAL ================= */
+
+    window.onclick = function(event) {
+
+        const modal =
+            document.getElementById('materialModal');
+
+
+        if (event.target === modal) {
+
+            closeModal();
+
+        }
+
+    };
+
+</script>
+
+</body>
+</html>

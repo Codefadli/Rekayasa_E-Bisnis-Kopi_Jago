@@ -4,26 +4,30 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Kopi Jago - Coffee Shop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="app.css">
 </head>
 <body class="customer-page">
     <header class="customer-nav" id="navbar">
-        <a href="home.html#home" aria-label="Kopi Jago">
-            <img src="../logo%20jago2.png" alt="Jago Coffee" class="nav-logo">
-        </a>
-        <button class="hamburger" id="hamburger" aria-label="Menu">
-            <span></span><span></span><span></span>
-        </button>
-        <nav class="customer-links" id="nav-links" aria-label="Navigasi customer">
-            <a href="#home" class="nav-link">Home</a>
-            <a href="#menu" class="nav-link">Menu</a>
-            <a href="cart.html">Keranjang <span id="cart-badge">(0)</span></a>
-            <a href="orders.html">Pesanan</a>
-            <a href="wishlist.html">Wishlist</a>
-            <a href="profile.html">Profile</a>
-        </nav>
-        <div id="account-area" class="customer-account"></div>
+        <div class="nav-container">
+            <a href="home.html#home" aria-label="Kopi Jago" class="brand-logo">
+                <img src="../logo%20jago2.png" alt="Jago Coffee" class="nav-logo">
+            </a>
+
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+
+            <nav class="customer-links" id="nav-links" aria-label="Navigasi customer">
+                <a href="#home" class="nav-link">HOME</a>
+                <a href="menu.html">MENU</a>
+                <a href="cart.html" class="nav-link">KERANJANG <span id="cart-badge">(0)</span></a>
+                <a href="orders.html" class="nav-link">PESANAN</a>
+                <a href="wishlist.html" class="nav-link">WISHLIST</a>
+            </nav>
+
+            <div id="account-area" class="customer-account"></div>
+        </div>
     </header>
     
     <section class="hero-section" id="home">
@@ -31,33 +35,26 @@
             <source src="../VIdeo%20Hero.mp4" type="video/mp4">
         </video>
         <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <h1>JAGO COFFEE</h1>
-            <p>Kopi berkualitas premium, diantar langsung ke tempatmu.<br>Cepat, segar, dan terjangkau.</p>
-            <div class="hero-actions">
-                <a href="#menu" class="hero-btn primary-btn">Pesan Sekarang</a>
-                <a href="#menu" class="hero-btn secondary-btn">Lihat Menu</a>
-            </div>
+       
         </div>
     </section>
 
-    <section class="menu-section" id="menu">
-        <div class="menu-wrapper">
-            <div class="section-heading">
-                <h2>Menu Favorit</h2>
-                <p>Pilihan terbaik dari Jago Coffee</p>
-            </div>
-            <div id="featured-grid" class="product-grid"></div>
-
-            <div class="section-heading" style="margin-top:80px">
-                <h2>Semua Menu</h2>
-                <p>Pilih minuman favoritmu</p>
-            </div>
-            <div id="category-filter" class="category-filter"></div>
-            <p id="menu-status" class="status-message" role="status"></p>
-            <div id="menu-grid" class="product-grid"></div>
+    <!-- === CART STORY SECTION === -->
+<section class="cart-story-section">
+    <div class="cart-story-container">
+        <h2>A CART THAT GREW WITH THE PEOPLE</h2>
+        <div class="cart-image-wrapper">
+            <img src="../Gerobak%20kopi%20jago.png" alt="Gerobak Kopi Jago">
         </div>
-    </section>
+    </div>
+</section>
+
+    <!-- Floating Live Chat Button (Sesuai Referensi Visual) -->
+    <a href="javascript:void(0)" class="floating-chat-btn" aria-label="Live Chat">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"/>
+        </svg>
+    </a>
 
     <footer class="customer-footer">© 2026 Kopi Jago. Minuman favorit, diantar dengan jago.</footer>
     
@@ -65,5 +62,16 @@
     <script src="../frontend/src/js/api.js"></script>
     <script src="shared.js"></script>
     <script src="app.js"></script>
+
+    <script>
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (window.scrollY > 30) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
+</script>
 </body>
 </html>

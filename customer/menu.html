@@ -4,9 +4,84 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Menu - Kopi Jago</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- CSS Utama -->
+    <link rel="stylesheet" href="app.css">
+   
 </head>
-<body>
-    <p>Mengalihkan ke menu...</p>
-    <script>window.location.replace('home.html#menu');</script>
+<body class="customer-page">
+
+    <!-- HERO SECTION (TAMPILAN BANNER ATAS) -->
+    <section class="menu-hero">
+        <!-- NAVBAR DI ATAS HERO -->
+        <header class="customer-nav menu-hero-nav" id="navbar">
+            <div class="nav-container">
+                <a href="home.html" aria-label="Kopi Jago" class="brand-logo">
+                    <img src="../logo%20jago2.png" alt="Jago Coffee" class="nav-logo">
+                </a>
+
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+
+                <nav class="customer-links" id="nav-links" aria-label="Navigasi customer">
+                    <a href="home.html" class="nav-link">HOME</a>
+                    <a href="menu.html" class="nav-link active">MENU</a>
+                    <a href="cart.html" class="nav-link">KERANJANG <span id="cart-badge">(0)</span></a>
+                    <a href="orders.html" class="nav-link">PESANAN</a>
+                    <a href="wishlist.html" class="nav-link">WISHLIST</a>
+                </nav>
+
+                <div id="account-area" class="customer-account"></div>
+            </div>
+        </header>
+
+        
+    <!-- SECTION DAFTAR MENU -->
+    <section class="menu-section" id="menu">
+        <div class="menu-wrapper">
+            <div class="section-heading">
+                <h2>MENU FAVORIT</h2>
+                <p>Pilihan terbaik dari Jago Coffee</p>
+            </div>
+            <div id="featured-grid" class="product-grid"></div>
+
+            <div class="section-heading" style="margin-top:80px">
+                <h2>SEMUA MENU</h2>
+                <p>Pilih minuman favoritmu</p>
+            </div>
+            <div id="category-filter" class="category-filter"></div>
+            <p id="menu-status" class="status-message" role="status"></p>
+            <div id="menu-grid" class="product-grid"></div>
+        </div>
+    </section>
+
+    <!-- Floating Live Chat Button -->
+    <a href="javascript:void(0)" class="floating-chat-btn" aria-label="Live Chat">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"/>
+        </svg>
+    </a>
+
+    <!-- FOOTER -->
+    <footer class="customer-footer">© 2026 Kopi Jago. Minuman favorit, diantar dengan jago.</footer>
+
+    <!-- FILE JAVASCRIPT -->
+    <script src="../frontend/src/js/routes.js"></script>
+    <script src="../frontend/src/js/api.js"></script>
+    <script src="shared.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 30) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
 </body>
 </html>
