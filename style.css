@@ -1172,6 +1172,7 @@ footer {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.45); /* Tingkat transparansi gelap bisa kamu atur di sini (0.45 = 45% gelap) */
     z-index: 2;
+    pointer-events: none; /* Allow clicks to pass through */
 }
 
 /* Memastikan kontainer kartu berada di atas video dan overlay */
@@ -1253,6 +1254,27 @@ header.auth-page nav {
 .input-group:focus-within { border: 1px solid var(--jago-red, #e3000f); }
 .input-group .icon { margin-right: 12px; color: #888; font-size: 18px; }
 .input-group input { border: none; outline: none; width: 100%; font-size: 15px; font-family: 'Open Sans', sans-serif; }
+
+/* Date selector for birth date */
+.date-selector {
+    display: flex;
+    gap: 10px;
+}
+.date-selector select {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    outline: none;
+    cursor: pointer;
+    background-color: white;
+    transition: border 0.3s;
+}
+.date-selector select:focus {
+    border-color: var(--jago-red, #e3000f);
+}
 
 .btn-modal-submit {
     width: 100%; padding: 14px; margin-top: 10px;

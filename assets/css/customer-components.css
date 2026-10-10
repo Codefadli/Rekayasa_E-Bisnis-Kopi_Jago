@@ -1,0 +1,422 @@
+/* ============================================================
+   CUSTOMER NAVBAR - JAGO COFFEE
+   Transparent → Red on scroll, matching jagocoffee.com
+   ============================================================ */
+
+.customer-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(17, 17, 17, 0.3);
+  backdrop-filter: blur(10px);
+  padding: 20px var(--container-padding);
+  transition: all var(--duration-slow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.customer-navbar.scrolled {
+  background: var(--jago-red);
+  padding: 14px var(--container-padding);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-logo {
+  height: 40px;
+  transition: height var(--duration-slow);
+}
+
+.customer-navbar.scrolled .navbar-logo {
+  height: 32px;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+  list-style: none;
+}
+
+.navbar-link {
+  font: 700 13px var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--jago-white);
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+  transition: border-color var(--duration-normal);
+  position: relative;
+}
+
+.navbar-link:hover,
+.navbar-link.active {
+  border-bottom-color: var(--jago-white);
+  color: var(--jago-white);
+}
+
+.navbar-badge {
+  display: inline-block;
+  margin-left: var(--space-xs);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.navbar-account {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font: 600 13px var(--font-body);
+  color: var(--jago-white);
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.navbar-logout {
+  font: 600 13px var(--font-body);
+  color: var(--jago-white);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: all var(--duration-normal);
+}
+
+.navbar-logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--jago-white);
+}
+
+/* Hamburger Mobile Menu */
+.navbar-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.navbar-hamburger span {
+  width: 24px;
+  height: 3px;
+  background: var(--jago-white);
+  border-radius: 2px;
+  transition: all var(--duration-slow);
+}
+
+.navbar-hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.navbar-hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar-hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Mobile Menu */
+@media (max-width: 768px) {
+  .navbar-hamburger {
+    display: flex;
+  }
+  
+  .navbar-menu {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: var(--jago-red);
+    padding: var(--space-lg);
+    gap: var(--space-sm);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--duration-slow);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  .navbar-menu.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .navbar-link {
+    width: 100%;
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: left;
+  }
+  
+  .navbar-account {
+    margin-left: auto;
+  }
+  
+  .customer-navbar {
+    padding: 14px var(--container-padding);
+  }
+  
+  .navbar-logo {
+    height: 36px;
+  }
+  
+  .customer-navbar.scrolled .navbar-logo {
+    height: 32px;
+  }
+}
+
+/* ============================================================
+   HERO SECTION - JAGO COFFEE
+   Fullscreen video background with dark overlay
+   ============================================================ */
+
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--jago-black);
+}
+
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(17, 17, 17, 0.7), rgba(17, 17, 17, 0.5));
+  z-index: 2;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: var(--jago-white);
+  max-width: 800px;
+  padding: 0 var(--container-padding);
+}
+
+.hero-title {
+  font: 900 clamp(48px, 10vw, 72px) var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  margin: 0 0 var(--space-lg);
+  color: var(--jago-white);
+}
+
+.hero-tagline {
+  font: 400 clamp(16px, 2vw, 18px) var(--font-body);
+  line-height: 1.6;
+  opacity: 0.95;
+  margin: 0 0 var(--space-2xl);
+}
+
+.hero-actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-btn {
+  padding: 16px 36px;
+  border-radius: 4px;
+  font: 700 14px var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all var(--duration-slow) var(--ease-out);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  min-width: 180px;
+}
+
+.hero-btn-primary {
+  background: var(--jago-red);
+  color: var(--jago-white);
+  border: 2px solid var(--jago-red);
+}
+
+.hero-btn-primary:hover {
+  background: var(--jago-red-dark);
+  border-color: var(--jago-red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(227, 24, 55, 0.4);
+}
+
+.hero-btn-secondary {
+  background: transparent;
+  color: var(--jago-white);
+  border: 2px solid var(--jago-white);
+}
+
+.hero-btn-secondary:hover {
+  background: var(--jago-white);
+  color: var(--jago-black);
+}
+
+/* Mobile Hero */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 90vh;
+  }
+  
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .hero-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* ============================================================
+   FOOTER - JAGO COFFEE
+   Dark footer with multi-column layout
+   ============================================================ */
+
+.customer-footer {
+  background: var(--jago-black);
+  color: var(--jago-white);
+  padding: var(--space-3xl) var(--container-padding) var(--space-xl);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-2xl) var(--space-xl);
+  margin-bottom: var(--space-2xl);
+}
+
+.footer-col h4 {
+  font: 700 14px var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--space-md);
+  color: var(--jago-white);
+}
+
+.footer-logo {
+  height: 40px;
+  margin-bottom: var(--space-md);
+}
+
+.footer-text {
+  font: 400 14px var(--font-body);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: var(--space-sm);
+}
+
+.footer-links a {
+  font: 400 14px var(--font-body);
+  color: rgba(255, 255, 255, 0.7);
+  transition: color var(--duration-normal);
+}
+
+.footer-links a:hover {
+  color: var(--jago-red);
+}
+
+.footer-promo {
+  background: linear-gradient(135deg, var(--jago-red), var(--jago-red-dark));
+  padding: var(--space-lg);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.footer-promo-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font: 700 11px var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+}
+
+.footer-promo h3 {
+  font: 900 24px var(--font-heading);
+  color: var(--jago-white);
+  margin: 0 0 var(--space-sm);
+}
+
+.footer-promo p {
+  font: 400 14px var(--font-body);
+  line-height: 1.5;
+  margin: 0 0 var(--space-md);
+  opacity: 0.9;
+}
+
+.footer-promo-btn {
+  background: var(--jago-white);
+  color: var(--jago-red);
+  padding: 10px 20px;
+  border-radius: 4px;
+  font: 700 13px var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  transition: all var(--duration-normal);
+}
+
+.footer-promo-btn:hover {
+  background: var(--jago-cream);
+  transform: translateY(-2px);
+}
+
+.footer-copyright {
+  text-align: center;
+  font: 400 13px var(--font-body);
+  color: rgba(255, 255, 255, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+}

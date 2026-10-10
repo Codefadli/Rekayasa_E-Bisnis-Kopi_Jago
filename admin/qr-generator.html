@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>QR Generator - Admin | Kopi Jago</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body class="admin-page">
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <h1 class="sidebar-logo">JAGO ADMIN</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard-new.html">📊 Dashboard</a>
+            <a href="orders-admin.html">📦 Orders</a>
+            <a href="menu-admin.html">☕ Menu</a>
+            <a href="sellers-admin.html">🚲 Sellers</a>
+            <a href="qr-generator.html" class="active">⚡ QR Generator</a>
+            <a href="../index.html">🏠 Back to Site</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="logout-btn" class="logout-btn">Logout</button>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1>QR Code Generator</h1>
+            <p class="admin-subtitle">Generate QR codes untuk customer earn Energy points</p>
+        </header>
+
+        <div class="admin-content">
+            <!-- Generator Form -->
+            <section class="card">
+                <h2 class="card-title">Generate New QR Code</h2>
+                <form id="qr-form" class="qr-form">
+                    <div class="form-group">
+                        <label for="energy-amount">Energy Amount (points):</label>
+                        <input 
+                            type="number" 
+                            id="energy-amount" 
+                            name="energy_amount" 
+                            value="10" 
+                            min="1" 
+                            max="100" 
+                            required
+                        >
+                        <small>Jumlah Energy yang akan diterima customer</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scan-limit">Scan Limit:</label>
+                        <input 
+                            type="number" 
+                            id="scan-limit" 
+                            name="scan_limit" 
+                            value="50" 
+                            min="1" 
+                            max="1000" 
+                            required
+                        >
+                        <small>Berapa kali QR bisa di-scan (contoh: 50 customer pertama)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expires-hours">Expires In (hours):</label>
+                        <input 
+                            type="number" 
+                            id="expires-hours" 
+                            name="expires_hours" 
+                            value="24" 
+                            min="1" 
+                            max="168" 
+                            required
+                        >
+                        <small>QR akan expired setelah jam ini (maks 7 hari = 168 jam)</small>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Generate QR Code</button>
+                </form>
+            </section>
+
+            <!-- Generated QR Display -->
+            <section class="card" id="qr-display" style="display:none">
+                <h2 class="card-title">QR Code Generated ✅</h2>
+                
+                <div class="qr-result-container">
+                    <div class="qr-image-wrapper">
+                        <canvas id="qr-canvas"></canvas>
+                    </div>
+
+                    <div class="qr-details">
+                        <div class="qr-detail-row">
+                            <strong>Token:</strong>
+                            <code id="qr-token">-</code>
+                            <button class="btn-copy" onclick="copyToken()">Copy</button>
+                        </div>
+                        <div class="qr-detail-row">
+                            <strong>Energy:</strong>
+                            <span id="qr-energy">-</span> points
+                        </div>
+                        <div class="qr-detail-row">
+                            <strong>Scan Limit:</strong>
+                            <span id="qr-limit">-</span> scans
+                        </div>
+                        <div class="qr-detail-row">
+                            <strong>Expires:</strong>
+                            <span id="qr-expires">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qr-actions">
+                    <button class="btn-secondary" onclick="downloadQR()">📥 Download QR</button>
+                    <button class="btn-secondary" onclick="printQR()">🖨️ Print QR</button>
+                    <button class="btn-primary" onclick="generateAnother()">Generate Another</button>
+                </div>
+            </section>
+
+            <!-- Active QR Codes List -->
+            <section class="card">
+                <h2 class="card-title">Active QR Codes</h2>
+                <div id="qr-list">
+                    <div class="loading">Loading...</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="admin-shared.js"></script>
+    <script src="qr-generator.js"></script>
+</body>
+</html>

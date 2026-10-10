@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tracking - Seller App - Kopi Jago</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        body{background:#f8f3ee;font-family:'Open Sans',sans-serif;margin:0;padding:0}
+        .seller-tracking-app{max-width:600px;margin:0 auto;padding:20px}
+        .app-header{background:#E31837;color:white;padding:20px;border-radius:12px;margin-bottom:20px;text-align:center}
+        .app-header h1{margin:0;font-size:1.5rem;font-weight:700}
+        .status-card{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+        .status-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
+        .status-row:last-child{border-bottom:none}
+        .status-label{font-weight:600;color:#666}
+        .status-value{color:#333;font-weight:700}
+        .status-value.active{color:#27ae60}
+        .status-value.inactive{color:#e74c3c}
+        .btn{background:#E31837;color:white;border:none;padding:14px 24px;border-radius:8px;font-weight:700;width:100%;cursor:pointer;font-size:1rem;margin-bottom:10px}
+        .btn:hover{background:#c41531}
+        .btn:disabled{background:#ccc;cursor:not-allowed}
+        .btn-secondary{background:#27ae60}
+        .btn-secondary:hover{background:#229954}
+        .orders-list{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+        .order-item{padding:12px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center}
+        .order-item:last-child{border-bottom:none}
+        .order-number{font-weight:700;color:#E31837}
+        .order-status{padding:4px 12px;border-radius:12px;font-size:0.75rem;font-weight:700;background:#fef3cd;color:#856404}
+        .order-status.on_delivery{background:#E31837;color:white}
+        .log-list{max-height:200px;overflow-y:auto;font-size:0.75rem;color:#666;background:#f9f9f9;padding:10px;border-radius:4px}
+        .log-entry{padding:4px 0;border-bottom:1px solid #eee}
+        .empty-state{text-align:center;color:#999;padding:40px 20px}
+    </style>
+</head>
+<body>
+    <div class="seller-tracking-app">
+        <div class="app-header">
+            <h1>🚴 Seller Tracking</h1>
+            <p style="margin:8px 0 0 0;font-size:0.875rem">Update lokasi real-time untuk order tracking</p>
+        </div>
+
+        <div class="status-card">
+            <h2 style="margin:0 0 16px 0;font-size:1.25rem">Status Tracking</h2>
+            <div class="status-row">
+                <span class="status-label">Status:</span>
+                <span class="status-value" id="tracking-status">Inactive</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Latitude:</span>
+                <span class="status-value" id="current-lat">-</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Longitude:</span>
+                <span class="status-value" id="current-lng">-</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Accuracy:</span>
+                <span class="status-value" id="current-accuracy">-</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Last Update:</span>
+                <span class="status-value" id="last-update">-</span>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <button class="btn" id="start-tracking-btn">📍 Mulai Tracking</button>
+            <button class="btn" id="stop-tracking-btn" disabled>⏹ Stop Tracking</button>
+            <button class="btn btn-secondary" id="manual-update-btn">🔄 Update Manual</button>
+        </div>
+
+        <div class="orders-list">
+            <h2 style="margin:0 0 16px 0;font-size:1.25rem">Active Orders</h2>
+            <div id="active-orders">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h3 style="margin:0 0 12px 0;font-size:1rem">Update Log</h3>
+            <div class="log-list" id="update-log"></div>
+        </div>
+    </div>
+
+    <script src="../frontend/src/js/routes.js"></script>
+    <script src="../frontend/src/js/api.js"></script>
+    <script>
+        const token = localStorage.getItem('kj_token') || localStorage.getItem('token') || '';
+        let trackingInterval = null;
+        let watchId = null;
+        let currentOrderId = null;
+
+        async function api(path, options = {}) {
+            return (await kjRequest(path, options)).data;
+        }
+
+        function log(message) {
+            const logDiv = document.getElementById('update-log');
+            const time = new Date().toLocaleTimeString('id-ID');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${time}] ${message}`;
+            logDiv.insertBefore(entry, logDiv.firstChild);
+            
+            // Keep only last 20 entries
+            while (logDiv.children.length > 20) {
+                logDiv.removeChild(logDiv.lastChild);
+            }
+        }
+
+        async function updateLocation(latitude, longitude, speed = null, accuracy = null) {
+            try {
+                const payload = {
+                    latitude,
+                    longitude,
+                    speed,
+                    accuracy
+                };
+
+                if (currentOrderId) {
+                    payload.order_id = currentOrderId;
+                }
+
+                await api('seller/location/update', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                document.getElementById('current-lat').textContent = latitude.toFixed(6);
+                document.getElementById('current-lng').textContent = longitude.toFixed(6);
+                document.getElementById('current-accuracy').textContent = accuracy ? accuracy.toFixed(0) + 'm' : '-';
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString('id-ID');
+
+                log(`✅ Location updated: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+            } catch (error) {
+                log(`❌ Update failed: ${error.message}`);
+            }
+        }
+
+        function startTracking() {
+            if (!navigator.geolocation) {
+                alert('Geolocation tidak didukung browser ini');
+                return;
+            }
+
+            document.getElementById('tracking-status').textContent = 'Active';
+            document.getElementById('tracking-status').className = 'status-value active';
+            document.getElementById('start-tracking-btn').disabled = true;
+            document.getElementById('stop-tracking-btn').disabled = false;
+
+            log('🟢 Tracking started');
+
+            // Watch position with high accuracy
+            watchId = navigator.geolocation.watchPosition(
+                (position) => {
+                    const { latitude, longitude, speed, accuracy } = position.coords;
+                    updateLocation(latitude, longitude, speed, accuracy);
+                },
+                (error) => {
+                    log(`⚠️ GPS Error: ${error.message}`);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+
+            // Auto-update every 10 seconds
+            trackingInterval = setInterval(() => {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude, speed, accuracy } = position.coords;
+                        updateLocation(latitude, longitude, speed, accuracy);
+                    },
+                    (error) => {
+                        log(`⚠️ GPS Error: ${error.message}`);
+                    }
+                );
+            }, 10000);
+        }
+
+        function stopTracking() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+            
+            if (trackingInterval) {
+                clearInterval(trackingInterval);
+                trackingInterval = null;
+            }
+
+            document.getElementById('tracking-status').textContent = 'Inactive';
+            document.getElementById('tracking-status').className = 'status-value inactive';
+            document.getElementById('start-tracking-btn').disabled = false;
+            document.getElementById('stop-tracking-btn').disabled = true;
+
+            log('🔴 Tracking stopped');
+        }
+
+        function manualUpdate() {
+            if (!navigator.geolocation) {
+                alert('Geolocation tidak didukung');
+                return;
+            }
+
+            log('🔄 Getting current location...');
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude, speed, accuracy } = position.coords;
+                    updateLocation(latitude, longitude, speed, accuracy);
+                },
+                (error) => {
+                    log(`❌ Failed: ${error.message}`);
+                    alert('Gagal mendapatkan lokasi: ' + error.message);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        async function loadActiveOrders() {
+            try {
+                const orders = await api('seller/orders/active');
+                const container = document.getElementById('active-orders');
+
+                if (!orders || orders.length === 0) {
+                    container.innerHTML = '<div class="empty-state">Tidak ada order aktif</div>';
+                    currentOrderId = null;
+                    return;
+                }
+
+                // Set first on_delivery order as current
+                const deliveryOrder = orders.find(o => o.status === 'on_delivery');
+                if (deliveryOrder) {
+                    currentOrderId = deliveryOrder.id;
+                }
+
+                container.innerHTML = orders.map(order => `
+                    <div class="order-item">
+                        <div>
+                            <div class="order-number">#${order.order_number}</div>
+                            <div style="font-size:0.75rem;color:#666">${order.customer}</div>
+                        </div>
+                        <span class="order-status ${order.status}">${order.status}</span>
+                    </div>
+                `).join('');
+
+                log(`📦 ${orders.length} active order(s) loaded`);
+            } catch (error) {
+                document.getElementById('active-orders').innerHTML = '<div class="empty-state">Error loading orders</div>';
+                log(`❌ Load orders failed: ${error.message}`);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('start-tracking-btn').addEventListener('click', startTracking);
+        document.getElementById('stop-tracking-btn').addEventListener('click', stopTracking);
+        document.getElementById('manual-update-btn').addEventListener('click', manualUpdate);
+
+        // Check auth
+        if (!token) {
+            alert('Silakan login sebagai seller');
+            window.location.href = '../login.html';
+        } else {
+            log('🔐 Authenticated');
+            loadActiveOrders();
+            
+            // Refresh orders every 30 seconds
+            setInterval(loadActiveOrders, 30000);
+        }
+    </script>
+</body>
+</html>

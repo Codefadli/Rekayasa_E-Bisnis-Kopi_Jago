@@ -1,0 +1,382 @@
+/* ============================================================
+   JAGO COFFEE - GLOBAL STYLESHEET
+   Based on jagocoffee.com official design system
+   Version: 1.0
+   ============================================================ */
+
+/* === CSS VARIABLES === */
+:root {
+  /* Colors - Primary */
+  --jago-red: #E31837;
+  --jago-red-dark: #C51630;
+  --jago-red-light: #FF2847;
+  
+  /* Colors - Neutrals */
+  --jago-black: #111111;
+  --jago-gray-900: #222222;
+  --jago-gray-700: #444444;
+  --jago-gray-400: #999999;
+  --jago-gray-200: #E0E0E0;
+  --jago-gray-100: #F5F5F5;
+  --jago-white: #FFFFFF;
+  --jago-cream: #F9F9F9;
+  
+  /* Colors - Accents */
+  --jago-blue: #2B5FCC;
+  --jago-orange: #FF6B35;
+  --jago-yellow: #FFC107;
+  --jago-green: #4CAF50;
+  
+  /* Typography */
+  --font-heading: 'Montserrat', sans-serif;
+  --font-body: 'Open Sans', sans-serif;
+  
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+  
+  /* Layout */
+  --container-max: 1280px;
+  --navbar-height: 70px;
+  --navbar-height-scrolled: 60px;
+  --container-padding: 6%;
+  
+  /* Motion */
+  --duration-fast: 0.15s;
+  --duration-normal: 0.2s;
+  --duration-slow: 0.3s;
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* === RESET & BASE === */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--navbar-height) + 20px);
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--jago-gray-900);
+  background: var(--jago-white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === TYPOGRAPHY === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--jago-black);
+  line-height: 1.1;
+}
+
+h1 { font-size: clamp(36px, 6vw, 72px); }
+h2 { font-size: clamp(28px, 4vw, 48px); }
+h3 { font-size: clamp(20px, 3vw, 36px); }
+h4 { font-size: clamp(18px, 2.5vw, 24px); }
+h5 { font-size: 18px; }
+h6 { font-size: 16px; }
+
+p {
+  margin: 0 0 var(--space-md);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--duration-normal);
+}
+
+a:hover {
+  color: var(--jago-red);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* === FOCUS STATES (Accessibility) === */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--jago-red);
+  outline-offset: 2px;
+}
+
+/* === LAYOUT UTILITIES === */
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+.section {
+  padding: var(--space-3xl) 0;
+}
+
+.section-lg {
+  padding: var(--space-4xl) 0;
+}
+
+/* === BUTTONS === */
+.btn {
+  display: inline-block;
+  padding: 16px 32px;
+  font: 700 14px var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  transition: all var(--duration-normal) var(--ease-out);
+  text-align: center;
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.btn-primary {
+  background: var(--jago-red);
+  color: var(--jago-white);
+  border: 2px solid var(--jago-red);
+}
+
+.btn-primary:hover {
+  background: var(--jago-red-dark);
+  border-color: var(--jago-red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(227, 24, 55, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--jago-red);
+  border: 2px solid var(--jago-red);
+}
+
+.btn-secondary:hover {
+  background: var(--jago-red);
+  color: var(--jago-white);
+}
+
+.btn-ghost {
+  background: transparent;
+  padding: 8px 16px;
+  font: 600 13px var(--font-body);
+  min-height: auto;
+}
+
+.btn-ghost:hover {
+  color: var(--jago-red);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* === CARDS === */
+.card {
+  background: var(--jago-white);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: all var(--duration-slow) var(--ease-out);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card-feature {
+  border: 3px solid var(--jago-blue);
+  padding: 32px 24px;
+}
+
+.card-feature.border-blue { border-color: var(--jago-blue); }
+.card-feature.border-orange { border-color: var(--jago-orange); }
+.card-feature.border-red { border-color: var(--jago-red); }
+.card-feature.border-yellow { border-color: var(--jago-yellow); }
+
+/* === FORMS === */
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  font: 600 14px var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--jago-black);
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  font: 400 16px var(--font-body);
+  color: var(--jago-gray-900);
+  background: var(--jago-white);
+  border: 1px solid var(--jago-gray-200);
+  border-radius: 4px;
+  transition: border-color var(--duration-normal);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--jago-red);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--jago-gray-400);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-error {
+  margin-top: var(--space-sm);
+  font-size: 14px;
+  color: var(--jago-red);
+}
+
+/* === GRID SYSTEMS === */
+.grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+.grid-auto {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* === UTILITIES === */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.text-uppercase { text-transform: uppercase; }
+
+.text-red { color: var(--jago-red); }
+.text-black { color: var(--jago-black); }
+.text-gray { color: var(--jago-gray-700); }
+.text-white { color: var(--jago-white); }
+
+.bg-white { background: var(--jago-white); }
+.bg-cream { background: var(--jago-cream); }
+.bg-gray { background: var(--jago-gray-100); }
+.bg-black { background: var(--jago-black); }
+.bg-red { background: var(--jago-red); }
+
+.mt-0 { margin-top: 0; }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mt-xl { margin-top: var(--space-xl); }
+
+.mb-0 { margin-bottom: 0; }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.mb-xl { margin-bottom: var(--space-xl); }
+
+.hidden { display: none; }
+
+/* === RESPONSIVE === */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-padding: 4%;
+    --navbar-height: 60px;
+    --navbar-height-scrolled: 56px;
+  }
+  
+  .grid-4,
+  .grid-3,
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .section {
+    padding: var(--space-2xl) 0;
+  }
+  
+  .section-lg {
+    padding: var(--space-3xl) 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

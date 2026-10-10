@@ -15,6 +15,17 @@ let paymentMethods = {
 let selectedMethod = 'qris';
 let selectedBank = 'bca';
 
+document.addEventListener('DOMContentLoaded', () => {
+    if (!token()) {
+        window.location.href = '../login.html';
+        return;
+    }
+    
+    showAccount();
+    loadCartCount();
+    loadOrderDetails();
+});
+
 async function loadOrderDetails() {
     const orderId = new URLSearchParams(location.search).get('order_id');
     if (!orderId) {
@@ -24,12 +35,21 @@ async function loadOrderDetails() {
     }
     
     try {
-        order = await api(`orders/${orderId}`);
+        order = await api('orders/' + orderId);
+        
+        // Check if already paid
+        if (order.payment_status === 'paid') {
+            alert('Order ini sudah dibayar!');
+            location.href = 'orders.html';
+            return;
+        }
+        
         renderOrderSummary();
         renderPaymentMethods();
     } catch (error) {
         console.error('[Payment] Load error:', error);
         alert('Gagal memuat order: ' + error.message);
+        location.href = 'orders.html';
     }
 }
 
@@ -125,21 +145,41 @@ async function initiatePayment() {
             bank: selectedMethod === 'bank_transfer' ? selectedBank : null
         };
         
-        const result = await api('payments/create', { method: 'POST', body: payload });
+        const result = await api('payments/create', {
+            method: 'POST',
+            body: payload
+        });
         
+        // Check if demo mode (simulated payment)
+        if (result.demo_mode) {
+            // Demo payment success - redirect to receipt
+            alert('✓ Pembayaran Berhasil!\n\nSIMULASI: Tidak ada uang sungguhan yang ditransfer.\n\nAnda akan diarahkan ke struk pembayaran.');
+            location.href = `receipt.html?order_id=${order.id}`;
+            return;
+        }
+        
+        // Production Midtrans flow (not used in demo mode)
         if (result.snap_token) {
-            // Midtrans Snap
+            // Midtrans Snap popup
             window.snap.pay(result.snap_token, {
-                onSuccess: () => {
+                onSuccess: function(result) {
+                    console.log('Payment success:', result);
                     alert('Pembayaran berhasil!');
+                    location.href = `receipt.html?order_id=${order.id}`;
+                },
+                onPending: function(result) {
+                    console.log('Payment pending:', result);
+                    alert('Menunggu pembayaran. Cek halaman pesanan untuk detail.');
                     location.href = 'orders.html';
                 },
-                onPending: () => {
-                    alert('Menunggu pembayaran. Cek halaman pesanan untuk detail.');
-                    location.href = `order-detail.html?id=${order.id}`;
-                },
-                onError: () => {
+                onError: function(result) {
+                    console.error('Payment error:', result);
                     alert('Pembayaran gagal. Silakan coba lagi.');
+                    btn.disabled = false;
+                    btn.textContent = 'Bayar Sekarang';
+                },
+                onClose: function() {
+                    console.log('Payment popup closed');
                     btn.disabled = false;
                     btn.textContent = 'Bayar Sekarang';
                 }
@@ -147,6 +187,9 @@ async function initiatePayment() {
         } else if (result.va_number || result.qr_string) {
             // Render payment instructions
             showPaymentInstructions(result);
+            btn.textContent = 'Pembayaran Dibuat';
+        } else {
+            throw new Error('Invalid payment response');
         }
     } catch (error) {
         console.error('[Payment] Create error:', error);
@@ -203,5 +246,3 @@ function copyVA(number) {
 }
 
 document.getElementById('btn-pay')?.addEventListener('click', initiatePayment);
-
-loadOrderDetails();

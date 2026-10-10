@@ -7,7 +7,7 @@ async function api(path, options = {}) {
 }
 
 function showAccount() {
-    const user = JSON.parse(localStorage.getItem('kj_user') || 'null');
+    const user = JSON.parse(localStorage.getItem('jago_user') || localStorage.getItem('kj_user') || 'null');
     const area = document.getElementById('account-area');
     if (!area) return;
     
@@ -16,7 +16,7 @@ function showAccount() {
         : '<a href="../login.html">Login</a><a class="primary" href="../login.html#register">Daftar</a>';
     
     document.getElementById('logout')?.addEventListener('click', async () => {
-        try { await api('auth/logout.php', {method:'POST'}); } catch (_) {}
+        try { await kjRequest('auth/logout', {method:'POST'}); } catch (_) {}
         localStorage.clear();
         location.href = '../login.html';
     });
@@ -59,3 +59,79 @@ const imageByName = {
 };
 
 const sizeLabel = {'small':'Small','medium':'Medium','large':'Large'};
+
+// Helper function for API calls (backward compatibility)
+function api(path, options = {}) {
+    // Convert to new API format
+    if (options.body && typeof options.body !== 'string') {
+        options.body = JSON.stringify(options.body);
+    }
+    return kjApi(path, options);
+}
+
+// Helper to get size label
+function getSizeLabel(size) {
+    return sizeLabel[size] || size;
+}
+
+// Helper to get product image
+function getProductImage(name) {
+    return imageByName[name] || '../kopsu%20jago.jfif';
+}
+
+// Update cart badge
+async function updateCartBadge() {
+    const badge = document.getElementById('cart-badge');
+    if (!badge) return;
+    
+    if (!token()) {
+        badge.textContent = '(0)';
+        return;
+    }
+    
+    try {
+        const items = await kjApi('cart');
+        const count = items.reduce((sum, item) => sum + Number(item.qty), 0);
+        badge.textContent = `(${count})`;
+    } catch (error) {
+        console.error('[Shared] Cart badge error:', error);
+        badge.textContent = '(0)';
+    }
+}
+
+// Component helpers (for cart.js and others)
+function showLoading(container, text = 'Memuat...') {
+    if (!container) return;
+    container.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>${esc(text)}</p></div>`;
+}
+
+function hideLoading(container) {
+    if (!container) return;
+    const loading = container.querySelector('.loading-state');
+    if (loading) loading.remove();
+}
+
+function showEmptyState(container, options = {}) {
+    if (!container) return;
+    const { icon = '📦', title = 'Tidak Ada Data', message = '', actionText = '', onAction = null } = options;
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">${icon}</div>
+            <h3>${esc(title)}</h3>
+            ${message ? `<p>${esc(message)}</p>` : ''}
+            ${actionText && onAction ? `<button class="btn btn-primary" onclick="(${onAction.toString()})()">${esc(actionText)}</button>` : ''}
+        </div>
+    `;
+}
+
+function showErrorState(container, message, retryFn = null) {
+    if (!container) return;
+    container.innerHTML = `
+        <div class="error-state">
+            <div class="error-icon">⚠️</div>
+            <h3>Terjadi Kesalahan</h3>
+            <p>${esc(message)}</p>
+            ${retryFn ? `<button class="btn btn-secondary" onclick="(${retryFn.toString()})()">Coba Lagi</button>` : ''}
+        </div>
+    `;
+}

@@ -11,11 +11,7 @@
 
     <!-- NAVBAR -->
     <header id="navbar" class="scrolled auth-page">
-      <div class="logo">
-        <a href="index.html"class="nav-logo">
-            <img src="logo jago2.png" alt="Jago Coffee" class="nav-logo">
-        </a>
-    </div>
+        <div class="logo">JAGO</div>
         <nav>
             <ul>
                 <li><a href="index.html">ABOUT US</a></li>
@@ -88,81 +84,23 @@
     <div id="modal-overlay" class="modal-overlay" onclick="closeModals()"></div>
 
     <!-- MODAL LOGIN -->
-   <!-- MODAL LOGIN -->
     <div id="login-modal" class="auth-modal">
         <div class="modal-header">
             <h2>Login</h2>
             <button class="close-btn" onclick="closeModals()">&times;</button>
         </div>
-        
         <div class="modal-body">
             <div class="input-group">
                 <span class="icon"></span>
                 <input type="email" placeholder="Your email" id="login-email" autocomplete="email">
             </div>
-            
             <div class="input-group">
-                <i class="icon fas fa-lock"></i>
-                <input type="password" placeholder="Password" id="login-password">
+                <input type="password" placeholder="Password" id="login-password" autocomplete="current-password">
             </div>
-
-            <!-- Link Lupa Password -->
-            <div class="forgot-password-link">
-                <a href="#" id="show-forgot-modal">Lupa Password?</a>
-            </div>
-
-            <!-- Tombol Login -->
-            <button class="btn-modal-submit" id="btn-login" type="button">Login</button>
-            
+            <div id="login-error" style="display:none;"></div>
+            <button class="btn-modal-submit" id="btn-login" type="button">Next</button>
             <p class="switch-auth">Don't have account? <a href="javascript:void(0)" onclick="openRegister()">Signup <strong>here</strong></a></p>
             <p class="recaptcha-text">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and <strong>Terms of Service</strong> apply.</p>
-        </div>
-    </div>
-
-
-    <!-- MODAL LUPA PASSWORD (Ditaruh sejajar di luar modal login) -->
-    <div class="auth-modal" id="forgot-modal" style="display: none;">
-        <div class="modal-header">
-            <h2>Lupa Password</h2>
-            <button class="close-btn" id="close-forgot">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p class="register-subtitle" style="margin-bottom: 20px; font-size: 14px; color: #666;">Masukkan email yang terdaftar, kami akan mengirimkan link untuk mereset password kamu.</p>
-            
-            <div class="input-group">
-                <i class="icon fas fa-envelope"></i>
-                <input type="email" placeholder="Alamat Email" required>
-            </div>
-            
-            <button class="btn-modal-submit" id="btn-send-reset">Kirim Link Reset</button>
-            
-            <div class="switch-auth" style="text-align: center; margin-top: 15px;">
-                <a href="#" id="back-to-login" style="font-size: 13px; color: #666; text-decoration: none;">Kembali ke <strong>Login</strong></a>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- MODAL RESET PASSWORD (Ditaruh sejajar di luar modal login) -->
-    <div class="auth-modal" id="reset-modal" style="display: none;">
-        <div class="modal-header">
-            <h2>Buat Password Baru</h2>
-            <button class="close-btn" id="close-reset">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p class="register-subtitle" style="margin-bottom: 20px; font-size: 14px; color: #666;">Silakan masukkan password baru kamu di bawah ini.</p>
-            
-            <div class="input-group">
-                <i class="icon fas fa-lock"></i>
-                <input type="password" placeholder="Password Baru" required>
-            </div>
-            
-            <div class="input-group">
-                <i class="icon fas fa-lock"></i>
-                <input type="password" placeholder="Konfirmasi Password Baru" required>
-            </div>
-            
-            <button class="btn-modal-submit" id="btn-save-password">Simpan Password</button>
         </div>
     </div>
 
@@ -175,27 +113,27 @@
         <div class="modal-body">
             <p class="register-subtitle">Create account to be our member to earn points, get free vouchers, and hear our news earlier.</p>
             <div class="input-group">
-                <input type="text" placeholder="Your Full Name*" id="register-name" autocomplete="name">
+                <input type="text" placeholder="Your Full Name*">
             </div>
             <div class="input-group">
                 <span class="icon"></span>
-                <input type="email" placeholder="Your email" id="register-email" autocomplete="email">
+                <input type="email" placeholder="Your email">
             </div>
             <div class="input-group">
                 <span class="icon"></span>
-                <input type="password" placeholder="Password" id="register-password" autocomplete="new-password">
+                <input type="password" placeholder="Password">
             </div>
             
             <div class="birthday-section">
-                <label for="birth_day">My Birthday</label>
+                <label>My Birthday (Optional)</label>
                 <div class="birthday-selects">
-                    <select id="birth_day" name="birth_day" required><option value="">Day</option></select>
-                    <select id="birth_month" name="birth_month" required><option value="">Month</option></select>
-                    <select id="birth_year" name="birth_year" required><option value="">Year</option></select>
+                    <select><option>Day</option></select>
+                    <select><option>Month</option></select>
+                    <select><option>Year</option></select>
                 </div>
             </div>
 
-            <button class="btn-modal-submit" id="btn-register" type="button">Create New Account</button>
+            <button class="btn-modal-submit">Create New Account</button>
             <p class="switch-auth">Already have account? <a href="javascript:void(0)" onclick="openLogin()">Login <strong>here</strong></a></p>
         </div>
     </div>
@@ -219,39 +157,87 @@
             document.getElementById('login-modal').style.display = 'none';
             document.getElementById('register-modal').style.display = 'none';
         }
-        if (window.location.hash === '#register') openRegister();
     </script>
-    <script src="frontend/src/js/routes.js"></script>
-    <script src="frontend/src/js/api.js"></script>
-    <script src="frontend/src/js/auth.js"></script>
-    <script>kjBindAuthForms();</script>
+    
+    <!-- AUTHENTICATION LOGIC -->
+    <script>
+        const loginBtn = document.getElementById('btn-login');
+        const loginEmail = document.getElementById('login-email');
+        const loginPassword = document.getElementById('login-password');
+        const loginError = document.getElementById('login-error');
 
-    <!-- Pop-up Box Chat Support -->
-<div class="chat-popup" id="chatPopup">
-  <div class="chat-header">
-    <h3>Chat Support</h3>
-    <button class="close-chat-btn" onclick="toggleChat()">✕</button>
-  </div>
-  <div class="chat-body">
-    <p>Log in to save your chat and continue on any device.</p>
-    <a href="login.html" class="btn-chat-login">Login</a>
-  </div>
-</div>
+        function showError(message) {
+            if (!loginError) return;
+            loginError.textContent = message;
+            loginError.style.display = 'block';
+            loginError.style.color = '#DC2626';
+            loginError.style.padding = '10px';
+            loginError.style.marginBottom = '10px';
+            loginError.style.borderRadius = '5px';
+            loginError.style.backgroundColor = '#FEE2E2';
+        }
 
-<!-- Tombol Chat Melayang -->
-<button class="floating-chat-btn" onclick="toggleChat()">
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
-    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path>
-  </svg>
-</button>
+        function hideError() {
+            if (loginError) loginError.style.display = 'none';
+        }
 
-<!-- Script Buka-Tutup Pop-up -->
-<script>
-  function toggleChat() {
-    const popup = document.getElementById('chatPopup');
-    popup.classList.toggle('active');
-  }
-</script>
-<script src="script.js"></script>
+        // LOGIN HANDLER
+        if (loginBtn) {
+            loginBtn.addEventListener('click', async () => {
+                hideError();
+                
+                const email = loginEmail.value.trim();
+                const password = loginPassword.value;
+
+                if (!email || !password) {
+                    showError('Email dan password harus diisi');
+                    return;
+                }
+
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Logging in...';
+
+                try {
+                    const response = await fetch('./backend/api/index.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            email, 
+                            password,
+                            _path: 'auth/login'
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success && result.data) {
+                        localStorage.setItem('kj_token', result.data.token);
+                        localStorage.setItem('kj_role', result.data.role);
+                        localStorage.setItem('kj_user', JSON.stringify(result.data.user));
+
+                        switch(result.data.role) {
+                            case 'admin':
+                                window.location.href = './admin/dashboard.html';
+                                break;
+                            case 'seller':
+                                window.location.href = './seller/dashboard.html';
+                                break;
+                            default:
+                                window.location.href = './customer/home.html';
+                        }
+                    } else {
+                        showError(result.message || 'Email atau password salah');
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = 'Next';
+                    }
+                } catch (error) {
+                    console.error('[Login] Error:', error);
+                    showError('Koneksi ke server gagal. Pastikan backend sedang berjalan.');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Next';
+                }
+            });
+        }
+    </script>
 </body>
 </html>

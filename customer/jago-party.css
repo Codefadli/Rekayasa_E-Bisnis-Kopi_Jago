@@ -1,0 +1,322 @@
+/* Jago Party Page Styles */
+
+/* Hero Section */
+.party-hero {
+    position: relative;
+    min-height: 60vh;
+    background: linear-gradient(135deg, #E31837 0%, #C51630 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px 60px;
+    overflow: hidden;
+}
+
+.party-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('../Gerobak kopi jago.png') center/cover no-repeat;
+    opacity: 0.1;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(227, 24, 55, 0.85);
+}
+
+.party-hero .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 800px;
+    color: white;
+}
+
+.party-hero h1 {
+    font: 900 48px 'Montserrat', sans-serif;
+    color: white;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.party-hero p {
+    font: 400 18px 'Open Sans', sans-serif;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 30px;
+    line-height: 1.8;
+}
+
+/* Packages Section */
+.packages-section {
+    padding: 80px 20px;
+}
+
+.packages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.package-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 24px;
+    box-shadow: 0 4px 20px rgba(75, 46, 34, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    border: 2px solid #eadfd7;
+}
+
+.package-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(227, 24, 55, 0.2);
+}
+
+.package-card.featured {
+    border-color: #E31837;
+    background: linear-gradient(to bottom, #fff5f5 0%, white 100%);
+}
+
+.package-badge {
+    position: absolute;
+    top: -12px;
+    right: 24px;
+    background: #E31837;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font: 700 12px 'Montserrat', sans-serif;
+    text-transform: uppercase;
+}
+
+.package-header {
+    text-align: center;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #eadfd7;
+    padding-bottom: 20px;
+}
+
+.package-header h3 {
+    font: 700 24px 'Montserrat', sans-serif;
+    color: #4b2e22;
+    margin-bottom: 12px;
+}
+
+.package-cups {
+    font: 600 16px 'Open Sans', sans-serif;
+    color: #E31837;
+}
+
+.package-price {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.price-label {
+    display: block;
+    font: 400 14px 'Open Sans', sans-serif;
+    color: #8b7568;
+    margin-bottom: 8px;
+}
+
+.price-amount {
+    display: block;
+    font: 900 32px 'Montserrat', sans-serif;
+    color: #E31837;
+}
+
+.package-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+}
+
+.package-features li {
+    font: 400 15px 'Open Sans', sans-serif;
+    color: #6d5d52;
+    padding: 10px 0;
+    border-bottom: 1px solid #f8f3ee;
+}
+
+.package-features li:last-child {
+    border-bottom: none;
+}
+
+.package-note {
+    margin-top: 40px;
+    padding: 20px;
+    background: #fff9f0;
+    border-left: 4px solid #ffc107;
+    border-radius: 8px;
+}
+
+.package-note p {
+    font: 400 14px 'Open Sans', sans-serif;
+    color: #6d5d52;
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+/* How It Works Section */
+.how-it-works-section {
+    padding: 80px 20px;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.step-card {
+    text-align: center;
+    padding: 24px;
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: #E31837;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 900 28px 'Montserrat', sans-serif;
+    margin: 0 auto 16px;
+}
+
+.step-card h3 {
+    font: 700 18px 'Montserrat', sans-serif;
+    color: #4b2e22;
+    margin-bottom: 12px;
+}
+
+.step-card p {
+    font: 400 14px 'Open Sans', sans-serif;
+    color: #6d5d52;
+    line-height: 1.6;
+}
+
+/* FAQ Section */
+.faq-section {
+    padding: 80px 20px;
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+}
+
+.faq-item {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(75, 46, 34, 0.08);
+}
+
+.faq-item h4 {
+    font: 700 16px 'Montserrat', sans-serif;
+    color: #4b2e22;
+    margin-bottom: 12px;
+}
+
+.faq-item p {
+    font: 400 14px 'Open Sans', sans-serif;
+    color: #6d5d52;
+    line-height: 1.6;
+}
+
+/* CTA Section */
+.bg-red {
+    background: linear-gradient(135deg, #E31837 0%, #C51630 100%);
+}
+
+.text-white {
+    color: white !important;
+}
+
+.cta-subtitle {
+    font: 400 18px 'Open Sans', sans-serif;
+    margin-bottom: 32px;
+    opacity: 0.95;
+}
+
+.cta-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-white {
+    background: white;
+    color: #E31837;
+    border: 2px solid white;
+}
+
+.btn-white:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.btn-outline-white {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-outline-white:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-large {
+    padding: 16px 40px;
+    font-size: 16px;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .party-hero h1 {
+        font-size: 36px;
+    }
+    
+    .party-hero p {
+        font-size: 16px;
+    }
+    
+    .packages-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-actions {
+        flex-direction: column;
+    }
+    
+    .cta-actions .btn {
+        width: 100%;
+    }
+}

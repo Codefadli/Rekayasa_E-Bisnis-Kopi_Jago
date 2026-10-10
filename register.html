@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Jago Coffee</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header id="navbar" class="scrolled auth-page">
+        <div class="logo">JAGO</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">ABOUT US</a></li>
+                <li><a href="index.html#menu">MENU</a></li>
+                <li><a href="customer/find-jagoan.html">FIND JAGOAN</a></li>
+            </ul>
+        </nav>
+        <div class="nav-auth">
+            <a href="login.html" class="auth-login">Login</a>
+        </div>
+    </header>
+
+    <section class="account-section">
+        <video autoplay muted loop playsinline class="bg-video">
+            <source src="video background.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+        
+        <div class="account-container">
+            <div class="account-card">
+                <h2 class="text-center mb-lg">Create Account</h2>
+                <p class="text-center text-muted mb-lg">Daftar untuk menjadi member dan dapatkan promo eksklusif</p>
+                
+                <form id="register-form">
+                    <div class="input-group">
+                        <label>Nama Lengkap *</label>
+                        <input type="text" id="reg-name" placeholder="Nama lengkap Anda" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Email *</label>
+                        <input type="email" id="reg-email" placeholder="email@example.com" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>No. Telepon</label>
+                        <input type="tel" id="reg-phone" placeholder="08123456789">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Password * (minimal 8 karakter)</label>
+                        <input type="password" id="reg-password" minlength="8" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Tanggal Lahir *</label>
+                        <div class="date-selector">
+                            <select id="reg-birth-day" required>
+                                <option value="">Tanggal</option>
+                            </select>
+                            <select id="reg-birth-month" required>
+                                <option value="">Bulan</option>
+                            </select>
+                            <select id="reg-birth-year" required>
+                                <option value="">Tahun</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="register-error" style="display:none;" class="alert alert-error"></div>
+                    <div id="register-success" style="display:none;" class="alert alert-success"></div>
+                    
+                    <button type="submit" class="btn-modal-submit" id="btn-register">Create Account</button>
+                    
+                    <p class="switch-auth text-center">
+                        Sudah punya akun? <a href="login.html"><strong>Login di sini</strong></a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const form = document.getElementById('register-form');
+        const btnRegister = document.getElementById('btn-register');
+        const errorDiv = document.getElementById('register-error');
+        const successDiv = document.getElementById('register-success');
+        const daySelect = document.getElementById('reg-birth-day');
+        const monthSelect = document.getElementById('reg-birth-month');
+        const yearSelect = document.getElementById('reg-birth-year');
+        
+        // Initialize date dropdowns
+        function initializeDateSelectors() {
+            // Populate days (1-31)
+            for (let i = 1; i <= 31; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                daySelect.appendChild(option);
+            }
+            
+            // Populate months (1-12)
+            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+                              'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            for (let i = 1; i <= 12; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `${i} - ${monthNames[i-1]}`;
+                monthSelect.appendChild(option);
+            }
+            
+            // Populate years (current year down to 100 years ago)
+            const currentYear = new Date().getFullYear();
+            for (let i = currentYear; i >= currentYear - 100; i--) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                yearSelect.appendChild(option);
+            }
+        }
+        
+        // Call initialization
+        initializeDateSelectors();
+        
+        // Update day options based on selected month and year
+        function updateDayOptions() {
+            const selectedDay = daySelect.value;
+            const month = parseInt(monthSelect.value) || 1;
+            const year = parseInt(yearSelect.value) || 2000;
+            
+            // Calculate days in month
+            let daysInMonth = 31;
+            if (month === 2) {
+                // Check leap year
+                const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+                daysInMonth = isLeapYear ? 29 : 28;
+            } else if ([4, 6, 9, 11].includes(month)) {
+                daysInMonth = 30;
+            }
+            
+            // Clear and repopulate day select
+            daySelect.innerHTML = '<option value="">Tanggal</option>';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const option = document.createElement('option');
+                option.value = day;
+                option.textContent = day;
+                daySelect.appendChild(option);
+            }
+            
+            // Restore selection if still valid
+            if (selectedDay && parseInt(selectedDay) <= daysInMonth) {
+                daySelect.value = selectedDay;
+            }
+        }
+        
+        // Update days when month or year changes
+        monthSelect.addEventListener('change', updateDayOptions);
+        yearSelect.addEventListener('change', updateDayOptions);
+        
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+        }
+        
+        function hideMessages() {
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+        }
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessages();
+            
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const password = document.getElementById('reg-password').value;
+            
+            const day = daySelect.value;
+            const month = monthSelect.value;
+            const year = yearSelect.value;
+            
+            if (!name || !email || !password) {
+                showError('Nama, email, dan password wajib diisi');
+                return;
+            }
+            
+            if (!day || !month || !year) {
+                showError('Tanggal lahir harus diisi lengkap');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showError('Password minimal 8 karakter');
+                return;
+            }
+            
+            // Format birth date as YYYY-MM-DD with zero padding
+            const birthDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            
+            // Validate date is valid
+            const dateObj = new Date(birthDate);
+            if (isNaN(dateObj.getTime())) {
+                showError('Tanggal lahir tidak valid');
+                return;
+            }
+            
+            btnRegister.disabled = true;
+            btnRegister.textContent = 'Mendaftar...';
+            
+            try {
+                const response = await fetch('./backend/api/index.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        _path: 'auth/register',
+                        name,
+                        email,
+                        phone: phone || null,
+                        password,
+                        birth_date: birthDate
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('Registrasi berhasil! Silakan login dengan akun Anda.');
+                    form.reset();
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    showError(result.message || 'Registrasi gagal');
+                    btnRegister.disabled = false;
+                    btnRegister.textContent = 'Create Account';
+                }
+            } catch (error) {
+                console.error('[Register] Error:', error);
+                showError('Koneksi ke server gagal. Pastikan backend sedang berjalan.');
+                btnRegister.disabled = false;
+                btnRegister.textContent = 'Create Account';
+            }
+        });
+        
+        // Initialize on page load
+        initializeDateSelectors();
+    </script>
+</body>
+</html>

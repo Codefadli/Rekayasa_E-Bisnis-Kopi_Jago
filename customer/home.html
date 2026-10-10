@@ -1,69 +1,175 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kopi Jago - Coffee Shop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="app.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jago Coffee - #1 Cafe on Wheels!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/jago-global.css">
+    <link rel="stylesheet" href="../assets/css/jago-components.css">
+    <link rel="stylesheet" href="../assets/css/customer-components.css">
+    <link rel="stylesheet" href="customer-home.css">
 </head>
-<body class="customer-page">
-    <header class="customer-nav" id="navbar">
-        <a href="home.html#home" aria-label="Kopi Jago">
-            <img src="../logo%20jago2.png" alt="Jago Coffee" class="nav-logo">
+<body>
+    <!-- NAVBAR -->
+    <nav class="customer-navbar" id="navbar">
+        <a href="#home">
+            <img src="../logo jago2.png" alt="Jago Coffee" class="navbar-logo">
         </a>
-        <button class="hamburger" id="hamburger" aria-label="Menu">
-            <span></span><span></span><span></span>
+        
+        <button class="navbar-hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
         </button>
-        <nav class="customer-links" id="nav-links" aria-label="Navigasi customer">
-            <a href="#home" class="nav-link">Home</a>
-            <a href="#menu" class="nav-link">Menu</a>
-            <a href="cart.html">Keranjang <span id="cart-badge">(0)</span></a>
-            <a href="orders.html">Pesanan</a>
-            <a href="wishlist.html">Wishlist</a>
-            <a href="profile.html">Profile</a>
-        </nav>
-        <div id="account-area" class="customer-account"></div>
-    </header>
-    
+        
+        <ul class="navbar-menu" id="nav-menu">
+            <li><a href="#home" class="navbar-link active">Home</a></li>
+            <li><a href="#menu" class="navbar-link">Menu</a></li>
+            <li><a href="find-jagoan.html" class="navbar-link">Find Jagoan</a></li>
+            <li><a href="cart.html" class="navbar-link">Keranjang <span id="cart-badge" class="navbar-badge">(0)</span></a></li>
+            <li><a href="wishlist.html" class="navbar-link">Wishlist</a></li>
+            <li><a href="orders.html" class="navbar-link">Pesanan</a></li>
+            <li><a href="jago-party.html" class="navbar-link">Jago Party</a></li>
+        </ul>
+        
+        <div class="navbar-account" id="account-area"></div>
+    </nav>
+
+    <!-- HERO SECTION -->
     <section class="hero-section" id="home">
         <video autoplay muted loop playsinline class="hero-video">
-            <source src="../VIdeo%20Hero.mp4" type="video/mp4">
+            <source src="../VIdeo Hero.mp4" type="video/mp4">
         </video>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>JAGO COFFEE</h1>
-            <p>Kopi berkualitas premium, diantar langsung ke tempatmu.<br>Cepat, segar, dan terjangkau.</p>
+            <h1 class="hero-title">JAGO COFFEE</h1>
+            <p class="hero-tagline">Kopi berkualitas premium, diantar langsung ke tempatmu.<br>Cepat, segar, dan terjangkau.</p>
             <div class="hero-actions">
-                <a href="#menu" class="hero-btn primary-btn">Pesan Sekarang</a>
-                <a href="#menu" class="hero-btn secondary-btn">Lihat Menu</a>
+                <a href="#menu" class="hero-btn hero-btn-primary">Pesan Sekarang</a>
+                <a href="find-jagoan.html" class="hero-btn hero-btn-secondary">Find Jagoan</a>
             </div>
         </div>
     </section>
 
-    <section class="menu-section" id="menu">
-        <div class="menu-wrapper">
-            <div class="section-heading">
-                <h2>Menu Favorit</h2>
-                <p>Pilihan terbaik dari Jago Coffee</p>
+    <!-- ABOUT SECTION -->
+    <section class="about-section section">
+        <div class="container">
+            <h2 class="section-title text-center">A Cart That Grew With The People</h2>
+            <div class="cart-showcase">
+                <img src="../Gerobak kopi jago.png" alt="Jago Coffee Cart" class="cart-image">
             </div>
-            <div id="featured-grid" class="product-grid"></div>
-
-            <div class="section-heading" style="margin-top:80px">
-                <h2>Semua Menu</h2>
-                <p>Pilih minuman favoritmu</p>
-            </div>
-            <div id="category-filter" class="category-filter"></div>
-            <p id="menu-status" class="status-message" role="status"></p>
-            <div id="menu-grid" class="product-grid"></div>
         </div>
     </section>
 
-    <footer class="customer-footer">© 2026 Kopi Jago. Minuman favorit, diantar dengan jago.</footer>
-    
-    <script src="../frontend/src/js/routes.js"></script>
-    <script src="../frontend/src/js/api.js"></script>
-    <script src="shared.js"></script>
-    <script src="app.js"></script>
+    <!-- MENU SECTION -->
+    <section class="menu-section section-lg bg-cream" id="menu">
+        <div class="container">
+            <div class="section-header text-center mb-xl">
+                <h2 class="section-title">Curious About Jago Coffee?</h2>
+                <p class="section-subtitle">GET YOURS NOW!</p>
+            </div>
+
+            <!-- Featured Menu -->
+            <div class="menu-featured mb-xl">
+                <h3 class="menu-section-title text-center">Menu Favorit</h3>
+                <div id="featured-menu" class="product-grid"></div>
+            </div>
+
+            <!-- All Menu -->
+            <div class="menu-all">
+                <h3 class="menu-section-title text-center">Semua Menu</h3>
+                <div id="category-filter" class="category-filter"></div>
+                <div id="menu-grid" class="product-grid"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS SECTION -->
+    <section class="testimonials-section section-lg bg-cream">
+        <div class="container">
+            <h2 class="section-title text-center mb-xl">What Our Customers Are Saying</h2>
+            <div class="testimonial-grid">
+                <div class="card testimonial-card">
+                    <p class="testimonial-quote">Jago makes my life easier! Now I can quickly get my morning coffee because I can spot Jago carts in front of my office. Then when I'm feeling lazy, I can simply order via Jago app without paying the delivery fee.</p>
+                    <p class="testimonial-author">— KEMAL</p>
+                </div>
+                <div class="card testimonial-card">
+                    <p class="testimonial-quote">Honestly, I didn't have any expectations when I tried Jago for the first time. I simply tried it out of curiosity, but turned out I like it so much. The coffee suits my tastebud and not to mention, the price is super affordable for its quality!</p>
+                    <p class="testimonial-author">— AYU</p>
+                </div>
+                <div class="card testimonial-card">
+                    <p class="testimonial-quote">I buy Jago almost every day to the point I become besties with the Jagoans! They're so friendly and often give me recommendation. Because I buy often, I also got to redeem Energy points into free drinks, which is very nice.</p>
+                    <p class="testimonial-author">— RUDI</p>
+                </div>
+                <div class="card testimonial-card">
+                    <p class="testimonial-quote">The cart design and the concept of cafe-on-wheels are really cool! It's giving a whole new experience for customers</p>
+                    <p class="testimonial-author">— SARAH</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section section-lg">
+        <div class="container text-center">
+            <h2 class="section-title">Ready To Get Your Jago Coffee?</h2>
+            <p class="cta-subtitle">Find your nearest Jagoan or browse our menu to order now!</p>
+            <div class="cta-actions">
+                <a href="find-jagoan.html" class="btn btn-primary">Find Jagoan</a>
+                <a href="#menu" class="btn btn-secondary">Browse Menu</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="customer-footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <img src="../logo jago2.png" alt="Jago Coffee" class="footer-logo">
+                <p class="footer-text">Kopi berkualitas premium dari 100% Arabica, diantar langsung ke lokasimu. Cepat, segar, terjangkau.</p>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Menu</h4>
+                <ul class="footer-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#menu">Menu</a></li>
+                    <li><a href="find-jagoan.html">Find Jagoan</a></li>
+                    <li><a href="jago-party.html">Jago Party</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul class="footer-links">
+                    <li><a href="orders.html">My Orders</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <div class="footer-promo">
+                    <span class="footer-promo-badge">Special</span>
+                    <h3>Free Delivery</h3>
+                    <p>Never a delivery fee when you order from Jago Coffee!</p>
+                    <a href="#menu" class="footer-promo-btn">Order Now</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-copyright">
+            © 2026 Kopi Jago. Minuman favorit, diantar dengan jago.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jago-core.js"></script>
+    <script src="../assets/js/jago-components.js"></script>
+    <script src="../assets/js/jago-navbar.js"></script>
+    <script src="home.js"></script>
 </body>
 </html>

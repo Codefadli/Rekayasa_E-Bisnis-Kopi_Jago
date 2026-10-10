@@ -1,1 +1,204 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Admin - Pesanan</title><link rel="stylesheet" href="../style.css"></head><body><main class="container"><h1>Pesanan</h1><p>Kelola pesanan customer.</p><a href="dashboard.html">Kembali ke dashboard</a></main></body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders Management - Admin Kopi Jago</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/jago-global.css">
+    <link rel="stylesheet" href="../assets/css/jago-components.css">
+    <link rel="stylesheet" href="../assets/css/admin-components.css">
+    <link rel="stylesheet" href="admin-layout.css">
+    <style>
+        .filters-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--jago-gray-200);
+            background: white;
+            border-radius: 8px;
+            font: 600 13px var(--font-body);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover {
+            border-color: var(--jago-red);
+            color: var(--jago-red);
+        }
+        .filter-btn.active {
+            background: var(--jago-red);
+            color: white;
+            border-color: var(--jago-red);
+        }
+        .order-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .order-detail-modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 32px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--jago-gray-400);
+        }
+        .order-items-list {
+            margin: 20px 0;
+        }
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--jago-gray-200);
+        }
+        .status-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <!-- TOP NAVBAR -->
+    <nav class="admin-topnav">
+        <div class="admin-topnav-left">
+            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+                <span></span><span></span><span></span>
+            </button>
+            <img src="../logo jago2.png" alt="Jago Coffee" class="admin-logo">
+        </div>
+        
+        <div class="admin-topnav-right">
+            <div class="admin-user-menu">
+                <span id="admin-name">Admin</span>
+                <button id="admin-logout" class="btn-ghost btn-sm">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+        <nav class="admin-nav">
+            <a href="dashboard.html" class="admin-nav-item" data-page="dashboard">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="orders.html" class="admin-nav-item active" data-page="orders">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                <span>Orders</span>
+                <span class="nav-badge" id="pending-orders-badge">0</span>
+            </a>
+            
+            <a href="customers.html" class="admin-nav-item" data-page="customers">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Customers</span>
+            </a>
+            
+            <a href="menu.html" class="admin-nav-item" data-page="menu">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                <span>Menu & Products</span>
+            </a>
+            
+            <a href="inventory.html" class="admin-nav-item" data-page="inventory">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                <span>Inventory</span>
+                <span class="nav-badge badge-warning" id="low-stock-badge">0</span>
+            </a>
+            
+            <a href="payments.html" class="admin-nav-item" data-page="payments">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                <span>Payments</span>
+            </a>
+            
+            <a href="analytics.html" class="admin-nav-item" data-page="analytics">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+                <span>Analytics</span>
+            </a>
+            
+            <a href="reports.html" class="admin-nav-item" data-page="reports">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <span>Reports</span>
+            </a>
+            
+            <div class="admin-nav-divider"></div>
+            
+            </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+        <div class="admin-page-header">
+            <h1 class="admin-page-title">Orders Management</h1>
+            <p class="admin-page-subtitle">View, manage, and update order status</p>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filters-bar">
+            <button class="filter-btn active" data-filter="all">All Orders</button>
+            <button class="filter-btn" data-filter="pending">Pending</button>
+            <button class="filter-btn" data-filter="confirmed">Confirmed</button>
+            <button class="filter-btn" data-filter="processing">Processing</button>
+            <button class="filter-btn" data-filter="on_delivery">On Delivery</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+            <button class="filter-btn" data-filter="cancelled">Cancelled</button>
+        </div>
+
+        <!-- ORDERS TABLE -->
+        <div class="data-table-container">
+            <div class="data-table-header">
+                <h3 class="data-table-title">Orders List</h3>
+                <span id="orders-count">0 orders</span>
+            </div>
+            <div id="orders-table-content"></div>
+        </div>
+    </main>
+
+    <!-- ORDER DETAIL MODAL -->
+    <div class="order-detail-modal" id="order-modal">
+        <div class="modal-content" id="modal-content">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jago-core.js"></script>
+    <script src="../assets/js/jago-components.js"></script>
+    <script src="admin-core-fix.js"></script>
+    <script src="admin-core.js"></script>
+    <script src="orders.js"></script>
+</body>
+</html>

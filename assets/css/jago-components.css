@@ -1,0 +1,579 @@
+/* ============================================================
+   JAGO COFFEE - UI COMPONENTS STYLES
+   Modal, Toast, Loading, Empty State, Bottom Sheet
+   Version: 2.0
+   ============================================================ */
+
+/* ============================================================
+   TOAST NOTIFICATIONS
+   ============================================================ */
+
+.kj-toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.kj-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--jago-white);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  min-width: 320px;
+  max-width: 400px;
+  opacity: 0;
+  transform: translateX(400px);
+  transition: all 0.3s var(--ease-out);
+  pointer-events: auto;
+}
+
+.kj-toast-show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.kj-toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.kj-toast-message {
+  flex: 1;
+  font: 400 14px var(--font-body);
+  color: var(--jago-gray-900);
+  line-height: 1.4;
+}
+
+.kj-toast-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--jago-gray-400);
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: color var(--duration-normal);
+}
+
+.kj-toast-close:hover {
+  color: var(--jago-gray-900);
+}
+
+/* Toast Types */
+.kj-toast-success .kj-toast-icon {
+  background: #E8F5E9;
+  color: var(--jago-green);
+}
+
+.kj-toast-error .kj-toast-icon {
+  background: #FFEBEE;
+  color: var(--jago-red);
+}
+
+.kj-toast-warning .kj-toast-icon {
+  background: #FFF8E1;
+  color: var(--jago-yellow);
+}
+
+.kj-toast-info .kj-toast-icon {
+  background: #E3F2FD;
+  color: var(--jago-blue);
+}
+
+/* Mobile Toast */
+@media (max-width: 768px) {
+  .kj-toast-container {
+    top: auto;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+  }
+  
+  .kj-toast {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   MODAL DIALOG
+   ============================================================ */
+
+.kj-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(17, 17, 17, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.kj-modal-show {
+  opacity: 1;
+}
+
+.kj-modal-content {
+  background: var(--jago-white);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.9);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.kj-modal-show .kj-modal-content {
+  transform: scale(1);
+}
+
+/* Modal Sizes */
+.kj-modal-small {
+  max-width: 400px;
+}
+
+.kj-modal-medium {
+  max-width: 600px;
+}
+
+.kj-modal-large {
+  max-width: 900px;
+}
+
+.kj-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  border-bottom: 1px solid var(--jago-gray-200);
+}
+
+.kj-modal-title {
+  font: 700 20px var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--jago-black);
+  margin: 0;
+}
+
+.kj-modal-close {
+  background: none;
+  border: none;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--jago-gray-400);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  transition: color var(--duration-normal);
+}
+
+.kj-modal-close:hover {
+  color: var(--jago-red);
+}
+
+.kj-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+  font: 400 16px var(--font-body);
+  line-height: 1.6;
+  color: var(--jago-gray-900);
+}
+
+.kj-modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 20px 24px;
+  border-top: 1px solid var(--jago-gray-200);
+}
+
+/* ============================================================
+   BOTTOM SHEET (Mobile)
+   ============================================================ */
+
+.kj-bottom-sheet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(17, 17, 17, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.kj-bottom-sheet-show {
+  opacity: 1;
+}
+
+.kj-bottom-sheet-content {
+  background: var(--jago-white);
+  border-radius: 16px 16px 0 0;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.kj-bottom-sheet-show .kj-bottom-sheet-content {
+  transform: translateY(0);
+}
+
+/* Sheet Heights */
+.kj-bottom-sheet-auto {
+  max-height: 90vh;
+}
+
+.kj-bottom-sheet-half {
+  height: 50vh;
+}
+
+.kj-bottom-sheet-full {
+  height: 90vh;
+}
+
+.kj-bottom-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--jago-gray-300);
+  border-radius: 2px;
+  margin: 12px auto 8px;
+  cursor: grab;
+}
+
+.kj-bottom-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--jago-gray-200);
+}
+
+.kj-bottom-sheet-title {
+  font: 700 18px var(--font-heading);
+  text-transform: uppercase;
+  color: var(--jago-black);
+  margin: 0;
+}
+
+.kj-bottom-sheet-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--jago-gray-400);
+  cursor: pointer;
+  padding: 0;
+}
+
+.kj-bottom-sheet-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ============================================================
+   LOADING OVERLAY
+   ============================================================ */
+
+.kj-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.kj-loading-spinner {
+  text-align: center;
+}
+
+.kj-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--jago-gray-200);
+  border-top-color: var(--jago-red);
+  border-radius: 50%;
+  animation: kj-spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes kj-spin {
+  to { transform: rotate(360deg); }
+}
+
+.kj-loading-text {
+  font: 600 14px var(--font-body);
+  color: var(--jago-gray-700);
+  margin: 0;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+
+.kj-empty-state {
+  text-align: center;
+  padding: var(--space-4xl) var(--space-lg);
+}
+
+.kj-empty-icon {
+  font-size: 64px;
+  margin-bottom: var(--space-lg);
+  opacity: 0.6;
+}
+
+.kj-empty-title {
+  font: 700 20px var(--font-heading);
+  text-transform: uppercase;
+  color: var(--jago-black);
+  margin: 0 0 var(--space-sm);
+}
+
+.kj-empty-message {
+  font: 400 16px var(--font-body);
+  color: var(--jago-gray-700);
+  margin: 0 0 var(--space-xl);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.kj-empty-action {
+  margin-top: var(--space-lg);
+}
+
+/* ============================================================
+   ERROR STATE
+   ============================================================ */
+
+.kj-error-state {
+  text-align: center;
+  padding: var(--space-3xl) var(--space-lg);
+}
+
+.kj-error-icon {
+  font-size: 64px;
+  margin-bottom: var(--space-lg);
+}
+
+.kj-error-message {
+  font: 400 16px var(--font-body);
+  color: var(--jago-red);
+  margin: 0 0 var(--space-xl);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.kj-error-retry {
+  margin-top: var(--space-md);
+}
+
+/* ============================================================
+   BADGE
+   ============================================================ */
+
+.kj-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font: 700 11px var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kj-badge-success {
+  background: #E8F5E9;
+  color: var(--jago-green);
+}
+
+.kj-badge-error {
+  background: #FFEBEE;
+  color: var(--jago-red);
+}
+
+.kj-badge-warning {
+  background: #FFF8E1;
+  color: var(--jago-yellow);
+}
+
+.kj-badge-info {
+  background: #E3F2FD;
+  color: var(--jago-blue);
+}
+
+.kj-badge-neutral {
+  background: var(--jago-gray-100);
+  color: var(--jago-gray-700);
+}
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+
+.kj-progress {
+  width: 100%;
+  height: 8px;
+  background: var(--jago-gray-200);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.kj-progress-bar {
+  height: 100%;
+  background: var(--jago-red);
+  border-radius: 4px;
+  transition: width 0.3s var(--ease-out);
+}
+
+/* ============================================================
+   SKELETON LOADER
+   ============================================================ */
+
+.kj-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--jago-gray-100) 25%,
+    var(--jago-gray-200) 50%,
+    var(--jago-gray-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: kj-skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes kj-skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.kj-skeleton-text {
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.kj-skeleton-title {
+  height: 24px;
+  margin-bottom: 12px;
+  width: 60%;
+}
+
+.kj-skeleton-card {
+  height: 200px;
+  border-radius: 12px;
+}
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+
+.kj-divider {
+  height: 1px;
+  background: var(--jago-gray-200);
+  margin: var(--space-lg) 0;
+}
+
+.kj-divider-text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin: var(--space-lg) 0;
+  font: 600 13px var(--font-body);
+  color: var(--jago-gray-700);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kj-divider-text::before,
+.kj-divider-text::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--jago-gray-200);
+}
+
+/* ============================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .kj-modal-content {
+    max-height: 95vh;
+    border-radius: 12px;
+  }
+  
+  .kj-modal-header,
+  .kj-modal-body,
+  .kj-modal-footer {
+    padding: 20px;
+  }
+  
+  .kj-modal-footer {
+    flex-direction: column;
+  }
+  
+  .kj-modal-footer .btn {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .kj-toast,
+  .kj-modal-content,
+  .kj-bottom-sheet-content,
+  .kj-spinner {
+    animation: none !important;
+    transition: none !important;
+  }
+}

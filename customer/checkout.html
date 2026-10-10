@@ -4,85 +4,216 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Checkout - Kopi Jago</title>
-    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/jago-global.css">
+    <link rel="stylesheet" href="../assets/css/jago-components.css">
+    <link rel="stylesheet" href="../assets/css/customer-components.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
-        .customer-page{background:#f8f3ee;color:#34251e;min-height:100vh;display:flex;flex-direction:column}
-        .customer-nav{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 6%;background:#fff;box-shadow:0 2px 12px #0002}
-        .customer-nav img{width:118px;height:auto}.customer-links{display:flex;align-items:center;gap:20px;font:600 13px 'Open Sans',sans-serif;color:#4b2e22}.customer-links a:hover{color:#bd3d2f}.customer-links a.active{color:#bd3d2f;border-bottom:2px solid #bd3d2f}
-        .customer-account{display:flex;align-items:center;gap:10px;font:600 13px 'Open Sans',sans-serif}.customer-account a,.customer-account button{border:0;background:none;color:#4b2e22;padding:8px;cursor:pointer}.customer-account .primary{background:#bd3d2f;color:#fff;border-radius:3px}
-        .checkout-container{max-width:900px;margin:auto;padding:54px 6%;flex:1}
-        .section-box{background:#fff;border-radius:8px;box-shadow:0 4px 18px #4b2e2215;padding:24px;margin-bottom:24px}
-        .section-title{font:700 18px Montserrat,sans-serif;color:#4b2e22;margin:0 0 16px}
-        .toggle-group{display:flex;gap:12px;margin-bottom:20px}
-        .toggle-btn{flex:1;border:2px solid #bd3d2f;background:#fff;color:#bd3d2f;padding:14px;border-radius:6px;cursor:pointer;font:600 14px Montserrat,sans-serif;transition:all .2s}
-        .toggle-btn.active{background:#bd3d2f;color:#fff}
-        .form-group{margin-bottom:16px}
-        .form-label{display:block;margin-bottom:6px;font:600 13px Montserrat,sans-serif;color:#4b2e22}
-        .form-input{width:100%;border:1px solid #ddd;padding:12px;border-radius:4px;font:400 14px 'Open Sans',sans-serif}
-        .form-input:focus{outline:2px solid #bd3d2f;border-color:#bd3d2f}
-        #map{height:300px;border-radius:6px;margin:16px 0}
-        .outlet-card{border:1px solid #eadfd7;padding:16px;border-radius:6px;margin-bottom:12px;cursor:pointer;transition:all .2s}
-        .outlet-card:hover,.outlet-card.selected{border-color:#bd3d2f;background:#fef5f3}
-        .outlet-name{font:700 15px Montserrat,sans-serif;color:#4b2e22;margin:0 0 6px}
-        .outlet-info{font-size:13px;color:#8b7568;margin:4px 0}
-        .summary-row{display:flex;justify-content:space-between;padding:8px 0;font-size:15px}
-        .summary-row.total{font-weight:700;font-size:18px;color:#4b2e22;border-top:2px solid #eadfd7;margin-top:12px;padding-top:16px}
-        .btn-submit{width:100%;border:0;background:#bd3d2f;color:#fff;padding:16px;border-radius:6px;cursor:pointer;font:700 14px Montserrat,sans-serif;text-transform:uppercase;margin-top:16px}
+        .checkout-page{background:#f8f3ee;min-height:100vh;padding-top:100px}
+        .checkout-container{max-width:1200px;margin:0 auto;padding:20px 6% 60px}
+        .checkout-title{font:900 32px Montserrat,sans-serif;color:#4b2e22;margin:0 0 32px}
+        .checkout-grid{display:grid;grid-template-columns:1fr 400px;gap:32px;align-items:start}
+        .checkout-main,.checkout-sidebar{background:#fff;border-radius:12px;box-shadow:0 4px 18px rgba(75,46,34,0.08);padding:28px}
+        .section-box{margin-bottom:28px}
+        .section-title{font:700 20px Montserrat,sans-serif;color:#4b2e22;margin:0 0 20px}
+        .toggle-group{display:flex;gap:12px;margin-bottom:24px}
+        .toggle-btn{flex:1;border:2px solid #eadfd7;background:#fff;color:#4b2e22;padding:14px 20px;border-radius:8px;font:600 14px Montserrat,sans-serif;cursor:pointer;transition:all .2s;text-align:center;min-height:50px;display:flex;align-items:center;justify-content:center}
+        .toggle-btn:hover{border-color:#bd3d2f;background:#fef5f3}
+        .toggle-btn.active{background:#bd3d2f;color:#fff;border-color:#bd3d2f}
+        .form-group{margin-bottom:20px}
+        .form-label{display:block;margin-bottom:8px;font:600 14px Montserrat,sans-serif;color:#4b2e22}
+        .form-input{width:100%;border:1px solid #ddd;padding:12px;border-radius:6px;font:400 14px 'Open Sans',sans-serif;resize:vertical}
+        .form-input:focus{outline:2px solid #bd3d2f;outline-offset:0;border-color:#bd3d2f}
+        #map{height:320px;width:100%;border-radius:8px;margin-top:16px}
+        .outlet-card{border:2px solid #eadfd7;padding:18px;border-radius:8px;margin-bottom:12px;cursor:pointer;transition:all .2s}
+        .outlet-card:hover{border-color:#bd3d2f;background:#fef5f3}
+        .outlet-card.selected{border-color:#bd3d2f;background:#fef5f3}
+        .outlet-name{font:600 16px Montserrat,sans-serif;color:#4b2e22;margin:0 0 8px}
+        .outlet-info{font-size:14px;color:#6d5d52;margin:4px 0;line-height:1.5}
+        .distance-info{margin-top:12px;padding:12px;background:#f8f3ee;border-radius:6px;font-size:14px;color:#4b2e22;text-align:center}
+        .error-msg{color:#dc2626;font-size:14px;margin-top:8px}
+        .summary-section{position:sticky;top:100px}
+        .summary-row{display:flex;justify-content:space-between;padding:10px 0;font-size:15px;color:#4b2e22}
+        .summary-row.total{font-weight:700;font-size:20px;border-top:2px solid #eadfd7;margin-top:12px;padding-top:16px;color:#bd3d2f}
+        .btn-submit{width:100%;border:0;background:#bd3d2f;color:#fff;padding:16px;border-radius:8px;cursor:pointer;font:700 14px Montserrat,sans-serif;text-transform:uppercase;margin-top:20px;transition:background .2s;min-height:54px}
         .btn-submit:hover{background:#a53527}
         .btn-submit:disabled{opacity:.6;cursor:not-allowed}
-        .error-msg{color:#bd3d2f;font-size:13px;margin-top:8px}
-        .customer-footer{padding:32px 6%;background:#4b2e22;color:#fff;text-align:center;font-size:13px;margin-top:auto}
+        .schedule-calendar{margin-top:16px}
+        .calendar-days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:20px}
+        .day-card{border:2px solid #eadfd7;padding:12px 8px;border-radius:8px;text-align:center;cursor:pointer;transition:all .2s}
+        .day-card:hover{border-color:#bd3d2f;background:#fef5f3}
+        .day-card.selected{background:#bd3d2f;color:#fff;border-color:#bd3d2f}
+        .day-card.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+        .day-date{font:700 18px Montserrat,sans-serif;margin:0 0 4px}
+        .day-name{font-size:11px;text-transform:uppercase;opacity:.8}
+        .time-slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+        .time-slot{border:2px solid #eadfd7;padding:12px;border-radius:8px;text-align:center;cursor:pointer;transition:all .2s}
+        .time-slot:hover{border-color:#bd3d2f;background:#fef5f3}
+        .time-slot.selected{background:#bd3d2f;color:#fff;border-color:#bd3d2f}
+        .time-slot.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+        .time-slot-time{font:600 14px Montserrat,sans-serif;margin:0 0 4px}
+        .time-slot-availability{font-size:11px;opacity:.8}
+        .blackout-notice{background:#fee;border:1px solid #fcc;color:#c33;padding:12px;border-radius:6px;text-align:center;margin-top:12px;font-size:13px}
+        @media(max-width:1024px){
+            .checkout-grid{grid-template-columns:1fr;gap:24px}
+            .summary-section{position:relative;top:0}
+            .calendar-days{grid-template-columns:repeat(4,1fr)}
+            .time-slots-grid{grid-template-columns:repeat(2,1fr)}
+        }
+        @media(max-width:768px){
+            .checkout-page{padding-top:80px}
+            .checkout-container{padding:20px 4% 40px}
+            .checkout-title{font-size:26px;margin-bottom:24px}
+            .toggle-group{flex-direction:column}
+            .checkout-main,.checkout-sidebar{padding:20px}
+            #map{height:250px}
+        }
     </style>
 </head>
-<body class="customer-page">
-    <header class="customer-nav">
-        <a href="home.html" aria-label="Kopi Jago"><img src="../logo%20jago2.png" alt="Jago Coffee"></a>
-        <nav class="customer-links">
-            <a href="home.html#home">Home</a>
-            <a href="home.html#menu">Menu</a>
-            <a href="cart.html">Keranjang</a>
-        </nav>
-        <div id="account-area" class="customer-account"></div>
-    </header>
-    
+<body class="customer-page checkout-page">
+    <!-- NAVBAR -->
+    <nav class="customer-navbar" id="navbar">
+        <a href="home.html">
+            <img src="../logo jago2.png" alt="Jago Coffee" class="navbar-logo">
+        </a>
+        
+        <button class="navbar-hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <ul class="navbar-menu" id="nav-menu">
+            <li><a href="home.html#home" class="navbar-link">Home</a></li>
+            <li><a href="home.html#menu" class="navbar-link">Menu</a></li>
+            <li><a href="find-jagoan.html" class="navbar-link">Find Jagoan</a></li>
+            <li><a href="cart.html" class="navbar-link">Keranjang <span id="cart-badge" class="navbar-badge">(0)</span></a></li>
+            <li><a href="wishlist.html" class="navbar-link">Wishlist</a></li>
+            <li><a href="orders.html" class="navbar-link">Pesanan</a></li>
+            <li><a href="jago-party.html" class="navbar-link">Jago Party</a></li>
+        </ul>
+        
+        <div class="navbar-account" id="account-area"></div>
+    </nav>
+
     <main class="checkout-container">
-        <h1 style="font:900 32px Montserrat,sans-serif;color:#4b2e22;margin:0 0 24px">Checkout</h1>
-        
-        <div class="section-box">
-            <h2 class="section-title">Metode Pengambilan</h2>
-            <div class="toggle-group">
-                <button class="toggle-btn active" data-type="pickup" onclick="selectFulfillment('pickup')">Ambil di Tempat</button>
-                <button class="toggle-btn" data-type="delivery" onclick="selectFulfillment('delivery')">Antar ke Lokasi</button>
+        <h1 class="checkout-title">Checkout</h1>
+
+        <div class="checkout-grid">
+            <div class="checkout-main">
+                <section class="section-box">
+                    <h2 class="section-title">Metode Pengambilan</h2>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-type="pickup" onclick="selectFulfillment('pickup')">
+                            Ambil di Tempat
+                        </button>
+                        <button class="toggle-btn" data-type="delivery" onclick="selectFulfillment('delivery')">
+                            Antar ke Lokasi
+                        </button>
+                    </div>
+                </section>
+
+                <section id="pickup-section" class="section-box">
+                    <h2 class="section-title">Pilih Outlet</h2>
+                    <div id="outlet-list"></div>
+                </section>
+
+                <section id="delivery-section" class="section-box" style="display:none">
+                    <h2 class="section-title">Alamat Pengiriman</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="delivery-address">Alamat Lengkap</label>
+                        <textarea id="delivery-address" class="form-input" rows="4" placeholder="Masukkan alamat lengkap Anda"></textarea>
+                    </div>
+                    <div id="map"></div>
+                    <div id="distance-info" class="distance-info" style="display:none"></div>
+                    <p id="delivery-error" class="error-msg"></p>
+                </section>
+
+                <!-- Schedule Order Section -->
+                <section class="section-box">
+                    <h2 class="section-title">Waktu Pengambilan</h2>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-timing="now" onclick="selectTiming('now')">
+                            Sekarang
+                        </button>
+                        <button class="toggle-btn" data-timing="schedule" onclick="selectTiming('schedule')">
+                            📅 Jadwalkan
+                        </button>
+                    </div>
+                    
+                    <div id="schedule-section" style="display:none">
+                        <div class="form-group">
+                            <label class="form-label">Pilih Tanggal & Waktu</label>
+                            <div id="schedule-calendar"></div>
+                        </div>
+                        <div id="schedule-error" class="error-msg"></div>
+                    </div>
+                </section>
+
+                <section class="section-box">
+                    <h2 class="section-title">Catatan Pesanan</h2>
+                    <div class="form-group">
+                        <textarea id="order-notes" class="form-input" rows="3" placeholder="Catatan tambahan (opsional)"></textarea>
+                    </div>
+                </section>
             </div>
-            
-            <div id="pickup-section">
-                <div id="outlet-list"></div>
-            </div>
-            
-            <div id="delivery-section" style="display:none">
-                <div class="form-group">
-                    <label class="form-label">Alamat Pengiriman</label>
-                    <textarea id="delivery-address" class="form-input" rows="3" placeholder="Masukkan alamat lengkap"></textarea>
+
+            <aside class="checkout-sidebar">
+                <div class="summary-section">
+                    <h2 class="section-title">Ringkasan Pesanan</h2>
+                    <div id="order-summary"></div>
+                    <button id="btn-checkout" class="btn-submit">Lanjut ke Pembayaran</button>
                 </div>
-                <div id="map"></div>
-                <p id="distance-info" class="outlet-info"></p>
-                <p id="delivery-error" class="error-msg"></p>
-            </div>
-        </div>
-        
-        <div class="section-box">
-            <h2 class="section-title">Ringkasan Pesanan</h2>
-            <div id="order-summary"></div>
-            <button id="btn-checkout" class="btn-submit">Lanjut ke Pembayaran</button>
+            </aside>
         </div>
     </main>
     
-    <footer class="customer-footer">© 2026 Kopi Jago. Minuman favorit, diantar dengan jago.</footer>
+    <footer class="customer-footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <img src="../logo jago2.png" alt="Jago Coffee" class="footer-logo">
+                <p class="footer-text">Kopi berkualitas premium dari 100% Arabica, diantar langsung ke lokasimu. Cepat, segar, terjangkau.</p>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Menu</h4>
+                <ul class="footer-links">
+                    <li><a href="home.html#home">Home</a></li>
+                    <li><a href="home.html#menu">Menu</a></li>
+                    <li><a href="find-jagoan.html">Find Jagoan</a></li>
+                    <li><a href="jago-party.html">Jago Party</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul class="footer-links">
+                    <li><a href="orders.html">My Orders</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <div class="footer-promo">
+                    <span class="footer-promo-badge">Special</span>
+                    <h3>Free Delivery</h3>
+                    <p>Never a delivery fee when you order from Jago Coffee!</p>
+                    <a href="home.html#menu" class="footer-promo-btn">Order Now</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-copyright">
+            © 2026 Kopi Jago. Minuman favorit, diantar dengan jago.
+        </div>
+    </footer>
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="../frontend/src/js/routes.js"></script>
-    <script src="../frontend/src/js/api.js"></script>
+    <script src="../assets/js/jago-core.js"></script>
+    <script src="../assets/js/jago-components.js"></script>
+    <script src="../assets/js/jago-navbar.js"></script>
     <script src="shared.js"></script>
     <script src="checkout.js"></script>
 </body>

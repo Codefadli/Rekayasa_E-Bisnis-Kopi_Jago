@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Jago Coffee</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/jago-global.css">
+    <link rel="stylesheet" href="../assets/css/admin-components.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../logo jago2.png" alt="Jago Coffee Admin" class="sidebar-logo">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="dashboard-new.html" class="nav-item active">
+                        <span class="nav-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <a href="products-new.html" class="nav-item">
+                        <span class="nav-icon">☕</span>
+                        <span>Products</span>
+                    </a>
+                    <a href="categories-new.html" class="nav-item">
+                        <span class="nav-icon">📂</span>
+                        <span>Categories</span>
+                    </a>
+                    <a href="orders-new.html" class="nav-item">
+                        <span class="nav-icon">🛒</span>
+                        <span>Orders</span>
+                    </a>
+                    <a href="customers-new.html" class="nav-item">
+                        <span class="nav-icon">👥</span>
+                        <span>Customers</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">System</div>
+                    <a href="settings-new.html" class="nav-item">
+                        <span class="nav-icon">⚙️</span>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="nav-item" onclick="logout()">
+                    <span class="nav-icon">🚪</span>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="admin-main">
+            <!-- TOPBAR -->
+            <header class="admin-topbar">
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                <h1 class="topbar-title">Dashboard</h1>
+                <div class="topbar-actions">
+                    <div class="topbar-user" id="admin-user">
+                        <span>👤</span>
+                        <span id="admin-name">Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTENT -->
+            <div class="admin-content">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value" id="stat-revenue">Rp 0</div>
+                        <div class="stat-label">Total Revenue</div>
+                        <div class="stat-change positive" id="stat-revenue-change">+0% dari kemarin</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">🛒</div>
+                        <div class="stat-value" id="stat-orders">0</div>
+                        <div class="stat-label">Total Orders</div>
+                        <div class="stat-change positive" id="stat-orders-change">+0% dari kemarin</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">☕</div>
+                        <div class="stat-value" id="stat-products">0</div>
+                        <div class="stat-label">Total Products</div>
+                        <div class="stat-change" id="stat-products-change">Active products</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value" id="stat-customers">0</div>
+                        <div class="stat-label">Total Customers</div>
+                        <div class="stat-change positive" id="stat-customers-change">+0 bulan ini</div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h2 class="table-title">Recent Orders</h2>
+                        <div class="table-actions">
+                            <a href="orders-new.html" class="btn btn-primary btn-sm">View All</a>
+                        </div>
+                    </div>
+                    <div id="orders-table-container">
+                        <p style="padding: 2rem; text-align: center; color: var(--jago-gray-400);">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        
+        sidebarToggle?.addEventListener('click', () => {
+            sidebar?.classList.toggle('active');
+        });
+
+        // Close sidebar on nav click (mobile)
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    sidebar?.classList.remove('active');
+                }
+            });
+        });
+
+        // Mock data loading
+        async function loadDashboardStats() {
+            try {
+                // In real implementation, these would be API calls
+                // For now, using mock data
+                
+                document.getElementById('stat-revenue').textContent = 'Rp 15.2M';
+                document.getElementById('stat-revenue-change').textContent = '+12% dari kemarin';
+                
+                document.getElementById('stat-orders').textContent = '248';
+                document.getElementById('stat-orders-change').textContent = '+18% dari kemarin';
+                
+                document.getElementById('stat-products').textContent = '8';
+                document.getElementById('stat-products-change').textContent = '8 active products';
+                
+                document.getElementById('stat-customers').textContent = '1,429';
+                document.getElementById('stat-customers-change').textContent = '+86 bulan ini';
+                
+                loadRecentOrders();
+            } catch (error) {
+                console.error('Load stats error:', error);
+            }
+        }
+
+        function loadRecentOrders() {
+            const container = document.getElementById('orders-table-container');
+            
+            // Mock data - in real app, fetch from API
+            const orders = [
+                { id: 'ORD-001', customer: 'John Doe', total: 45000, status: 'completed', date: '2026-10-07 14:30' },
+                { id: 'ORD-002', customer: 'Jane Smith', total: 32000, status: 'processing', date: '2026-10-07 13:15' },
+                { id: 'ORD-003', customer: 'Bob Johnson', total: 28000, status: 'pending', date: '2026-10-07 12:45' },
+                { id: 'ORD-004', customer: 'Alice Brown', total: 56000, status: 'completed', date: '2026-10-07 11:20' },
+                { id: 'ORD-005', customer: 'Charlie Davis', total: 41000, status: 'on_delivery', date: '2026-10-07 10:10' }
+            ];
+            
+            const statusBadge = {
+                'completed': 'badge-success',
+                'processing': 'badge-info',
+                'pending': 'badge-warning',
+                'on_delivery': 'badge-info',
+                'cancelled': 'badge-danger'
+            };
+            
+            const statusLabel = {
+                'completed': 'Selesai',
+                'processing': 'Diproses',
+                'pending': 'Menunggu',
+                'on_delivery': 'Dikirim',
+                'cancelled': 'Dibatalkan'
+            };
+            
+            container.innerHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orders.map(order => `
+                            <tr>
+                                <td><strong>${order.id}</strong></td>
+                                <td>${order.customer}</td>
+                                <td>Rp ${order.total.toLocaleString('id-ID')}</td>
+                                <td><span class="badge ${statusBadge[order.status]}">${statusLabel[order.status]}</span></td>
+                                <td>${order.date}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon" title="View">👁️</button>
+                                        <button class="btn-icon" title="Edit">✏️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function logout() {
+            if (confirm('Logout dari admin panel?')) {
+                localStorage.removeItem('kj_token');
+                localStorage.removeItem('kj_user');
+                window.location.href = '../login.html';
+            }
+        }
+
+        // Load on init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardStats();
+            
+            // Set admin name from localStorage
+            const user = JSON.parse(localStorage.getItem('kj_user') || '{}');
+            if (user.name) {
+                document.getElementById('admin-name').textContent = user.name;
+            }
+            
+            console.log('[Admin Dashboard] Initialized');
+        });
+    </script>
+</body>
+</html>

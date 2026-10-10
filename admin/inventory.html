@@ -1,1 +1,210 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Admin - Stok</title><link rel="stylesheet" href="../style.css"></head><body><main class="container"><h1>Stok</h1><p>Kelola stok minuman.</p><a href="dashboard.html">Kembali ke dashboard</a></main></body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory - Admin Kopi Jago</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/jago-global.css">
+    <link rel="stylesheet" href="../assets/css/jago-components.css">
+    <link rel="stylesheet" href="../assets/css/admin-components.css">
+    <link rel="stylesheet" href="admin-layout.css">
+    <style>
+        .inventory-filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--jago-gray-300);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font: 600 13px var(--font-body);
+            transition: all 0.2s;
+        }
+        .filter-btn:hover {
+            border-color: var(--jago-red);
+        }
+        .filter-btn.active {
+            background: var(--jago-red);
+            color: white;
+            border-color: var(--jago-red);
+        }
+        .stock-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .stock-ok { background: var(--jago-green); }
+        .stock-low { background: var(--jago-orange); }
+        .stock-out { background: var(--jago-red); }
+        
+        .adjust-stock-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .adjust-stock-modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            padding: 32px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--jago-gray-400);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font: 600 13px var(--font-body);
+            color: var(--jago-gray-700);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--jago-gray-200);
+            border-radius: 8px;
+            font: 400 14px var(--font-body);
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--jago-red);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .highlight-danger { background: rgba(220, 38, 38, 0.05); }
+        .highlight-warning { background: rgba(234, 88, 12, 0.05); }
+    </style>
+</head>
+<body class="admin-body">
+    <nav class="admin-topnav">
+        <div class="admin-topnav-left">
+            <button class="sidebar-toggle" id="sidebar-toggle"><span></span><span></span><span></span></button>
+            <img src="../logo jago2.png" alt="Jago Coffee" class="admin-logo">
+        </div>
+        <div class="admin-topnav-right">
+            <div class="admin-user-menu">
+                <span id="admin-name">Admin</span>
+                <button id="admin-logout" class="btn-ghost btn-sm">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <aside class="admin-sidebar" id="admin-sidebar">
+        <nav class="admin-nav">
+            <a href="dashboard.html" class="admin-nav-item"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Dashboard</span></a>
+            <a href="orders.html" class="admin-nav-item"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span>Orders</span><span class="nav-badge" id="pending-orders-badge">0</span></a>
+            <a href="customers.html" class="admin-nav-item"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Customers</span></a>
+            <a href="menu.html" class="admin-nav-item"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg><span>Menu & Products</span></a>
+            <a href="inventory.html" class="admin-nav-item active"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>Inventory</span><span class="nav-badge badge-warning" id="low-stock-badge">0</span></a>
+            <a href="jagoans.html" class="admin-nav-item"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Jagoans</span></a>
+            <a href="payments.html" class="admin-nav-item"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>Payments</span></a>
+            <a href="analytics.html" class="admin-nav-item"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg><span>Analytics</span></a>
+            <a href="reports.html" class="admin-nav-item"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg><span>Reports</span></a>
+            <div class="admin-nav-divider"></div>
+            </nav>
+    </aside>
+
+    <main class="admin-main">
+        <div class="admin-page-header">
+            <h1 class="admin-page-title">Inventory Management</h1>
+            <p class="admin-page-subtitle">Monitor stock levels and manage inventory</p>
+        </div>
+
+        <div class="inventory-filters">
+            <button class="filter-btn active" data-filter="all" onclick="filterInventory('all')">All Items</button>
+            <button class="filter-btn" data-filter="low" onclick="filterInventory('low')">Low Stock</button>
+            <button class="filter-btn" data-filter="out" onclick="filterInventory('out')">Out of Stock</button>
+            <button class="filter-btn" data-filter="ok" onclick="filterInventory('ok')">In Stock</button>
+        </div>
+
+        <div class="data-table-container">
+            <div class="data-table-header">
+                <h3 class="data-table-title">Inventory Status</h3>
+                <span id="inventory-count">0 items</span>
+            </div>
+            <div id="inventory-table-content"></div>
+        </div>
+    </main>
+
+    <!-- ADJUST STOCK MODAL -->
+    <div class="adjust-stock-modal" id="adjust-stock-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-product-name">Adjust Stock</h2>
+                <button class="modal-close" onclick="closeAdjustModal()">&times;</button>
+            </div>
+            <form id="adjust-stock-form" onsubmit="submitStockAdjustment(event)">
+                <div class="form-group">
+                    <label>Current Stock</label>
+                    <input type="text" id="current-stock" readonly style="background: var(--jago-gray-100);">
+                </div>
+                <div class="form-group">
+                    <label>Adjustment Type</label>
+                    <select id="adjustment-type" required onchange="updateAdjustmentLabel()">
+                        <option value="add">Add Stock</option>
+                        <option value="remove">Remove Stock</option>
+                        <option value="set">Set Stock</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="adjustment-amount-label">Amount to Add</label>
+                    <input type="number" id="adjustment-amount" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Reason (Optional)</label>
+                    <input type="text" id="adjustment-reason" placeholder="e.g., Restock, Damaged, Correction">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closeAdjustModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/jago-core.js"></script>
+    <script src="../assets/js/jago-components.js"></script>
+    <script src="admin-core-fix.js"></script>
+    <script src="admin-core.js"></script>
+    <script src="inventory-data-loader.js"></script>
+    <script src="inventory.js"></script>
+</body>
+</html>

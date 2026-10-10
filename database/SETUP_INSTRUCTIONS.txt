@@ -1,0 +1,392 @@
+=================================================================
+JAGO COFFEE - SETUP INSTRUCTIONS
+=================================================================
+
+PERUBAHAN TERBARU (Oct 2026):
+1. Pricing Update: Entry point 8k-12k (sesuai website)
+2. Free Delivery: Ongkir selalu Rp 0
+3. Find Jagoan Feature: Map + nearby outlets
+4. Energy/Rewards System: Earn, redeem, QR scan ⚡
+5. Payment Integration: Midtrans GoPay/QRIS/Bank Transfer 💳
+6. Order Tracking: Real-time GPS + ETA calculation 🚴
+7. Schedule Order: Date picker + time slots + capacity 📅 NEW!
+
+=================================================================
+DATABASE SETUP (WAJIB SEBELUM TESTING):
+=================================================================
+
+1. Start XAMPP
+   - Buka XAMPP Control Panel
+   - Start Apache + MySQL
+
+2. Import Database (Option A - Via phpMyAdmin):
+   - Buka http://localhost/phpmyadmin
+   - Create database: kopi_jago_db
+   - Import files (urutan penting):
+     a. schema.sql
+     b. migration_add_sizes.sql
+     c. migration_add_outlet_data.sql
+     d. migration_energy_rewards.sql
+     e. migration_payment_midtrans.sql
+     f. migration_order_tracking.sql
+     g. migration_schedule_order.sql 📅 NEW
+     h. seed.sql
+
+3. Import Database (Option B - Via Command Line):
+   cd C:\xampp\mysql\bin
+   mysql -u root -p
+   
+   SOURCE C:/xampp/htdocs/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/database/schema.sql;
+   SOURCE C:/xampp/htdocs/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/database/migration_add_sizes.sql;
+   SOURCE C:/xampp/htdocs/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/database/migration_add_outlet_data.sql;
+   SOURCE C:/xampp/htdocs/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/database/migration_energy_rewards.sql;
+   SOURCE C:/xampp/htdocs/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/database/migration_payment_midtrans.sql;
+   SOURCE C:/xampp/htdocs/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/database/migration_order_tracking.sql;
+   SOURCE C:/xampp/htdocs/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/database/migration_schedule_order.sql;
+   SOURCE C:/xampp/htdocs/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/database/seed.sql;
+
+4. Verify Data:
+   USE kopi_jago_db;
+   SELECT name, price FROM menu_items ORDER BY price;
+   -- Expected: Harga mulai dari 8000 (bukan 15000-22000)
+   
+   SELECT outlet_name, status FROM seller_profiles;
+   -- Expected: 2 outlets (Outlet Jago 3, Outlet Jago 4)
+   
+   SELECT * FROM energy_rewards;
+   -- Expected: 6 rewards (diskon, free drinks, merchandise)
+   
+   SELECT * FROM payment_config;
+   -- Expected: 6 config rows (Midtrans keys, enabled payments)
+   
+   SELECT * FROM order_location_history;
+   -- Expected: 0 rows initially (GPS logs)
+   
+   SELECT * FROM delivery_eta_log;
+   -- Expected: 0 rows initially (ETA calculations)
+   
+   SELECT * FROM time_slots;
+   -- Expected: 21 rows (7 days x 3 slots for outlet_id=3)
+   
+   SELECT * FROM schedule_bookings;
+   -- Expected: 0 rows initially
+   
+   SELECT * FROM schedule_blackout_dates;
+   -- Expected: 3 rows (holidays)
+
+=================================================================
+TESTING URL:
+=================================================================
+
+Customer Pages:
+- Home: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/customer/home.html
+- Find Jagoan: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/customer/find-jagoan.html
+- Energy & Rewards ⚡: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/customer/energy.html
+- Cart: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/customer/cart.html
+- Checkout: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/customer/checkout.html
+- Payment 💳: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/customer/payment.html?order_id=1
+- Orders: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/customer/orders.html
+- Order Tracking 🚴: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/customer/tracking.html?order_id=1
+
+Admin:
+- Dashboard: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/admin/dashboard-new.html
+- QR Generator ⚡: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/admin/qr-generator.html
+
+Seller:
+- Tracking App 🚴: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/seller/tracking-app.html
+
+Public:
+- Landing: http://localhost/kopi-jago/Rekayasa_E-Bisnis-Kopi_Jago/index.html
+
+=================================================================
+TEST USER:
+=================================================================
+
+Customer:
+Email: siti@example.com
+Password: password
+
+Admin:
+Email: admin@kopijago.id
+Password: password
+
+Seller:
+Email: seller@example.com
+Password: password
+
+=================================================================
+ENERGY/REWARDS FEATURE - TESTING CHECKLIST:
+=================================================================
+
+CUSTOMER SIDE:
+[ ] 1. Login customer → Navigate to Energy page
+[ ] 2. Energy balance shows 0 (initial state)
+[ ] 3. Rewards tab shows 6 rewards (discount, free drink, merchandise)
+[ ] 4. Click reward card → modal shows detail
+[ ] 5. Try redeem with insufficient Energy → error "Energy tidak cukup"
+[ ] 6. Switch to History tab → shows "Belum ada riwayat"
+[ ] 7. Switch to My Rewards tab → shows "Belum menukar reward"
+[ ] 8. Click "Scan QR" → modal opens
+[ ] 9. Input valid QR token (from admin) → Success, Energy balance updated
+[ ] 10. History tab shows "QR Scan" transaction (+10 Energy)
+[ ] 11. Try scan same QR again → error "Kamu sudah scan QR code ini"
+[ ] 12. Place an order → Complete order (status = completed)
+[ ] 13. Energy auto-earned after order completion (trigger works)
+[ ] 14. History shows "Order #XXX completed" transaction
+[ ] 15. Redeem reward with sufficient Energy → Success
+[ ] 16. Energy balance decreases correctly
+[ ] 17. My Rewards tab shows redeemed reward (status: approved)
+[ ] 18. Notification received after QR scan & redemption
+
+ADMIN SIDE:
+[ ] 19. Login admin → Navigate to QR Generator page
+[ ] 20. Fill form: Energy=10, Scan Limit=50, Expires=24 hours
+[ ] 21. Click "Generate QR Code" → QR image appears
+[ ] 22. Token shows format: JAGO-XXXXXXXX-XXXXXXXX
+[ ] 23. Click "Copy" → token copied to clipboard
+[ ] 24. Click "Download QR" → PNG file downloads
+[ ] 25. Click "Print QR" → print preview opens
+[ ] 26. Active QR Codes table shows generated QR with status "Active"
+[ ] 27. After customer scans → scan count increases
+[ ] 28. After reaching scan limit → status becomes "Exhausted"
+[ ] 29. After expiration time → status becomes "Expired"
+
+=================================================================
+ORDER TRACKING TESTING (Customer & Seller) 🚴
+=================================================================
+
+A. SELLER SETUP (GPS Tracking):
+[ ] 1. Login sebagai seller (jagoan1@kopijago.id / password123)
+[ ] 2. Buka: http://localhost/.../seller/tracking-app.html
+[ ] 3. Klik "Mulai Tracking" → Allow location permission
+[ ] 4. Verify status berubah "Active"
+[ ] 5. Check latitude/longitude terisi
+[ ] 6. Check "Last Update" timestamp
+[ ] 7. Check "Update Log" menampilkan success entries
+[ ] 8. Create test order (as customer) dengan status "on_delivery"
+[ ] 9. Verify order muncul di "Active Orders" list
+[ ] 10. Wait 10s → Verify auto-update location (log entry baru)
+
+B. CUSTOMER TRACKING:
+[ ] 11. Login sebagai customer (siti@example.com / password123)
+[ ] 12. Buka: http://localhost/.../customer/orders.html
+[ ] 13. Find order dengan status "confirmed/processing/ready/on_delivery"
+[ ] 14. Klik button "🚴 Lacak Pesanan"
+[ ] 15. Verify redirect ke tracking.html?order_id=X
+[ ] 16. Check status timeline terisi (6 steps)
+[ ] 17. Check current status highlighted (merah)
+[ ] 18. Check completed steps (hijau)
+[ ] 19. If seller location available → Map displayed
+[ ] 20. Check red marker (🚴 seller) on map
+[ ] 21. Check map tiles loaded (OpenStreetMap)
+[ ] 22. If order status = "on_delivery" → ETA card shown
+[ ] 23. Check ETA time (estimated minutes)
+[ ] 24. Check distance (km)
+[ ] 25. Check "Seller Info" card displayed
+[ ] 26. Check seller name, outlet, phone number
+[ ] 27. Klik "📞 Hubungi Jagoan" → Phone dialer opens
+[ ] 28. Klik "🔄 Refresh" button → Data reloads
+[ ] 29. Wait 15s → Auto-refresh triggers
+
+C. DATABASE VERIFICATION:
+[ ] 30. Run: SELECT * FROM order_location_history;
+[ ] 31. Verify GPS coordinates logged dengan seller_id + order_id
+[ ] 32. Check recorded_at timestamps every ~10s
+[ ] 33. Run: SELECT * FROM delivery_eta_log;
+[ ] 34. Verify ETA calculations logged (distance_km, estimated_minutes)
+[ ] 35. Verify haversine calculation method
+[ ] 36. Check seller_latitude, seller_longitude, customer_latitude, customer_longitude
+
+D. API TESTING:
+[ ] 37. GET /orders/:id/track → Returns order + seller_location + eta + location_history
+[ ] 38. POST /seller/location/update → Updates seller_profiles.last_latitude/longitude
+[ ] 39. POST /seller/location/update with order_id → Logs to order_location_history
+[ ] 40. GET /seller/orders/active → Returns orders with status confirmed/processing/ready/on_delivery
+[ ] 41. PATCH /seller/orders/:id/status → Updates order status + notifies customer
+
+E. ETA CALCULATION:
+[ ] 42. Verify Haversine distance formula: R=6371km
+[ ] 43. Average speed default: 15 km/h (sepeda)
+[ ] 44. ETA = (distance / speed) * 60 minutes
+[ ] 45. Example: 2.5km → (2.5/15)*60 = 10 menit
+
+F. EDGE CASES:
+[ ] 46. Order without vehicle_id → No tracking available
+[ ] 47. Seller location NULL → Map not shown
+[ ] 48. Order status = "completed" → No "Lacak Pesanan" button
+[ ] 49. Order status = "pending" → No tracking, button hidden
+[ ] 50. GPS permission denied → Seller app shows error log
+[ ] 51. Seller stops tracking → Last known location still shown
+[ ] 52. Multiple sellers active → Each order shows correct seller
+
+=================================================================
+PAYMENT FEATURE - TESTING CHECKLIST:
+=================================================================
+
+SETUP:
+[ ] 1. Register Midtrans Sandbox: https://dashboard.sandbox.midtrans.com/register
+[ ] 2. Get Server Key + Client Key dari Settings → Access Keys
+[ ] 3. Update payment_config table dengan real keys
+[ ] 4. Verify: SELECT * FROM payment_config;
+
+CUSTOMER FLOW:
+[ ] 5. Login customer → Add items to cart → Checkout
+[ ] 6. Order created → Redirected to payment.html
+[ ] 7. Payment methods displayed (QRIS, GoPay, Bank Transfer, ShopeePay)
+[ ] 8. Select QRIS → Snap popup opens
+[ ] 9. QR code displayed
+[ ] 10. Scan with Midtrans Simulator → Payment success
+[ ] 11. Popup closes → Redirected to orders.html
+[ ] 12. Order shows "Lunas" badge (payment_status = paid)
+[ ] 13. Notification received "Pembayaran Berhasil"
+
+GOPAY FLOW:
+[ ] 14. Select GoPay → Deeplink/redirect
+[ ] 15. Simulate payment → Success
+[ ] 16. Order updated to paid
+
+BANK TRANSFER FLOW:
+[ ] 17. Select Bank Transfer → Choose BCA
+[ ] 18. VA number displayed
+[ ] 19. Copy VA button works
+[ ] 20. Instructions displayed clearly
+[ ] 21. Pay via Midtrans Simulator (Dashboard → Payment Simulator)
+[ ] 22. Webhook received → Order updated to paid
+
+WEBHOOK:
+[ ] 23. Setup ngrok: ngrok http 80
+[ ] 24. Set webhook URL di Midtrans dashboard
+[ ] 25. Complete payment → Check payment_notifications table
+[ ] 26. Verify is_valid = 1 (signature valid)
+[ ] 27. Verify processed_at not NULL
+
+EDGE CASES:
+[ ] 28. Try pay already-paid order → Error "Order sudah dibayar"
+[ ] 29. Close Snap popup → Order still pending (can retry)
+[ ] 30. Payment timeout/expire → Status = failed
+[ ] 31. Check GET /payments/check?order_id=X → Returns correct status
+
+=================================================================
+FIND JAGOAN FEATURE - TESTING CHECKLIST:
+=================================================================
+
+[ ] 1. Browser permission: Allow geolocation
+[ ] 2. Map loads with OSM tiles
+[ ] 3. User marker (blue pin) shows at current location
+[ ] 4. Outlet markers (red/yellow) show at correct coordinates
+[ ] 5. Distance calculated correctly (Haversine)
+[ ] 6. Click marker → bottom sheet appears
+[ ] 7. Bottom sheet shows: name, status, distance, address, hours, phone
+[ ] 8. "Order Sekarang" redirects to checkout with outlet pre-selected
+[ ] 9. Toggle Map/List view works
+[ ] 10. List view sorted by distance (nearest first)
+[ ] 11. Navbar "Find Jagoan" link works on all pages
+[ ] 12. Mobile responsive (map height, touch targets 44x44px)
+[ ] 13. Console: no JavaScript errors
+[ ] 14. Pricing: menu items show 8k-12k range (not 15k-22k)
+[ ] 15. Checkout: Ongkir = Rp 0 (free delivery)
+
+=================================================================
+ENERGY BUSINESS LOGIC:
+=================================================================
+
+1. EARN ENERGY:
+   - Order Completion: 1 point per Rp 1,000 spent (minimum 10 pts)
+     Example: Order Rp 25,000 = 25 Energy points
+   - QR Scan: Amount set by admin (default 10 pts)
+   - Admin Adjustment: Manual credit/debit by admin
+
+2. REDEEM ENERGY:
+   - Discount Rp 5k = 50 pts
+   - Discount Rp 10k = 100 pts
+   - Free Americano = 150 pts
+   - Free Kopi Jago = 200 pts
+   - Tumbler = 500 pts
+   - T-Shirt = 800 pts
+
+3. QR SCAN RULES:
+   - One QR code per customer (can't double scan)
+   - QR expires after set duration (default 24h)
+   - Scan limit enforced (e.g., first 50 customers)
+   - Invalid/expired QR → error message
+
+4. REDEMPTION:
+   - Deducts Energy immediately
+   - Creates redemption record (status: approved)
+   - Expires after 30 days if not claimed
+   - Stock checked (if limited stock reward)
+   - Notification sent to customer
+
+=================================================================
+KNOWN ISSUES:
+=================================================================
+
+1. Outlet Data Placeholder
+   - Koordinat di migration_add_outlet_data.sql adalah PLACEHOLDER
+   - Ganti dengan koordinat asli outlet Jago Coffee sebelum production
+   - Current: Jakarta (-6.9175, 107.6191) - salah koordinat
+   - Should be: Bandung area (sesuai area operasional)
+
+2. Geolocation Permission
+   - Jika user deny permission, fallback ke manual input
+   - Manual geocoding belum implement (perlu Nominatim API)
+   - Sementara: gunakan default Jakarta center
+
+3. QR Code Scanner
+   - Saat ini manual input token (text field)
+   - Camera-based QR scanner belum implement
+   - Bisa ditambahkan dengan library: jsQR atau html5-qrcode
+
+5. Energy Auto-Award Trigger
+   - Trigger MySQL sudah dibuat (award_energy_after_order)
+   - PENTING: Pastikan MySQL triggers enabled
+   - Test dengan complete order manual via admin
+
+6. Payment Integration (Midtrans)
+   - Credentials di payment_config adalah PLACEHOLDER
+   - WAJIB update dengan real Midtrans API keys
+   - Sandbox keys format: SB-Mid-server-xxx, SB-Mid-client-xxx
+   - Webhook requires ngrok untuk testing di localhost
+   - Production webhook needs real domain HTTPS
+
+7. Order Tracking System 🚴
+   - Migration adds: order_location_history, delivery_eta_log tables
+   - Migration modifies: orders table (delivery_started_at, estimated_delivery_time, actual_delivery_time)
+   - Seller app: seller/tracking-app.html untuk update GPS
+   - Customer tracking: customer/tracking.html untuk lihat lokasi real-time
+
+8. Schedule Order System 📅 NEW
+   - Migration adds: time_slots, schedule_bookings, schedule_blackout_dates tables
+   - Migration modifies: orders table (scheduled_for, time_slot_id, is_scheduled, scheduled_notes)
+   - Function: check_slot_availability() untuk validasi kapasitas
+   - Triggers: after_scheduled_order_insert, after_scheduled_order_cancel untuk booking count
+   - Default slots: 7 days x 3 time periods (08-12, 12-16, 16-20) per outlet
+   - Capacity management: 10-25 orders per slot
+   - Checkout flow: Pilih outlet → Pilih timing (now/schedule) → Pilih date+slot → Validate → Create order
+   - See: database/PAYMENT_SETUP.txt untuk detailed guide
+
+=================================================================
+NEXT FEATURES (PRIORITAS):
+=================================================================
+
+HIGH PRIORITY:
+1. ✅ Energy/Rewards System (DONE)
+2. ✅ Payment Integration (Midtrans GoPay/OVO) (DONE)
+3. ✅ Order Tracking (map + seller location + ETA) (DONE)
+4. ✅ Schedule Order (date/time picker) (DONE)
+
+MEDIUM PRIORITY:
+5. Notification Center (push/real-time)
+6. Jago Party Booking
+7. Admin: Jagoan Management (detail performance)
+8. Admin: Real-time Dashboard (WebSocket)
+9. Camera QR Scanner (customer)
+10. Admin: Energy Management (manual adjust, bulk operations)
+
+LOW PRIORITY:
+11. Customer: Favorite Products
+12. Customer: Order Rating & Review
+13. Admin: Reports & Analytics Export
+14. Seller: Mobile View Optimization
+
+=================================================================
