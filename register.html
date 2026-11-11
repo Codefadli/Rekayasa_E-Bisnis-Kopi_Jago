@@ -55,18 +55,18 @@
                     </div>
                     
                     <div class="input-group">
-                        <label>Tanggal Lahir *</label>
-                        <div class="date-selector">
-                            <select id="reg-birth-day" required>
-                                <option value="">Tanggal</option>
-                            </select>
-                            <select id="reg-birth-month" required>
-                                <option value="">Bulan</option>
-                            </select>
-                            <select id="reg-birth-year" required>
-                                <option value="">Tahun</option>
-                            </select>
-                        </div>
+                        <label>Tanggal Lahir (Opsional)</label>
+                                                <div class="date-selector" style="display: flex; gap: 8px;">
+                                                                            <select id="reg-birth-day" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                                                                                <option value="">Tanggal</option>
+                                                                            </select>
+                                                                            <select id="reg-birth-month" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                                                                                <option value="">Bulan</option>
+                                                                            </select>
+                                                                            <select id="reg-birth-year" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                                                                                <option value="">Tahun</option>
+                                                                            </select>
+                                                                        </div>
                     </div>
                     
                     <div id="register-error" style="display:none;" class="alert alert-error"></div>
