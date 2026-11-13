@@ -1,5 +1,7 @@
 ```Masuk ke Branch Masing-Masing
 
+git switch main
+
 Setiap anggota harus masuk ke branch sesuai tugasnya.
 
 Shafira — Asisten
