@@ -15,12 +15,12 @@ async function loadAnalytics() {
     try {
         KJComponents.showLoading('summary-stats');
         
-        const response = await kjRequest('orders', { method: 'GET' });
-        allOrders = response.data || [];
+        const response = await kjApi('admin/analytics');
+        const analyticsData = response || {};
         
-        console.log('[Analytics] Loaded:', allOrders.length);
+        console.log('[Analytics] Loaded:', analyticsData);
         
-        renderAnalytics();
+        renderAnalytics(analyticsData);
         
     } catch (error) {
         console.error('[Analytics] Failed to load:', error);

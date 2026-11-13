@@ -1,5 +1,4 @@
 // Shared utilities for all customer pages
-const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const token = () => localStorage.getItem('kj_token') || localStorage.getItem('token') || '';
 
 async function api(path, options = {}) {
@@ -46,38 +45,35 @@ async function loadCartCount() {
 }
 
 // Image mapping for all product pages
+// Mapping keys must match EXACTLY the menu_items.name values from the API
 const imageByName = {
-    'Kopi Jago Signature':'../kopsu%20jago.jfif',
-    'Kopi Susu Vanilla':'../Salted%20Caramel%20Latte.png',
-    'Americano':'../americano%20koja.jfif',
-    'Chocolate Latte':'../jago%20coklat.jfif',
-    'Pink Latte':'../pink%20coco.jfif',
-    'Hazelnut Latte':'../mont%20blanck%20kopi.jfif',
-    'Red Velvet Latte':'../jago%20coklat.jfif',
-    'Matcha Green Tea Latte':'../macha%20latte.jfif',
-    'Citrus Cold Brew':'../citrus%20cold.jfif'
+    // --- Kopi ---
+    'Kopi Jago Signature':   '../kopsu%20jago.jfif',        // kopsu jago.jfif
+    'Kopi Susu Vanilla':     '../kopsu%20jago.jfif',        // fallback kopi susu
+    'Kopi Susu':             '../kopsu%20jago.jfif',        // kopi susu klasik
+    'Americano':             '../americano%20koja.jfif',     // americano koja.jfif
+    'Jago Americano':        '../americano%20koja.jfif',
+    'Chocolate Latte':       '../jago%20coklat.jfif',        // jago coklat.jfif
+    'Chocolate':             '../jago%20coklat.jfif',
+    'Jago Chocolate':        '../jago%20coklat.jfif',
+    'Red Velvet Latte':      '../jago%20coklat.jfif',
+    'Pink Coco':             '../pink%20coco.jfif',          // pink coco.jfif
+    'Pink Latte':            '../pink%20coco.jfif',
+    'Hazelnut Latte':        '../mont%20blanck%20kopi.jfif', // mont blanck kopi.jfif
+    'Mont Blanc Shake':      '../mont%20blanck%20kopi.jfif',
+    'Matcha Green Tea Latte':'../macha%20latte.jfif',        // macha latte.jfif
+    'Matcha Latte':          '../macha%20latte.jfif',
+    'Citrus Cold Brew':      '../citrus%20cold.jfif',        // citrus cold.jfif
+    'Kopi Susu Jago':        '../kopsu%20jago.jfif',         // kopsu jago.jfif
+    'Salted Caramel Latte':  '../Salted%20Caramel%20Latte.png',
 };
 
 const sizeLabel = {'small':'Small','medium':'Medium','large':'Large'};
 
-// Helper function for API calls (backward compatibility)
-function api(path, options = {}) {
-    // Convert to new API format
-    if (options.body && typeof options.body !== 'string') {
-        options.body = JSON.stringify(options.body);
-    }
-    return kjApi(path, options);
-}
-
 // Helper to get size label
-function getSizeLabel(size) {
-    return sizeLabel[size] || size;
-}
 
-// Helper to get product image
-function getProductImage(name) {
-    return imageByName[name] || '../kopsu%20jago.jfif';
-}
+// API wrapper: kjRequest returns {success, message, data}
+// The async api() extracts .data; the sync api() below delegates to kjApi
 
 // Update cart badge
 async function updateCartBadge() {

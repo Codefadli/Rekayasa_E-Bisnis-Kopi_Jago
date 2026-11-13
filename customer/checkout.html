@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="../assets/css/jago-global.css">
     <link rel="stylesheet" href="../assets/css/jago-components.css">
     <link rel="stylesheet" href="../assets/css/customer-components.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         .checkout-page{background:#f8f3ee;min-height:100vh;padding-top:100px}
         .checkout-container{max-width:1200px;margin:0 auto;padding:20px 6% 60px}
@@ -25,75 +24,179 @@
         .form-label{display:block;margin-bottom:8px;font:600 14px Montserrat,sans-serif;color:#4b2e22}
         .form-input{width:100%;border:1px solid #ddd;padding:12px;border-radius:6px;font:400 14px 'Open Sans',sans-serif;resize:vertical}
         .form-input:focus{outline:2px solid #bd3d2f;outline-offset:0;border-color:#bd3d2f}
-        #map{height:320px;width:100%;border-radius:8px;margin-top:16px}
-        .outlet-card{border:2px solid #eadfd7;padding:18px;border-radius:8px;margin-bottom:12px;cursor:pointer;transition:all .2s}
-        .outlet-card:hover{border-color:#bd3d2f;background:#fef5f3}
-        .outlet-card.selected{border-color:#bd3d2f;background:#fef5f3}
-        .outlet-name{font:600 16px Montserrat,sans-serif;color:#4b2e22;margin:0 0 8px}
-        .outlet-info{font-size:14px;color:#6d5d52;margin:4px 0;line-height:1.5}
-        .distance-info{margin-top:12px;padding:12px;background:#f8f3ee;border-radius:6px;font-size:14px;color:#4b2e22;text-align:center}
-        .error-msg{color:#dc2626;font-size:14px;margin-top:8px}
-        .summary-section{position:sticky;top:100px}
-        .summary-row{display:flex;justify-content:space-between;padding:10px 0;font-size:15px;color:#4b2e22}
+        .cart-item{display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid #eadfd7}
+        .cart-item:last-child{border-bottom:none}
+        .cart-item-image{width:80px;height:80px;border-radius:8px;object-fit:cover;background:#f1e4d8}
+        .cart-item-info{flex:1}
+        .cart-item-name{font:600 15px Montserrat,sans-serif;color:#4b2e22;margin:0 0 4px}
+        .cart-item-size{font:400 12px 'Open Sans',sans-serif;color:#806d62;margin:0 0 8px}
+        .cart-item-qty{font:600 15px Montserrat,sans-serif;color:#4b2e22}
+        .cart-item-price{font:600 15px Montserrat,sans-serif;color:#bd3d2f}
+        .summary-row{display:flex;justify-content:space-between;padding:10px 0;font-size:15px;color:#4b2e22;border-bottom:1px solid #eadfd7}
         .summary-row.total{font-weight:700;font-size:20px;border-top:2px solid #eadfd7;margin-top:12px;padding-top:16px;color:#bd3d2f}
         .btn-submit{width:100%;border:0;background:#bd3d2f;color:#fff;padding:16px;border-radius:8px;cursor:pointer;font:700 14px Montserrat,sans-serif;text-transform:uppercase;margin-top:20px;transition:background .2s;min-height:54px}
         .btn-submit:hover{background:#a53527}
         .btn-submit:disabled{opacity:.6;cursor:not-allowed}
-        .schedule-calendar{margin-top:16px}
-        .calendar-days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:20px}
-        .day-card{border:2px solid #eadfd7;padding:12px 8px;border-radius:8px;text-align:center;cursor:pointer;transition:all .2s}
-        .day-card:hover{border-color:#bd3d2f;background:#fef5f3}
-        .day-card.selected{background:#bd3d2f;color:#fff;border-color:#bd3d2f}
-        .day-card.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
-        .day-date{font:700 18px Montserrat,sans-serif;margin:0 0 4px}
-        .day-name{font-size:11px;text-transform:uppercase;opacity:.8}
-        .time-slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
-        .time-slot{border:2px solid #eadfd7;padding:12px;border-radius:8px;text-align:center;cursor:pointer;transition:all .2s}
-        .time-slot:hover{border-color:#bd3d2f;background:#fef5f3}
-        .time-slot.selected{background:#bd3d2f;color:#fff;border-color:#bd3d2f}
-        .time-slot.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
-        .time-slot-time{font:600 14px Montserrat,sans-serif;margin:0 0 4px}
-        .time-slot-availability{font-size:11px;opacity:.8}
-        .blackout-notice{background:#fee;border:1px solid #fcc;color:#c33;padding:12px;border-radius:6px;text-align:center;margin-top:12px;font-size:13px}
-        @media(max-width:1024px){
-            .checkout-grid{grid-template-columns:1fr;gap:24px}
-            .summary-section{position:relative;top:0}
-            .calendar-days{grid-template-columns:repeat(4,1fr)}
-            .time-slots-grid{grid-template-columns:repeat(2,1fr)}
+        .payment-methods{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+        .payment-option{border:2px solid #eadfd7;border-radius:8px;padding:16px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px}
+        .payment-option:hover{border-color:#bd3d2f;background:#fef5f3}
+        .payment-option.selected{border-color:#bd3d2f;background:#fef5f3}
+        .payment-option input{margin:0}
+        .payment-option-icon{font-size:24px;width:40px}
+        .payment-option-info{flex:1}
+        .payment-option-name{font:600 14px Montserrat,sans-serif;color:#4b2e22}
+        .payment-option-desc{font:400 12px 'Open Sans',sans-serif;color:#806d62}
+        .error-msg{color:#dc2626;font-size:14px;margin-top:8px}
+        .payment-btn{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:2px solid #eadfd7;border-radius:8px;background:#fff;color:#4b2e22;padding:16px;cursor:pointer;transition:all .2s;font:400 14px 'Open Sans',sans-serif}
+        .payment-btn:hover{border-color:#bd3d2f;background:#fef5f3}
+        .payment-btn.v{border-color:#bd3d2f;background:#fef5f3;box-shadow:0 0 0 1px #bd3d2f inset}
+        .payment-btn-icon{font-size:24px;width:40px;text-align:center;flex-shrink:0}
+        .payment-btn-info{flex:1;min-width:0}
+        .payment-btn-name{font:600 14px Montserrat,sans-serif;color:#4b2e22;margin-bottom:2px}
+        .payment-btn-desc{font:400 12px 'Open Sans',sans-serif;color:#806d62;line-height:1.4}
+        .payment-btn-check{font:700 16px Montserrat,sans-serif;color:#bd3d2f;opacity:0;transition:opacity .2s;flex-shrink:0}
+        .payment-btn.v .payment-btn-check{opacity:1}
+        .bank-detail-box{margin-top:16px;border:1px solid #eadfd7;border-radius:8px;padding:20px;background:#fff}
+        .bank-detail-title{font:600 16px Montserrat,sans-serif;color:#4b2e22;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+        .bank-transfer-icon{color:#bd3d2f;font-size:18px}
+        .bank-help{color:#806d62;font-size:14px;background:#f1e4d8;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center}
+        .bank-list{display:flex;flex-direction:column;gap:8px}
+        .bank-item{display:flex;align-items:center;gap:12px;border:2px solid #eadfd7;border-radius:8px;padding:12px 16px;background:#fff;cursor:pointer;transition:all .2s;font:600 14px Montserrat,sans-serif;color:#4b2e22;min-height:50px;width:100%;text-align:left}
+        .bank-item:hover{border-color:#bd3d2f;background:#fef5f3}
+        .bank-item.selected{border-color:#bd3d2f;background:#fef5f3;box-shadow:0 0 0 1px #bd3d2f inset}
+        .bank-item-logo{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;flex-shrink:0}
+        .bank-item-name{flex:1}
+        .bank-item-check{color:#bd3d2f;opacity:0;transition:opacity .2s;flex-shrink:0}
+        .bank-item.selected .bank-item-check{opacity:1}
+        .qris-box{margin-top:16px;text-align:center;border:1px solid #eadfd7;border-radius:8px;padding:20px;background:#fff}
+        .qris-image{width:200px;height:200px;border-radius:8px;object-fit:cover;margin:0 auto 12px;display:block}
+        .qris-title{font:600 16px Montserrat,sans-serif;color:#4b2e22;margin-bottom:8px}
+        .qris-note{font:400 12px 'Open Sans',sans-serif;color:#806d62}
+        .receipt-section{margin-top:32px}
+        .receipt-box{
+            max-width:420px;margin:0 auto;background:#fff;border:1px solid #eadfd7;
+            border-radius:16px;box-shadow:0 8px 32px rgba(75,46,34,.12);overflow:hidden;position:relative
         }
-        @media(max-width:768px){
-            .checkout-page{padding-top:80px}
-            .checkout-container{padding:20px 4% 40px}
-            .checkout-title{font-size:26px;margin-bottom:24px}
-            .toggle-group{flex-direction:column}
-            .checkout-main,.checkout-sidebar{padding:20px}
-            #map{height:250px}
+        .receipt-box::before,.receipt-box::after{
+            content:'';position:absolute;left:-10px;right:-10px;height:14px;
+            background:radial-gradient(circle at 10px 0,transparent 10px,#fff 11px) repeat-x;
+            background-size:20px 14px;z-index:2
         }
+        .receipt-box::before{top:-7px;transform:rotate(180deg)}
+        .receipt-box::after{bottom:-7px}
+        .receipt-header{
+            background:linear-gradient(135deg,#bd3d2f 0%,#8a2a1f 100%);
+            color:#fff;text-align:center;padding:26px 20px 48px;position:relative
+        }
+        .receipt-header::after{
+            content:'';position:absolute;left:0;right:0;bottom:-1px;height:24px;
+            background:radial-gradient(circle at 12px 24px,#fff 12px,transparent 13px) repeat-x;
+            background-size:24px 24px
+        }
+        .receipt-brand{font:900 30px Montserrat,sans-serif;letter-spacing:6px;line-height:1}
+        .receipt-tagline{font:400 11px 'Open Sans',sans-serif;opacity:.8;margin-top:8px;letter-spacing:.5px}
+        .receipt-confirm{padding:20px 24px 0;text-align:center}
+        .receipt-check-anim{width:64px;height:64px;margin:0 auto 14px;position:relative}
+        .receipt-check-circle{
+            width:64px;height:64px;border-radius:50%;border:3px solid #4caf50;
+            display:flex;align-items:center;justify-content:center;
+            animation:receiptCheckPop .5s cubic-bezier(.2,1.4,.5,1) forwards;position:relative
+        }
+        .receipt-check-circle::before{
+            content:'';position:absolute;inset:-3px;border-radius:50%;
+            border:3px solid #4caf50;animation:receiptCheckPulse 1.6s ease-out .5s infinite
+        }
+        .receipt-check-circle::after{
+            content:'';width:26px;height:14px;border-left:4px solid #4caf50;border-bottom:4px solid #4caf50;
+            transform:rotate(-45deg) translate(2px,-3px);transform-origin:center;
+            animation:receiptCheckDraw .45s ease-out .35s both
+        }
+        @keyframes receiptCheckPop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+        @keyframes receiptCheckDraw{0%{width:0;height:0;opacity:0}100%{width:26px;height:14px;opacity:1}}
+        @keyframes receiptCheckPulse{0%{transform:scale(1);opacity:.5}70%{transform:scale(1.35);opacity:0}100%{transform:scale(1.35);opacity:0}}
+        .receipt-success-title{font:800 19px Montserrat,sans-serif;color:#2e7d32;letter-spacing:-.2px}
+        .receipt-success-sub{font:400 12px 'Open Sans',sans-serif;color:#806d62;margin-top:6px;line-height:1.5}
+        .receipt-meta-grid{padding:8px 24px 0}
+        .receipt-meta-row{
+            display:flex;justify-content:space-between;align-items:center;gap:12px;
+            padding:9px 0;border-bottom:1px dashed #efe6df;font-size:13px
+        }
+        .receipt-meta-row:last-child{border-bottom:none}
+        .receipt-meta-label{color:#9c8878;font:400 12px 'Open Sans',sans-serif;flex-shrink:0}
+        .receipt-meta-value{font:600 13px Montserrat,sans-serif;color:#4b2e22;text-align:right;word-break:break-word}
+        .receipt-badge{
+            font:700 10px Montserrat,sans-serif;letter-spacing:.6px;text-transform:uppercase;
+            padding:4px 10px;border-radius:20px;white-space:nowrap
+        }
+        .receipt-badge-pending{background:#fff4e5;color:#b26a00}
+        .receipt-badge-processing{background:#e8f1fb;color:#1565c0}
+        .receipt-badge-completed,.receipt-badge-paid{background:#e8f5e9;color:#2e7d32}
+        .receipt-badge-cancelled{background:#fdecea;color:#c62828}
+        .receipt-va{
+            margin:16px 24px 0;padding:14px 16px;background:#fdf7f4;
+            border:1px dashed #e2c9bc;border-radius:10px;text-align:center
+        }
+        .receipt-va-label{font:600 10px Montserrat,sans-serif;color:#9c8878;letter-spacing:1.2px;text-transform:uppercase}
+        .receipt-va-number{font:700 19px 'Courier New',monospace;color:#bd3d2f;letter-spacing:2px;margin:6px 0 10px}
+        .receipt-va-copy{
+            display:inline-block;background:#bd3d2f;color:#fff;font:600 11px Montserrat,sans-serif;
+            padding:6px 18px;border-radius:6px;cursor:pointer;transition:background .2s
+        }
+        .receipt-va-copy:hover{background:#a53527}
+        .receipt-divider{
+            height:1px;margin:14px 24px;
+            background:repeating-linear-gradient(90deg,#e5d8cf 0,#e5d8cf 7px,transparent 7px,transparent 14px)
+        }
+        .receipt-items{padding:0 24px;display:flex;flex-direction:column;gap:2px}
+        .receipt-item{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid #f7f0eb}
+        .receipt-item:last-child{border-bottom:none}
+        .receipt-item-info{flex:1;min-width:0}
+        .receipt-item-name{display:block;font:600 14px Montserrat,sans-serif;color:#4b2e22;line-height:1.35}
+        .receipt-item-meta{display:block;font:400 11px 'Open Sans',sans-serif;color:#9c8878;margin-top:3px}
+        .receipt-item-price{font:600 14px Montserrat,sans-serif;color:#4b2e22;white-space:nowrap}
+        .receipt-summary{padding:14px 24px 20px;display:flex;flex-direction:column;gap:7px}
+        .receipt-summary-row{display:flex;justify-content:space-between;font:400 13px 'Open Sans',sans-serif;color:#806d62}
+        .receipt-summary-row strong{font:600 13px Montserrat,sans-serif;color:#4b2e22}
+        .receipt-total-row{
+            display:flex;justify-content:space-between;align-items:baseline;
+            margin-top:8px;padding-top:12px;border-top:2px solid #f0dfd6;
+            font:700 13px Montserrat,sans-serif;color:#bd3d2f;letter-spacing:1px
+        }
+        .receipt-total-row strong{font:900 21px Montserrat,sans-serif;color:#bd3d2f;letter-spacing:-.5px}
+        .receipt-foot{
+            background:#fdfaf8;border-top:1px solid #f2e8e1;padding:16px 24px;text-align:center;
+            font:400 11px 'Open Sans',sans-serif;color:#a8968a;line-height:1.7
+        }
+        @media(max-width:480px){
+            .receipt-brand{font-size:25px;letter-spacing:4px}
+            .receipt-meta-grid,.receipt-items,.receipt-summary,.receipt-divider,
+            .receipt-foot,.receipt-va{margin-left:0;margin-right:0}
+            .receipt-meta-grid{padding:8px 18px 0}
+            .receipt-items{padding:0 18px}
+            .receipt-summary{padding:14px 18px 18px}
+            .receipt-va{margin:14px 18px 0}
+            .receipt-divider{margin:14px 18px}
+            .receipt-foot{padding:14px 18px}
+        }
+        @media(max-width:1024px){.checkout-grid{grid-template-columns:1fr;gap:24px}}
     </style>
 </head>
 <body class="customer-page checkout-page">
     <!-- NAVBAR -->
-    <nav class="customer-navbar" id="navbar">
+    <nav class="customer-navbar scrolled" id="navbar">
         <a href="home.html">
             <img src="../logo jago2.png" alt="Jago Coffee" class="navbar-logo">
         </a>
-        
         <button class="navbar-hamburger" id="hamburger" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span>
         </button>
-        
         <ul class="navbar-menu" id="nav-menu">
             <li><a href="home.html#home" class="navbar-link">Home</a></li>
             <li><a href="home.html#menu" class="navbar-link">Menu</a></li>
-            <li><a href="find-jagoan.html" class="navbar-link">Find Jagoan</a></li>
             <li><a href="cart.html" class="navbar-link">Keranjang <span id="cart-badge" class="navbar-badge">(0)</span></a></li>
             <li><a href="wishlist.html" class="navbar-link">Wishlist</a></li>
             <li><a href="orders.html" class="navbar-link">Pesanan</a></li>
-            <li><a href="jago-party.html" class="navbar-link">Jago Party</a></li>
         </ul>
-        
         <div class="navbar-account" id="account-area"></div>
     </nav>
 
@@ -103,59 +206,17 @@
         <div class="checkout-grid">
             <div class="checkout-main">
                 <section class="section-box">
-                    <h2 class="section-title">Metode Pengambilan</h2>
-                    <div class="toggle-group">
-                        <button class="toggle-btn active" data-type="pickup" onclick="selectFulfillment('pickup')">
-                            Ambil di Tempat
-                        </button>
-                        <button class="toggle-btn" data-type="delivery" onclick="selectFulfillment('delivery')">
-                            Antar ke Lokasi
-                        </button>
-                    </div>
-                </section>
-
-                <section id="pickup-section" class="section-box">
-                    <h2 class="section-title">Pilih Outlet</h2>
-                    <div id="outlet-list"></div>
-                </section>
-
-                <section id="delivery-section" class="section-box" style="display:none">
-                    <h2 class="section-title">Alamat Pengiriman</h2>
-                    <div class="form-group">
-                        <label class="form-label" for="delivery-address">Alamat Lengkap</label>
-                        <textarea id="delivery-address" class="form-input" rows="4" placeholder="Masukkan alamat lengkap Anda"></textarea>
-                    </div>
-                    <div id="map"></div>
-                    <div id="distance-info" class="distance-info" style="display:none"></div>
-                    <p id="delivery-error" class="error-msg"></p>
-                </section>
-
-                <!-- Schedule Order Section -->
-                <section class="section-box">
-                    <h2 class="section-title">Waktu Pengambilan</h2>
-                    <div class="toggle-group">
-                        <button class="toggle-btn active" data-timing="now" onclick="selectTiming('now')">
-                            Sekarang
-                        </button>
-                        <button class="toggle-btn" data-timing="schedule" onclick="selectTiming('schedule')">
-                            📅 Jadwalkan
-                        </button>
-                    </div>
-                    
-                    <div id="schedule-section" style="display:none">
-                        <div class="form-group">
-                            <label class="form-label">Pilih Tanggal & Waktu</label>
-                            <div id="schedule-calendar"></div>
-                        </div>
-                        <div id="schedule-error" class="error-msg"></div>
-                    </div>
+                    <h2 class="section-title">Detail Pesanan</h2>
+                    <div id="order-items-container"></div>
                 </section>
 
                 <section class="section-box">
-                    <h2 class="section-title">Catatan Pesanan</h2>
-                    <div class="form-group">
-                        <textarea id="order-notes" class="form-input" rows="3" placeholder="Catatan tambahan (opsional)"></textarea>
+                    <h2 class="section-title">Metode Pembayaran</h2>
+                    <div class="payment-methods" id="payment-methods">
+                        <!-- Payment options will be rendered here -->
                     </div>
+                    <div id="bank-transfer-detail"></div>
+                    <div id="qris-section"></div>
                 </section>
             </div>
 
@@ -163,29 +224,30 @@
                 <div class="summary-section">
                     <h2 class="section-title">Ringkasan Pesanan</h2>
                     <div id="order-summary"></div>
-                    <button id="btn-checkout" class="btn-submit">Lanjut ke Pembayaran</button>
+                    <a href="orders.html" id="btn-check-detail" class="btn-submit" style="display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:20px">Cek Detail Pesanan</a>
+                    <button id="btn-submit-order" class="btn-submit" style="display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:12px;width:100%">Lanjut Ke Pembayaran</button>
                 </div>
             </aside>
         </div>
     </main>
-    
+
+    <section class="receipt-section" id="receipt-section">
+        <!-- Digital receipt will be rendered here -->
+    </section>
+
     <footer class="customer-footer">
         <div class="footer-grid">
             <div class="footer-col">
                 <img src="../logo jago2.png" alt="Jago Coffee" class="footer-logo">
                 <p class="footer-text">Kopi berkualitas premium dari 100% Arabica, diantar langsung ke lokasimu. Cepat, segar, terjangkau.</p>
             </div>
-            
             <div class="footer-col">
                 <h4>Menu</h4>
                 <ul class="footer-links">
                     <li><a href="home.html#home">Home</a></li>
                     <li><a href="home.html#menu">Menu</a></li>
-                    <li><a href="find-jagoan.html">Find Jagoan</a></li>
-                    <li><a href="jago-party.html">Jago Party</a></li>
                 </ul>
             </div>
-            
             <div class="footer-col">
                 <h4>Account</h4>
                 <ul class="footer-links">
@@ -194,7 +256,6 @@
                     <li><a href="profile.html">Profile</a></li>
                 </ul>
             </div>
-            
             <div class="footer-col">
                 <div class="footer-promo">
                     <span class="footer-promo-badge">Special</span>
@@ -204,13 +265,11 @@
                 </div>
             </div>
         </div>
-        
         <div class="footer-copyright">
             © 2026 Kopi Jago. Minuman favorit, diantar dengan jago.
         </div>
     </footer>
-    
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script src="../assets/js/jago-core.js"></script>
     <script src="../assets/js/jago-components.js"></script>
     <script src="../assets/js/jago-navbar.js"></script>

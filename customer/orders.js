@@ -7,13 +7,27 @@ let allOrders = [];
 let currentStatus = 'all';
 
 const STATUS_CONFIG = {
-    pending: { label: 'Pending', color: 'warning' },
+    pending: { label: 'Menunggu Pembayaran', color: 'warning' },
     confirmed: { label: 'Dikonfirmasi', color: 'info' },
     processing: { label: 'Diproses', color: 'info' },
     ready: { label: 'Siap', color: 'info' },
     on_delivery: { label: 'Dikirim', color: 'info' },
     completed: { label: 'Selesai', color: 'success' },
     cancelled: { label: 'Dibatalkan', color: 'error' }
+};
+
+const PAYMENT_STATUS_LABEL = {
+    pending: 'Belum Dibayar',
+    paid: 'Lunas',
+    failed: 'Gagal',
+    refunded: 'Dikembalikan'
+};
+
+const PAYMENT_METHOD_LABEL = {
+    cash: 'Tunai (COD)',
+    qris: 'QRIS',
+    bank_transfer: 'Transfer Bank',
+    ewallet: 'E-Wallet'
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -23,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         else window.location.href = 'home.html';
         return;
     }
-    
+
     setupTabs();
     await loadOrders();
 });
@@ -42,7 +56,7 @@ function setupTabs() {
 async function loadOrders() {
     const container = document.getElementById('orders-container');
     showLoading(container);
-    
+
     try {
         allOrders = await kjApi('orders');
         console.log('[Orders] Loaded:', allOrders.length);
@@ -55,35 +69,80 @@ async function loadOrders() {
     }
 }
 
+/**
+ * Filter order berdasarkan tab:
+ *  - all              : semua pesanan
+ *  - payment_process  : belum lunas & belum dibatalkan (menunggu pembayaran)
+ *  - completed        : status selesai
+ *  - cancelled        : status dibatalkan
+ *  - history          : riwayat pembelian (sudah dibayar)
+ */
+function filterByTab(status) {
+    switch (status) {
+        case 'payment_process':
+            return allOrders.filter(o =>
+                o.status !== 'cancelled' &&
+                o.status !== 'completed' &&
+                o.payment_status !== 'paid'
+            );
+        case 'completed':
+            return allOrders.filter(o => o.payment_status === 'paid');
+        case 'cancelled':
+            return allOrders.filter(o => o.status === 'cancelled');
+        case 'history':
+            return allOrders.filter(o => o.payment_status === 'paid');
+        case 'all':
+        default:
+            return allOrders;
+    }
+}
+
+const EMPTY_MESSAGE = {
+    all: 'Anda belum memiliki pesanan.',
+    payment_process: 'Tidak ada pesanan yang menunggu pembayaran.',
+    completed: 'Belum ada pesanan yang selesai.',
+    cancelled: 'Tidak ada pesanan yang dibatalkan.',
+    history: 'Belum ada riwayat pembelian. Riwayat muncul setelah pembayaran lunas.'
+};
+
 function renderOrders() {
     const container = document.getElementById('orders-container');
-    const filtered = currentStatus === 'all' ? allOrders : allOrders.filter(o => o.status === currentStatus);
-    
+    const filtered = filterByTab(currentStatus);
+
     if (filtered.length === 0) {
         showEmptyState(container, {
             icon: '📦',
             title: 'Tidak Ada Pesanan',
-            message: currentStatus === 'all' ? 'Anda belum memiliki pesanan.' : `Tidak ada pesanan dengan status "${STATUS_CONFIG[currentStatus]?.label || currentStatus}".`,
+            message: EMPTY_MESSAGE[currentStatus] || 'Tidak ada pesanan.',
             actionText: 'Lihat Menu',
             onAction: () => window.location.href = 'home.html#menu'
         });
         return;
     }
-    
-    container.innerHTML = filtered.map(order => `
+
+    container.innerHTML = filtered.map(order => {
+        const statusCfg = STATUS_CONFIG[order.status] || { label: order.status, color: 'neutral' };
+        const items = order.items || [];
+        const visibleItems = items.slice(0, 3);
+        const remaining = items.length - visibleItems.length;
+
+        return `
         <div class="order-card">
             <div class="order-header">
                 <div>
                     <h3 class="order-number">${esc(order.order_number)}</h3>
                     <p class="order-date">${formatDate(order.created_at)}</p>
                 </div>
-                <span class="kj-badge kj-badge-${STATUS_CONFIG[order.status]?.color || 'neutral'}">
-                    ${esc(STATUS_CONFIG[order.status]?.label || order.status)}
-                </span>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                    <span class="kj-badge kj-badge-${statusCfg.color}">${esc(statusCfg.label)}</span>
+                    <span style="font:600 11px var(--font-body);color:var(--jago-gray-700);text-transform:uppercase;letter-spacing:.04em">
+                        ${esc(PAYMENT_STATUS_LABEL[order.payment_status] || order.payment_status || '-')}
+                    </span>
+                </div>
             </div>
-            
+
             <div class="order-items">
-                ${(order.items || []).slice(0, 3).map(item => `
+                ${visibleItems.map(item => `
                     <div class="order-item">
                         <img src="${esc(getProductImage(item.name))}" alt="${esc(item.name)}" class="order-item-image">
                         <div class="order-item-info">
@@ -92,47 +151,111 @@ function renderOrders() {
                         </div>
                     </div>
                 `).join('')}
-                ${(order.items || []).length > 3 ? `<p style="font-size: 12px; color: var(--jago-gray-700); margin-top: 8px;">+${(order.items || []).length - 3} item lainnya</p>` : ''}
+                ${remaining > 0 ? `<p style="font-size: 12px; color: var(--jago-gray-700); margin-top: 8px;">+${remaining} item lainnya</p>` : ''}
             </div>
-            
+
             <div class="order-footer">
                 <div class="order-total">Total: ${formatRupiah(order.total_amount)}</div>
                 <div class="order-actions">
                     ${order.status === 'on_delivery' || order.status === 'ready' ? `<a href="tracking.html?order_id=${order.id}" class="btn btn-primary btn-sm">Lacak</a>` : ''}
-                    <button class="btn btn-secondary btn-sm" onclick="viewDetail(${order.id})">Detail</button>
+                    <button class="btn btn-secondary btn-sm" onclick="viewDetail(${order.id})">Lihat Struk</button>
                 </div>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
+/**
+ * Struk digital — mencerminkan kondisi transaksi sesungguhnya
+ * (status pesanan, status pembayaran, metode bayar, rincian biaya, waktu).
+ */
 async function viewDetail(orderId) {
     try {
         const order = await kjApi(`orders/${orderId}`);
+        const statusCfg = STATUS_CONFIG[order.status] || { label: order.status, color: 'neutral' };
+        const items = order.items || [];
+        const subtotal = Number(order.subtotal || 0);
+        const discount = Number(order.discount_amount || 0);
+        const shipping = Number(order.shipping_cost || 0);
+        const total = Number(order.total_amount || 0);
+
+        const itemsHtml = items.map(item => `
+            <div class="receipt-item">
+                <div class="receipt-item-info">
+                    <span class="receipt-item-name">${esc(item.name)}</span>
+                    <span class="receipt-item-meta">${item.qty} x ${formatRupiah(item.price)}</span>
+                </div>
+                <div class="receipt-item-price">${formatRupiah(Number(item.price) * Number(item.qty))}</div>
+            </div>
+        `).join('');
+
         KJModal.show({
-            title: order.order_number,
+            title: 'Struk Digital',
             size: 'medium',
             html: `
-                <div style="padding: 8px 0;">
-                    <p><strong>Status:</strong> <span class="kj-badge kj-badge-${STATUS_CONFIG[order.status]?.color}">${STATUS_CONFIG[order.status]?.label}</span></p>
-                    <p><strong>Tanggal:</strong> ${formatDate(order.created_at)}</p>
-                    <p><strong>Tipe:</strong> ${order.fulfillment_type === 'delivery' ? 'Delivery' : 'Pickup'}</p>
-                    ${order.address_line ? `<p><strong>Alamat:</strong> ${esc(order.address_line)}, ${esc(order.city)}</p>` : ''}
-                    <hr style="margin: 16px 0; border: none; border-top: 1px solid var(--jago-gray-200);">
-                    <h4 style="margin: 16px 0 8px;">Items:</h4>
-                    ${(order.items || []).map(item => `<p>• ${esc(item.name)} (${item.qty}x) - ${formatRupiah(item.price * item.qty)}</p>`).join('')}
-                    <hr style="margin: 16px 0;">
-                    <p><strong>Subtotal:</strong> ${formatRupiah(order.subtotal)}</p>
-                    <p><strong>Diskon:</strong> ${formatRupiah(order.discount_amount)}</p>
-                    <p><strong>Ongkir:</strong> ${formatRupiah(order.shipping_cost)}</p>
-                    <p style="font-size: 18px; font-weight: 700; color: var(--jago-red);"><strong>Total:</strong> ${formatRupiah(order.total_amount)}</p>
+                <div class="receipt-modal">
+                    <div class="receipt-header">
+                        <div class="receipt-brand">KOPI JAGO</div>
+                        <div class="receipt-tagline">Minuman favorit, diantar dengan jago.</div>
+                    </div>
+
+                    <div class="receipt-meta-grid">
+                        <div class="receipt-meta-row">
+                            <span class="receipt-meta-label">No. Pesanan</span>
+                            <span class="receipt-meta-value">${esc(order.order_number)}</span>
+                        </div>
+                        <div class="receipt-meta-row">
+                            <span class="receipt-meta-label">Tanggal</span>
+                            <span class="receipt-meta-value">${formatDate(order.created_at)}</span>
+                        </div>
+                        <div class="receipt-meta-row">
+                            <span class="receipt-meta-label">Tipe</span>
+                            <span class="receipt-meta-value">${esc(order.fulfillment_type === 'delivery' ? 'Delivery' : 'Pickup')}</span>
+                        </div>
+                        <div class="receipt-meta-row">
+                            <span class="receipt-meta-label">Status Pesanan</span>
+                            <span class="receipt-badge receipt-badge-${statusCfg.color}">${esc(statusCfg.label)}</span>
+                        </div>
+                        <div class="receipt-meta-row">
+                            <span class="receipt-meta-label">Metode Bayar</span>
+                            <span class="receipt-meta-value">${esc(PAYMENT_METHOD_LABEL[order.payment_method] || order.payment_method || '-')}</span>
+                        </div>
+                    </div>
+
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-items">${itemsHtml}</div>
+
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-summary">
+                        <div class="receipt-summary-row">
+                            <span>Subtotal</span>
+                            <strong>${formatRupiah(subtotal)}</strong>
+                        </div>
+                        ${discount > 0 ? `<div class="receipt-summary-row"><span>Diskon</span><strong>-${formatRupiah(discount)}</strong></div>` : ''}
+                        <div class="receipt-summary-row">
+                            <span>Ongkir</span>
+                            <strong>${shipping > 0 ? formatRupiah(shipping) : 'GRATIS'}</strong>
+                        </div>
+                        <div class="receipt-summary-row receipt-total-row">
+                            <span>TOTAL</span>
+                            <strong>${formatRupiah(total)}</strong>
+                        </div>
+                    </div>
+
+                    <div class="receipt-foot">
+                        Terima kasih telah memesan di Kopi Jago.<br>
+                        Struk ini dibuat otomatis oleh sistem.
+                    </div>
                 </div>
             `,
             showConfirm: false,
             cancelText: 'Tutup'
         });
     } catch (error) {
-        KJToast.error('Gagal memuat detail: ' + error.message);
+        KJToast.error('Gagal memuat struk: ' + error.message);
     }
 }
 

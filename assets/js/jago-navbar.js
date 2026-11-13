@@ -81,17 +81,21 @@ class JagoNavbar {
     
     updateAccountDisplay() {
         if (!this.accountArea) return;
-        
+
         const user = KJAuth.getUser();
-        
+
         if (KJAuth.isAuthenticated() && user) {
+            const root = kjApplicationRoot();
             this.accountArea.innerHTML = `
                 <div class="navbar-user">
                     <span>Halo, ${esc(user.name || 'Customer')}</span>
                 </div>
+                <a href="${root}/customer/checkout.html" class="navbar-checkout" title="Checkout" aria-label="Checkout">
+                                    <img src="${root}/new-icon.png" alt="Checkout" class="navbar-checkout-icon">
+                                </a>
                 <button id="navbar-logout" class="navbar-logout">Logout</button>
             `;
-            
+
             // Attach logout handler
             const logoutBtn = document.getElementById('navbar-logout');
             if (logoutBtn) {
@@ -100,14 +104,14 @@ class JagoNavbar {
                         'Apakah Anda yakin ingin logout?',
                         'Konfirmasi Logout'
                     );
-                    
+
                     if (confirmed) {
                         try {
                             await kjRequest('auth/logout', { method: 'POST' });
                         } catch (error) {
                             console.error('[Navbar] Logout error:', error);
                         }
-                        
+
                         KJAuth.logout();
                     }
                 });

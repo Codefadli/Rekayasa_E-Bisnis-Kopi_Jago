@@ -14,7 +14,6 @@
             <ul>
                 <li><a href="index.html">ABOUT US</a></li>
                 <li><a href="index.html#menu">MENU</a></li>
-                <li><a href="customer/find-jagoan.html">FIND JAGOAN</a></li>
             </ul>
         </nav>
         <div class="nav-auth">
@@ -27,7 +26,7 @@
             <source src="video background.mp4" type="video/mp4">
         </video>
         <div class="video-overlay"></div>
-        
+
         <div class="account-container">
             <div class="account-card">
                 <h2 class="text-center mb-lg">Create Account</h2>
@@ -56,17 +55,17 @@
                     
                     <div class="input-group">
                         <label>Tanggal Lahir (Opsional)</label>
-                                                <div class="date-selector" style="display: flex; gap: 8px;">
-                                                                            <select id="reg-birth-day" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
-                                                                                <option value="">Tanggal</option>
-                                                                            </select>
-                                                                            <select id="reg-birth-month" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
-                                                                                <option value="">Bulan</option>
-                                                                            </select>
-                                                                            <select id="reg-birth-year" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
-                                                                                <option value="">Tahun</option>
-                                                                            </select>
-                                                                        </div>
+                        <div class="date-selector" style="display: flex; gap: 8px;">
+                            <select id="reg-birth-day" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc; pointer-events: auto; z-index: 100;">
+                                <option value="">Tanggal</option>
+                            </select>
+                            <select id="reg-birth-month" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc; pointer-events: auto; z-index: 100;">
+                                <option value="">Bulan</option>
+                            </select>
+                            <select id="reg-birth-year" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc; pointer-events: auto; z-index: 100;">
+                                <option value="">Tahun</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div id="register-error" style="display:none;" class="alert alert-error"></div>
@@ -90,10 +89,10 @@
         const daySelect = document.getElementById('reg-birth-day');
         const monthSelect = document.getElementById('reg-birth-month');
         const yearSelect = document.getElementById('reg-birth-year');
-        
-        // Initialize date dropdowns
+
         function initializeDateSelectors() {
-            // Populate days (1-31)
+            // Clear first, then populate days (1-31)
+            daySelect.innerHTML = '<option value="">Tanggal</option>';
             for (let i = 1; i <= 31; i++) {
                 const option = document.createElement('option');
                 option.value = i;
@@ -101,18 +100,20 @@
                 daySelect.appendChild(option);
             }
             
-            // Populate months (1-12)
+            // Populate months (1-12) - tampil nama bulan saja tanpa angka
             const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
-                              'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                               'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            monthSelect.innerHTML = '<option value="">Bulan</option>';
             for (let i = 1; i <= 12; i++) {
                 const option = document.createElement('option');
                 option.value = i;
-                option.textContent = `${i} - ${monthNames[i-1]}`;
+                option.textContent = monthNames[i-1];
                 monthSelect.appendChild(option);
             }
             
             // Populate years (current year down to 100 years ago)
             const currentYear = new Date().getFullYear();
+            yearSelect.innerHTML = '<option value="">Tahun</option>';
             for (let i = currentYear; i >= currentYear - 100; i--) {
                 const option = document.createElement('option');
                 option.value = i;
@@ -120,11 +121,7 @@
                 yearSelect.appendChild(option);
             }
         }
-        
-        // Call initialization
-        initializeDateSelectors();
-        
-        // Update day options based on selected month and year
+
         function updateDayOptions() {
             const selectedDay = daySelect.value;
             const month = parseInt(monthSelect.value) || 1;
@@ -154,28 +151,24 @@
                 daySelect.value = selectedDay;
             }
         }
-        
-        // Update days when month or year changes
-        monthSelect.addEventListener('change', updateDayOptions);
-        yearSelect.addEventListener('change', updateDayOptions);
-        
+
         function showError(message) {
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
             successDiv.style.display = 'none';
         }
-        
+
         function showSuccess(message) {
             successDiv.textContent = message;
             successDiv.style.display = 'block';
             errorDiv.style.display = 'none';
         }
-        
+
         function hideMessages() {
             errorDiv.style.display = 'none';
             successDiv.style.display = 'none';
         }
-        
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             hideMessages();
@@ -184,26 +177,25 @@
             const email = document.getElementById('reg-email').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
             const password = document.getElementById('reg-password').value;
-            
             const day = daySelect.value;
             const month = monthSelect.value;
             const year = yearSelect.value;
-            
+
             if (!name || !email || !password) {
                 showError('Nama, email, dan password wajib diisi');
                 return;
             }
-            
+
             if (!day || !month || !year) {
                 showError('Tanggal lahir harus diisi lengkap');
                 return;
             }
-            
+
             if (password.length < 8) {
                 showError('Password minimal 8 karakter');
                 return;
             }
-            
+
             // Format birth date as YYYY-MM-DD with zero padding
             const birthDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
             
@@ -213,14 +205,14 @@
                 showError('Tanggal lahir tidak valid');
                 return;
             }
-            
+
             btnRegister.disabled = true;
             btnRegister.textContent = 'Mendaftar...';
-            
+
             try {
-                const response = await fetch('./backend/api/index.php', {
+                const response = await fetch('/backend/api/index.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type: application/json' },
                     body: JSON.stringify({
                         _path: 'auth/register',
                         name,
@@ -230,15 +222,34 @@
                         birth_date: birthDate
                     })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
-                    showSuccess('Registrasi berhasil! Silakan login dengan akun Anda.');
+                    showSuccess('Registrasi berhasil! Sedang memproses masuk...');
                     form.reset();
+
+                    // Auto-login setelah registrasi agar user langsung masuk ke homepage customer
+                    try {
+                        const loginResp = await fetch('/backend/api/index.php/auth/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type: application/json' },
+                            body: JSON.stringify({ email, password })
+                        });
+                        const loginData = await loginResp.json();
+
+                        if (loginData.success && loginData.data) {
+                            localStorage.setItem('kj_token', loginData.data.token);
+                            localStorage.setItem('kj_role', loginData.data.role);
+                            localStorage.setItem('kj_user', JSON.stringify(loginData.data.user));
+                        }
+                    } catch (_) {
+                        // Gagal auto-login: abaikan, user masih akan diarahkan ke home
+                    }
+
                     setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 2000);
+                        window.location.href = 'customer/home.html';
+                    }, 1500);
                 } else {
                     showError(result.message || 'Registrasi gagal');
                     btnRegister.disabled = false;
@@ -251,9 +262,11 @@
                 btnRegister.textContent = 'Create Account';
             }
         });
-        
+
         // Initialize on page load
         initializeDateSelectors();
+        monthSelect.addEventListener('change', updateDayOptions);
+        yearSelect.addEventListener('change', updateDayOptions);
     </script>
 </body>
 </html>

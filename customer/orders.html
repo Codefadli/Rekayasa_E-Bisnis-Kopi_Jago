@@ -32,6 +32,64 @@
         .order-total{font:700 18px var(--font-heading);color:var(--jago-red)}
         .order-actions{display:flex;gap:8px}
         @media(max-width:768px){.orders-page{padding-top:80px}.page-title{font-size:24px}.order-header{flex-direction:column;gap:12px}.order-footer{flex-direction:column;gap:12px;align-items:stretch}.order-actions{flex-direction:column}}
+
+        /* ===== STRUK DIGITAL (selaras dengan struk checkout) ===== */
+        .receipt-modal{border-radius:12px;overflow:hidden;background:#fff}
+        .receipt-header{
+            background:linear-gradient(135deg,#bd3d2f 0%,#8a2a1f 100%);
+            color:#fff;text-align:center;padding:26px 20px 30px;position:relative
+        }
+        .receipt-header::after{
+            content:'';position:absolute;left:0;right:0;bottom:-1px;height:24px;
+            background:radial-gradient(circle at 12px 24px,#fff 12px,transparent 13px) repeat-x;
+            background-size:24px 24px
+        }
+        .receipt-brand{font:900 30px Montserrat,sans-serif;letter-spacing:6px;line-height:1}
+        .receipt-tagline{font:400 11px 'Open Sans',sans-serif;opacity:.8;margin-top:8px;letter-spacing:.5px}
+        .receipt-meta-grid{padding:14px 6px 0}
+        .receipt-meta-row{
+            display:flex;justify-content:space-between;align-items:center;gap:12px;
+            padding:9px 0;border-bottom:1px dashed #efe6df;font-size:13px
+        }
+        .receipt-meta-row:last-child{border-bottom:none}
+        .receipt-meta-label{color:#9c8878;font:400 12px 'Open Sans',sans-serif;flex-shrink:0}
+        .receipt-meta-value{font:600 13px Montserrat,sans-serif;color:#4b2e22;text-align:right;word-break:break-word}
+        .receipt-badge{
+            font:700 10px Montserrat,sans-serif;letter-spacing:.6px;text-transform:uppercase;
+            padding:4px 10px;border-radius:20px;white-space:nowrap;background:#eee;color:#555
+        }
+        .receipt-badge-warning{background:#fff4e5;color:#b26a00}
+        .receipt-badge-info{background:#e8f1fb;color:#1565c0}
+        .receipt-badge-success{background:#e8f5e9;color:#2e7d32}
+        .receipt-badge-error{background:#fdecea;color:#c62828}
+        .receipt-divider{
+            height:1px;margin:14px 6px;
+            background:repeating-linear-gradient(90deg,#e5d8cf 0,#e5d8cf 7px,transparent 7px,transparent 14px)
+        }
+        .receipt-items{padding:0 6px;display:flex;flex-direction:column;gap:2px}
+        .receipt-item{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid #f7f0eb}
+        .receipt-item:last-child{border-bottom:none}
+        .receipt-item-info{flex:1;min-width:0}
+        .receipt-item-name{display:block;font:600 14px Montserrat,sans-serif;color:#4b2e22;line-height:1.35}
+        .receipt-item-meta{display:block;font:400 11px 'Open Sans',sans-serif;color:#9c8878;margin-top:3px}
+        .receipt-item-price{font:600 14px Montserrat,sans-serif;color:#4b2e22;white-space:nowrap}
+        .receipt-summary{padding:14px 6px 18px;display:flex;flex-direction:column;gap:7px}
+        .receipt-summary-row{display:flex;justify-content:space-between;font:400 13px 'Open Sans',sans-serif;color:#806d62}
+        .receipt-summary-row strong{font:600 13px Montserrat,sans-serif;color:#4b2e22}
+        .receipt-total-row{
+            display:flex;justify-content:space-between;align-items:baseline;
+            margin-top:8px;padding-top:12px;border-top:2px solid #f0dfd6;
+            font:700 13px Montserrat,sans-serif;color:#bd3d2f;letter-spacing:1px
+        }
+        .receipt-total-row strong{font:900 21px Montserrat,sans-serif;color:#bd3d2f;letter-spacing:-.5px}
+        .receipt-foot{
+            background:#fdfaf8;border-top:1px solid #f2e8e1;padding:16px 12px;text-align:center;
+            font:400 11px 'Open Sans',sans-serif;color:#a8968a;line-height:1.7
+        }
+        @media(max-width:480px){
+            .receipt-brand{font-size:25px;letter-spacing:4px}
+            .receipt-header{padding:22px 16px 28px}
+        }
     </style>
 </head>
 <body>
@@ -39,14 +97,12 @@
         <a href="home.html#home"><img src="../logo jago2.png" alt="Jago Coffee" class="navbar-logo"></a>
         <button class="navbar-hamburger" id="hamburger"><span></span><span></span><span></span></button>
         <ul class="navbar-menu" id="nav-menu">
-            <li><a href="home.html#home" class="navbar-link">Home</a></li>
-            <li><a href="home.html#menu" class="navbar-link">Menu</a></li>
-            <li><a href="find-jagoan.html" class="navbar-link">Find Jagoan</a></li>
-            <li><a href="cart.html" class="navbar-link">Keranjang <span id="cart-badge" class="navbar-badge">(0)</span></a></li>
-            <li><a href="wishlist.html" class="navbar-link">Wishlist</a></li>
-            <li><a href="orders.html" class="navbar-link active">Pesanan</a></li>
-            <li><a href="jago-party.html" class="navbar-link">Jago Party</a></li>
-        </ul>
+                    <li><a href="home.html#home" class="navbar-link">Home</a></li>
+                    <li><a href="home.html#menu" class="navbar-link">Menu</a></li>
+                    <li><a href="cart.html" class="navbar-link">Keranjang <span id="cart-badge" class="navbar-badge">(0)</span></a></li>
+                    <li><a href="wishlist.html" class="navbar-link">Wishlist</a></li>
+                    <li><a href="orders.html" class="navbar-link">Pesanan</a></li>
+                </ul>
         <div class="navbar-account" id="account-area"></div>
     </nav>
     <main class="orders-page">
@@ -54,11 +110,10 @@
             <h1 class="page-title">Pesanan Saya</h1>
             <div class="orders-tabs">
                 <button class="tab-btn active" data-status="all">Semua</button>
-                <button class="tab-btn" data-status="pending">Pending</button>
-                <button class="tab-btn" data-status="confirmed">Dikonfirmasi</button>
-                <button class="tab-btn" data-status="on_delivery">Dikirim</button>
+                <button class="tab-btn" data-status="payment_process">Proses Pembayaran</button>
                 <button class="tab-btn" data-status="completed">Selesai</button>
                 <button class="tab-btn" data-status="cancelled">Dibatalkan</button>
+                <button class="tab-btn" data-status="history">Riwayat Pembelian</button>
             </div>
             <div id="orders-container"></div>
         </div>
@@ -66,7 +121,7 @@
     <footer class="customer-footer">
         <div class="footer-grid">
             <div class="footer-col"><img src="../logo jago2.png" alt="Jago Coffee" class="footer-logo"><p class="footer-text">Kopi berkualitas premium dari 100% Arabica, diantar langsung ke lokasimu.</p></div>
-            <div class="footer-col"><h4>Menu</h4><ul class="footer-links"><li><a href="home.html#home">Home</a></li><li><a href="home.html#menu">Menu</a></li><li><a href="find-jagoan.html">Find Jagoan</a></li></ul></div>
+            <div class="footer-col"><h4>Menu</h4><ul class="footer-links"><li><a href="home.html#home">Home</a></li><li><a href="home.html#menu">Menu</a></li></ul></div>
             <div class="footer-col"><h4>Account</h4><ul class="footer-links"><li><a href="orders.html">Orders</a></li><li><a href="cart.html">Cart</a></li><li><a href="profile.html">Profile</a></li></ul></div>
         </div>
         <div class="footer-copyright">© 2026 Kopi Jago. Minuman favorit, diantar dengan jago.</div>

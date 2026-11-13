@@ -55,14 +55,51 @@ function order_for(PDO $db, int $id, array $user): ?array {
     $q->execute([$id]); $row['items'] = $q->fetchAll();
     return $row;
 }
+
+/**
+ * Ambil item pesanan untuk BANYAK order sekaligus (list view) supaya data
+ * yang tampil di halaman PESANAN konsisten dengan isi pesanan sebenarnya.
+ */
+function attach_items(PDO $db, array $orders): array {
+    if (!$orders) return $orders;
+    $ids = array_map(fn($o) => (int)$o['id'], $orders);
+    $in = implode(',', array_fill(0, count($ids), '?'));
+    $q = $db->prepare("SELECT oi.order_id,oi.menu_id,oi.qty,oi.price,m.name FROM order_items oi JOIN menu_items m ON m.id=oi.menu_id WHERE oi.order_id IN ($in) ORDER BY oi.order_id,oi.menu_id");
+    $q->execute($ids);
+    $byOrder = [];
+    foreach ($q->fetchAll() as $item) {
+        $byOrder[(int)$item['order_id']][] = $item;
+    }
+    foreach ($orders as &$o) {
+        $o['items'] = $byOrder[(int)$o['id']] ?? [];
+    }
+    unset($o);
+    return $orders;
+}
 function require_order(PDO $db, int $id, array $user): array {
     $order = order_for($db, $id, $user);
     if (!$order) Response::error('Order tidak ditemukan', 404);
     return $order;
 }
 
+/**
+ * Auto-cancel QRIS orders that are still pending after 2 minutes.
+ * Dipanggil di setiap request supaya tidak perlu cron job.
+ */
+function auto_cancel_qris_orders(PDO $db): void {
+    $db->prepare("UPDATE orders SET status='cancelled', updated_at=NOW()
+                  WHERE payment_method='qris' AND payment_status='pending' AND status='pending'
+                  AND created_at < DATE_SUB(NOW(), INTERVAL 2 MINUTE)")->execute();
+    $cancelled = $db->query("SELECT id, user_id, order_number FROM orders WHERE status='cancelled' AND payment_method='qris' AND payment_status='pending' AND updated_at >= DATE_SUB(NOW(), INTERVAL 5 SECOND)")->fetchAll();
+    foreach ($cancelled as $row) {
+        notify($db, (int)$row['user_id'], 'Order Dibatalkan', 'Order ' . $row['order_number'] . ' dibatalkan karena pembayaran QRIS tidak diselesaikan dalam 2 menit.');
+    }
+}
+
 try {
     $db = Database::connection();
+    // Auto-cancel QRIS orders pending > 2 minutes
+    auto_cancel_qris_orders($db);
     if ($path === 'auth/register' && $method === 'POST') {
         if (stripos($contentType, 'application/json') === false) Response::error('Content-Type application/json wajib diisi.', 415);
         $name = input_string($body, 'name');
@@ -77,7 +114,7 @@ try {
         $existing=$db->prepare('SELECT id FROM users WHERE email=? LIMIT 1');
         $existing->execute([$email]);
         if ($existing->fetch()) Response::error('Email sudah terdaftar.',409);
-        $q=$db->prepare('INSERT INTO users(role_id,name,email,phone,birth_date,password_hash) VALUES(1,?,?,?,?,?)');
+        $q=$db->prepare('INSERT INTO users(role_id,name,email,phone,birth_date,password_hash) VALUES(2,?,?,?,?,?)');
         $q->execute([$name,$email,$body['phone']??null,$birthDate,password_hash($password,PASSWORD_DEFAULT)]);
         Response::json(['id'=>$db->lastInsertId()],201,'Registrasi berhasil.');
     }
@@ -182,85 +219,85 @@ try {
     }
     if ($path === 'addresses' && in_array($method,['GET','POST'],true)) { $u=Auth::require(['customer']);if($method==='POST'){$recipient=input_string($body,'recipient_name',$u['name']);$phone=input_string($body,'phone',(string)($u['phone']??''));$line=input_string($body,'address_line');$city=input_string($body,'city');$province=input_string($body,'province');if(!$recipient||!$phone||!$line||!$city||!$province)Response::error('Data alamat belum lengkap',422);$db->prepare('INSERT INTO addresses(user_id,label,recipient_name,phone,address_line,city,province,postal_code,is_default) VALUES(?,?,?,?,?,?,?,?,?)')->execute([$u['id'],input_string($body,'label')?:null,$recipient,$phone,$line,$city,$province,input_string($body,'postal_code')?:null,(int)($body['is_default']??0)]);} $q=$db->prepare('SELECT * FROM addresses WHERE user_id=? ORDER BY is_default DESC,id');$q->execute([$u['id']]);Response::json($q->fetchAll()); }
     if ($path === 'orders' && $method === 'POST') {
-        $u=Auth::require(['customer']); $db->beginTransaction(); 
-        
-        // Validate outlet for pickup/delivery
-        $outletId = (int)($body['outlet_id']??0);
-        $fulfillment=$body['fulfillment_type']??'delivery';
-        if (!in_array($fulfillment,['pickup','delivery'],true)) { $db->rollBack(); Response::error('Tipe fulfillment tidak valid',422); }
-        
-        $outlet = $db->prepare('SELECT user_id,outlet_name,last_latitude,last_longitude,max_delivery_km,delivery_fee_per_km,flat_delivery_fee FROM seller_profiles WHERE user_id=? AND status IN ("available","busy")');
-        $outlet->execute([$outletId]);
-        $outletData = $outlet->fetch();
-        if (!$outletData) { $db->rollBack(); Response::error('Outlet tidak tersedia',422); }
-        
-        // Calculate shipping cost for delivery
-        // BUSINESS RULE: Free delivery always (per website: "never a delivery fee")
-        $shippingCost = 0;
-        if ($fulfillment === 'delivery') {
-            $lat = (float)($body['delivery_lat']??0);
-            $lng = (float)($body['delivery_lng']??0);
-            if (!$lat || !$lng) { $db->rollBack(); Response::error('Koordinat delivery wajib diisi',422); }
-            
-            // Haversine distance (for validation only)
-            $R = 6371; // km
-            $dLat = deg2rad($lat - $outletData['last_latitude']);
-            $dLon = deg2rad($lng - $outletData['last_longitude']);
-            $a = sin($dLat/2) * sin($dLat/2) + cos(deg2rad($outletData['last_latitude'])) * cos(deg2rad($lat)) * sin($dLon/2) * sin($dLon/2);
-            $c = 2 * atan2(sqrt($a), sqrt(1-$a));
-            $distance = $R * $c;
-            
-            $maxKm = (float)($outletData['max_delivery_km']??5);
-            if ($distance > $maxKm) { 
-                $db->rollBack(); 
-                Response::error("Alamat di luar jangkauan delivery ({$maxKm} km). Jarak: ".round($distance,1)." km",422); 
-            }
-            
-            // Shipping cost is ALWAYS 0 (free delivery)
-            // $shippingCost remains 0
-        }
-        
+        $u=Auth::require(['customer']); $db->beginTransaction();
+
+        $fulfillment='pickup';
+
         // Get cart items with prices from DB (NEVER trust frontend)
-        $q=$db->prepare('SELECT c.menu_id,c.size,c.qty,m.name,COALESCE(ms.price,m.price) price,COALESCE(i.stock,0) stock FROM cart_items c JOIN menu_items m ON m.id=c.menu_id LEFT JOIN menu_sizes ms ON ms.menu_id=c.menu_id AND ms.size=c.size LEFT JOIN inventory_stock i ON i.menu_id=m.id WHERE c.user_id=? AND m.is_available=1 FOR UPDATE'); 
-        $q->execute([$u['id']]); 
+        $q=$db->prepare('SELECT c.menu_id,c.size,c.qty,m.name,COALESCE(ms.price,m.price) price,COALESCE(i.stock,0) stock FROM cart_items c JOIN menu_items m ON m.id=c.menu_id LEFT JOIN menu_sizes ms ON ms.menu_id=c.menu_id AND ms.size=c.size LEFT JOIN inventory_stock i ON i.menu_id=m.id WHERE c.user_id=? AND m.is_available=1 FOR UPDATE');
+        $q->execute([$u['id']]);
         $items=$q->fetchAll();
-        if (!$items) { $db->rollBack(); Response::error('Cart kosong'); } 
+        if (!$items) { $db->rollBack(); Response::error('Cart kosong'); }
         foreach($items as $x) if ((int)$x['stock'] < (int)$x['qty']) { $db->rollBack(); Response::error('Stok '.$x['name'].' tidak mencukupi',422); }
-        
-        $sub=array_sum(array_map(fn($i)=>(float)$i['qty']*(float)$i['price'],$items)); 
-        $discount=0; 
-        $payment=$body['payment_method']??'cash'; 
-        if (!in_array($payment,['cash','qris','bank_transfer','ewallet'],true)) { $db->rollBack(); Response::error('Metode bayar tidak valid',422); }
-        
-        $address=$body['address_id']??null; 
-        if ($fulfillment==='delivery' && !$address) { $db->rollBack(); Response::error('Alamat wajib untuk delivery',422); } 
-        if ($fulfillment==='pickup') $address=null;
-        if ($address) { $a=$db->prepare('SELECT id FROM addresses WHERE id=? AND user_id=?'); $a->execute([(int)$address,$u['id']]); if (!$a->fetch()) { $db->rollBack(); Response::error('Alamat tidak valid',422); } }
-        
-        if (!empty($body['promo_code'])) { $p=$db->prepare('SELECT * FROM promos WHERE code=? AND is_active=1 AND CURDATE() BETWEEN start_date AND end_date AND min_purchase<=?'); $p->execute([strtoupper(trim($body['promo_code'])),$sub]); if($r=$p->fetch()) $discount=$r['discount_type']==='percentage'?round($sub*$r['discount_value']/100,2):min($sub,$r['discount_value']); }
-        
-        $total = max(0, $sub - $discount + $shippingCost);
-        $num='INV-'.date('YmdHis').'-'.bin2hex(random_bytes(3)); 
-        $o=$db->prepare('INSERT INTO orders(order_number,user_id,status,fulfillment_type,subtotal,discount_amount,shipping_cost,total_amount,payment_method,payment_status,address_id,notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)'); 
-        $o->execute([$num,$u['id'],'pending',$fulfillment,$sub,$discount,$shippingCost,$total,$payment,'pending',$address,$body['notes']??null]); 
+
+        $sub=array_sum(array_map(fn($i)=>(float)$i['qty']*(float)$i['price'],$items));
+        $discount=0;
+        $payment=$body['payment_method']??'cash';
+        if (!in_array($payment,['cash','qris','bank_transfer','ewallet','bca','bni','bri','mandiri','bsi','seabank'],true)) { $db->rollBack(); Response::error('Metode bayar tidak valid',422); }
+
+        $total = max(0, $sub - $discount);
+        $num='INV-'.date('YmdHis').'-'.bin2hex(random_bytes(3));
+
+        // Payment via bank transfer (BCA/BNI/BRI/Mandiri/BSI/SeaBank) = INSTANTLY PAID (demo flow).
+        // QRIS = status pending; auto-cancelled by auto_cancel_qris_orders() after 2 minutes.
+        $bankCodes=['bca','bni','bri','mandiri','bsi','seabank','bank_transfer'];
+        $isBankPayment=in_array($payment,$bankCodes,true);
+        $paymentStatus=$isBankPayment?'paid':'pending';
+        $orderStatus=$isBankPayment?'completed':'pending';
+
+        $o=$db->prepare('INSERT INTO orders(order_number,user_id,status,fulfillment_type,subtotal,discount_amount,shipping_cost,total_amount,payment_method,payment_status,address_id,notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)');
+        $o->execute([$num,$u['id'],$orderStatus,$fulfillment,$sub,$discount,0,$total,$payment,$paymentStatus,null,null]);
         $id=$db->lastInsertId();
-        
+
+        $orderItemsOut=[];
         foreach($items as $x){
             $db->prepare('INSERT INTO order_items(order_id,menu_id,qty,price) VALUES(?,?,?,?)')->execute([$id,$x['menu_id'],$x['qty'],$x['price']]);
             $db->prepare('UPDATE inventory_stock SET stock=stock-? WHERE menu_id=? AND stock>=?')->execute([$x['qty'],$x['menu_id'],$x['qty']]);
-        } 
-        
-        notify($db,$u['id'],'Order dibuat','Order '.$num.' berhasil dibuat. Segera lakukan pembayaran.'); 
-        
-        // DONT clear cart yet - wait until payment success
-        // $db->prepare('DELETE FROM cart_items WHERE user_id=?')->execute([$u['id']]); 
-        
-        $db->commit(); 
-        Response::json(['id'=>$id,'order_number'=>$num,'subtotal'=>$sub,'shipping_cost'=>$shippingCost,'total_amount'=>$total,'payment_status'=>'pending'],201);
+            $orderItemsOut[]=[
+                'menu_id'=>(int)$x['menu_id'],
+                'name'=>$x['name'],
+                'size'=>$x['size'],
+                'qty'=>(int)$x['qty'],
+                'price'=>(float)$x['price'],
+                'subtotal'=>(float)$x['qty']*(float)$x['price']
+            ];
+        }
+
+        // Cart sengaja TIDAK dihapus di sini: pembuatan order bukan berarti cart
+        // dikosongkan. Cart hanya dihapus saat pembayaran benar-benar dikonfirmasi
+        // (lihat handler konfirmasi pembayaran).
+        // Cart diosongkan setelah transaksi berhasil (payment_status='paid')
+        $db->prepare('DELETE FROM cart_items WHERE user_id=?')->execute([$u['id']]);
+
+        notify($db,$u['id'],'Order dibuat','Order '.$num.' berhasil dibuat.');
+
+        $db->commit();
+        Response::json([
+            'id'=>(int)$id,
+            'order_number'=>$num,
+            'status'=>$orderStatus,
+            'fulfillment_type'=>$fulfillment,
+            'subtotal'=>(float)$sub,
+            'shipping_cost'=>0,
+            'total_amount'=>(float)$total,
+            'payment_method'=>$payment,
+            'payment_status'=>$paymentStatus,
+            'created_at'=>date('Y-m-d H:i:s'),
+            'items'=>$orderItemsOut
+        ],201);
     }
-    if ($path === 'orders' && $method === 'GET') { $u=Auth::require(); $sql=$u['role']==='customer'?'SELECT * FROM orders WHERE user_id=? ORDER BY created_at DESC':($u['role']==='seller'?'SELECT o.*,u.name customer FROM orders o JOIN users u ON u.id=o.user_id JOIN vehicles v ON v.id=o.vehicle_id WHERE v.seller_id=? ORDER BY o.created_at DESC':'SELECT o.*,u.name customer FROM orders o JOIN users u ON u.id=o.user_id ORDER BY o.created_at DESC'); $q=$db->prepare($sql);$q->execute($u['role']==='admin'?[]:[$u['id']]);Response::json($q->fetchAll()); }
+    if ($path === 'orders' && $method === 'GET') {
+        $u=Auth::require();
+        $sql=$u['role']==='customer'?'SELECT * FROM orders WHERE user_id=? ORDER BY created_at DESC':($u['role']==='seller'?'SELECT o.*,u.name customer FROM orders o JOIN users u ON u.id=o.user_id JOIN vehicles v ON v.id=o.vehicle_id WHERE v.seller_id=? ORDER BY o.created_at DESC':'SELECT o.*,u.name customer FROM orders o JOIN users u ON u.id=o.user_id ORDER BY o.created_at DESC');
+        $q=$db->prepare($sql);
+        $q->execute($u['role']==='admin'?[]:[$u['id']]);
+        $orders = $q->fetchAll();
+        $orders = attach_items($db, $orders);
+        Response::json($orders);
+    }
     if (preg_match('#^orders/(\d+)$#',$path,$m) && $method==='GET') { $u=Auth::require(); Response::json(require_order($db,(int)$m[1],$u)); }
-    if (preg_match('#^orders/(\d+)/cancel$#',$path,$m) && $method==='PATCH') { $u=Auth::require(['customer','admin']); $o=require_order($db,(int)$m[1],$u); if(!in_array($o['status'],['pending','confirmed'],true)) Response::error('Order tidak dapat dibatalkan',422); $db->beginTransaction();$db->prepare("UPDATE orders SET status='cancelled' WHERE id=?")->execute([$m[1]]);$items=$db->prepare('SELECT menu_id,qty FROM order_items WHERE order_id=?');$items->execute([$m[1]]);foreach($items as $item)$db->prepare('UPDATE inventory_stock SET stock=stock+? WHERE menu_id=?')->execute([$item['qty'],$item['menu_id']]);$db->commit(); notify($db,(int)$o['user_id'],'Order dibatalkan','Order '.$o['order_number'].' telah dibatalkan.'); Response::json(['message'=>'Order cancelled']); }
+    if (preg_match('#^orders/(\d+)/cancel-qris$#',$path,$m) && $method==='PATCH') { $u=Auth::require(['customer','admin']); $o=require_order($db,(int)$m[1],$u); if($o['payment_method']!=='qris' || $o['status']!=='pending') Response::error('Order tidak valid untuk pembatalan',422); $db->beginTransaction();$db->prepare("UPDATE orders SET status='cancelled' WHERE id=?")->execute([(int)$m[1]]);$items=$db->prepare('SELECT menu_id,qty FROM order_items WHERE order_id=?');$items->execute([(int)$m[1]]);foreach($items as $item)$db->prepare('UPDATE inventory_stock SET stock=stock+? WHERE menu_id=?')->execute([$item['qty'],$item['menu_id']]);$db->commit(); notify($db,(int)$o['user_id'],'Order Dibatalkan','Order '.$o['order_number'].' dibatalkan karena pembayaran QRIS tidak diselesaikan dalam 2 menit.'); Response::json(['message'=>'Order dibatalkan karena QRIS timeout']); }
+    if (preg_match('#^orders/(\d+)/cancel$#',$path,$m) && $method==='PATCH') { $u=Auth::require(['customer','admin']); $o=require_order($db,(int)$m[1],$u); if(!in_array($o['status'],['pending','confirmed'],true)) Response::error('Order tidak dapat dibatalkan',422); $db->beginTransaction();$db->prepare("UPDATE orders SET status='cancelled' WHERE id=?")->execute([(int)$m[1]]);$items=$db->prepare('SELECT menu_id,qty FROM order_items WHERE order_id=?');$items->execute([(int)$m[1]]);foreach($items as $item)$db->prepare('UPDATE inventory_stock SET stock=stock+? WHERE menu_id=?')->execute([$item['qty'],$item['menu_id']]);$db->commit(); notify($db,(int)$o['user_id'],'Order dibatalkan','Order '.$o['order_number'].' telah dibatalkan.'); Response::json(['message'=>'Order cancelled']); }
     if (preg_match('#^orders/(\d+)/assign$#',$path,$m) && $method==='PATCH') { $u=Auth::require(['admin']); $vid=(int)($body['vehicle_id']??0); $q=$db->prepare("UPDATE orders o JOIN vehicles v ON v.id=? JOIN users s ON s.id=v.seller_id JOIN roles r ON r.id=s.role_id SET o.vehicle_id=? WHERE o.id=? AND v.is_available=1 AND r.name='seller' AND o.status='pending'");$q->execute([$vid,$vid,$m[1]]);if(!$q->rowCount())Response::error('Order atau kendaraan tidak valid',422);$db->prepare('INSERT INTO order_assignment_audit(order_id,vehicle_id,admin_id,action) VALUES(?,?,?,?)')->execute([$m[1],$vid,$u['id'],'assigned']);$o=$db->prepare('SELECT user_id,order_number FROM orders WHERE id=?');$o->execute([$m[1]]);if($assigned=$o->fetch())notify($db,(int)$assigned['user_id'],'Seller ditugaskan','Seller telah ditugaskan untuk order '.$assigned['order_number'].'.');Response::json(['message'=>'Seller assigned']); }
     if (preg_match('#^orders/(\d+)/status$#',$path,$m) && $method==='PATCH') { $u=Auth::require(['admin','seller']); $o=require_order($db,(int)$m[1],$u); $allowed=['pending'=>['confirmed','cancelled'],'confirmed'=>['processing','cancelled'],'processing'=>['ready','cancelled'],'ready'=>['on_delivery','completed'],'on_delivery'=>['completed'],'completed'=>[],'cancelled'=>[]];$new=$body['status']??'';if(!in_array($new,$allowed[$o['status']],true))Response::error('Transisi status tidak valid',422);$db->prepare('UPDATE orders SET status=? WHERE id=?')->execute([$new,$m[1]]);notify($db,(int)$o['user_id'],'Status order diperbarui','Order '.$o['order_number'].' sekarang '.$new.'.');Response::json(['message'=>'Status updated']); }
     if (preg_match('#^seller/orders/(\d+)/action$#',$path,$m) && $method==='POST') { $u=Auth::require(['seller']); $actions=['accepted'=>'confirmed','preparing'=>'processing','ready'=>'ready','on_the_way'=>'on_delivery','delivered'=>'completed','failed'=>'cancelled'];$action=$body['action']??'';if(!isset($actions[$action]))Response::error('Aksi seller tidak valid',422);$o=require_order($db,(int)$m[1],$u);$new=$actions[$action];$allowed=['pending'=>['confirmed'],'confirmed'=>['processing'],'processing'=>['ready'],'ready'=>['on_delivery','completed'],'on_delivery'=>['completed'],'completed'=>[],'cancelled'=>[]];if(!in_array($new,$allowed[$o['status']],true))Response::error('Aksi tidak sesuai status order',422);$db->prepare('UPDATE orders SET status=? WHERE id=?')->execute([$new,$m[1]]);notify($db,(int)$o['user_id'],'Status order diperbarui','Order '.$o['order_number'].' sekarang '.$new.'.');Response::json(['message'=>'Seller action accepted','status'=>$new]); }
@@ -271,7 +308,58 @@ try {
     if ($path === 'menu/rating' && $method==='POST') { $u=Auth::require(['customer']);$order=(int)($body['order_id']??0);$menu=(int)($body['menu_id']??0);$score=(int)($body['score']??0);if($score<1||$score>5)Response::error('Rating harus 1-5',422);$q=$db->prepare("SELECT 1 FROM order_items i JOIN orders o ON o.id=i.order_id WHERE i.order_id=? AND i.menu_id=? AND o.user_id=? AND o.status='completed'");$q->execute([$order,$menu,$u['id']]);if(!$q->fetch())Response::error('Rating hanya untuk menu yang selesai dibeli',403);$db->prepare('INSERT INTO ratings(order_id,menu_id,user_id,score,review) VALUES(?,?,?,?,?)')->execute([$order,$menu,$u['id'],$score,input_string($body,'review')?:null]);Response::json(['message'=>'Rating tersimpan'],201); }
     if (preg_match('#^admin/orders/(\\d+)/payment$#',$path,$m) && $method==='PATCH') { Auth::require(['admin']);$status=$body['payment_status']??'';if(!in_array($status,['pending','paid','failed','refunded'],true))Response::error('Status pembayaran tidak valid',422);$q=$db->prepare('UPDATE orders SET payment_status=? WHERE id=?');$q->execute([$status,$m[1]]);if(!$q->rowCount())Response::error('Order tidak ditemukan',404);$o=$db->prepare('SELECT user_id,order_number FROM orders WHERE id=?');$o->execute([$m[1]]);if($row=$o->fetch())notify($db,(int)$row['user_id'],'Status pembayaran diperbarui','Pembayaran order '.$row['order_number'].' berstatus '.$status.'.');Response::json(['message'=>'Payment status updated']); }
     
-    // === ENERGY/REWARDS ENDPOINTS ===
+    if ($path === 'admin/orders' && $method === 'GET') {
+        Auth::require(['admin']);
+        $q = $db->query('SELECT o.*, u.name as customer_name, u.email as customer_email FROM orders o JOIN users u ON u.id = o.user_id ORDER BY o.created_at DESC');
+        Response::json($q->fetchAll());
+    }
+
+    if ($path === 'admin/orders' && $method === 'PATCH') {
+        Auth::require(['admin']);
+        $id = (int)($body['id'] ?? 0);
+        $status = $body['status'] ?? '';
+        $allowed = ['pending','confirmed','processing','ready','on_delivery','completed','cancelled'];
+        if ($id < 1 || !in_array($status, $allowed, true)) {
+            Response::error('Data tidak valid', 422);
+        }
+        $q = $db->prepare('UPDATE orders SET status = ? WHERE id = ?');
+        $q->execute([$status, $id]);
+        if (!$q->rowCount()) Response::error('Order tidak ditemukan', 404);
+        notify($db, (int)($body['user_id'] ?? 0), 'Status order diperbarui', 'Order #' . $id . ' sekarang ' . $status . '.');
+        Response::json(['message' => 'Status updated', 'id' => $id, 'status' => $status]);
+    }
+
+    if ($path === 'admin/customers' && $method === 'GET') {
+        Auth::require(['admin']);
+        $q = $db->query('SELECT id, name, email, phone, birth_date, created_at, is_active FROM users WHERE role_id = 2 ORDER BY created_at DESC');
+        Response::json($q->fetchAll());
+    }
+
+    if ($path === 'admin/stats' && $method === 'GET') {
+        Auth::require(['admin']);
+        $customers = $db->query('SELECT COUNT(*) as count FROM users WHERE role_id = 2')->fetch();
+        $orders = $db->query('SELECT COUNT(*) as count FROM orders')->fetch();
+        $pending = $db->query('SELECT COUNT(*) as count FROM orders WHERE status = "pending"')->fetch();
+        $completed = $db->query('SELECT COUNT(*) as count FROM orders WHERE status = "completed"')->fetch();
+        $revenue = $db->query('SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE payment_status = "paid"')->fetch();
+        $recentOrders = $db->query('SELECT o.*, u.name as customer_name FROM orders o JOIN users u ON u.id = o.user_id ORDER BY o.created_at DESC LIMIT 10')->fetchAll();
+        Response::json([
+            'customers' => (int)$customers['count'],
+            'orders' => (int)$orders['count'],
+            'pending' => (int)$pending['count'],
+            'completed' => (int)$completed['count'],
+            'revenue' => (float)$revenue['total'],
+            'recent_orders' => $recentOrders
+        ]);
+    }
+
+    if ($path === 'admin/analytics' && $method === 'GET') {
+        Auth::require(['admin']);
+        $categorySales = $db->query('SELECT c.name as category, COUNT(oi.menu_id) as total_items, SUM(oi.qty * oi.price) as total_revenue FROM order_items oi JOIN orders o ON o.id = oi.order_id JOIN menu_items m ON m.id = oi.menu_id JOIN menu_categories c ON c.id = m.category_id WHERE o.payment_status = "paid" GROUP BY c.name')->fetchAll();
+        $dailySales = $db->query('SELECT DATE(created_at) as date, COUNT(*) as orders, SUM(total_amount) as revenue FROM orders WHERE payment_status = "paid" AND created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) GROUP BY DATE(created_at) ORDER BY date DESC')->fetchAll();
+        Response::json(['category_sales' => $categorySales, 'daily_sales' => $dailySales]);
+    }
+
     if ($path === 'energy' && $method === 'GET') { 
         $u=Auth::require(['customer']); 
         $balance=$db->prepare('SELECT COALESCE(SUM(amount),0) as balance FROM energy_transactions WHERE user_id=?'); 
@@ -804,39 +892,39 @@ try {
     }
     
     if ($path === 'schedule/validate' && $method === 'POST') {
-        // Validate slot availability before checkout
-        $slotId=(int)($body['time_slot_id']??0);
-        $scheduledFor=$body['scheduled_for']??'';
-        
-        if(!$slotId||!$scheduledFor)Response::error('time_slot_id and scheduled_for required',422);
-        
-        // Parse datetime
-        $dt=DateTime::createFromFormat('Y-m-d H:i:s',$scheduledFor);
-        if(!$dt)Response::error('Invalid scheduled_for format (Y-m-d H:i:s)',422);
-        
-        $bookingDate=$dt->format('Y-m-d');
-        
-        // Check slot exists and active
-        $slot=$db->prepare('SELECT id,outlet_id,capacity,start_time,end_time FROM time_slots WHERE id=? AND is_active=1');
-        $slot->execute([$slotId]);
-        $slotData=$slot->fetch();
-        
-        if(!$slotData)Response::error('Time slot not found or inactive',404);
-        
-        // Check blackout
-        $blackout=$db->prepare('SELECT 1 FROM schedule_blackout_dates WHERE outlet_id=? AND blackout_date=?');
-        $blackout->execute([$slotData['outlet_id'],$bookingDate]);
-        if($blackout->fetch())Response::error('Date is not available (blackout)',422);
-        
-        // Check capacity
-        $available=$db->prepare('SELECT check_slot_availability(?,?) as available');
-        $available->execute([$slotId,$bookingDate]);
-        $avail=(int)$available->fetchColumn();
-        
-        if($avail<=0)Response::error('Time slot is fully booked',422);
-        
-        Response::json(['available'=>$avail,'slot'=>$slotData]);
-    }
+            // Validate slot availability before checkout
+            $slotId = (int)($body['time_slot_id'] ?? 0);
+            $scheduledFor = $body['scheduled_for'] ?? '';
+
+            if (!$slotId || !$scheduledFor) Response::error('time_slot_id and scheduled_for required', 422);
+
+            // Parse datetime
+            $dt = DateTime::createFromFormat('Y-m-d H:i:s', $scheduledFor);
+            if (!$dt) Response::error('Invalid scheduled_for format (Y-m-d H:i:s)', 422);
+
+            $bookingDate = $dt->format('Y-m-d');
+
+            // Check slot exists and active
+            $slot = $db->prepare('SELECT id, outlet_id, capacity, start_time, end_time FROM time_slots WHERE id=? AND is_active=1');
+            $slot->execute([$slotId]);
+            $slotData = $slot->fetch();
+
+            if (!$slotData) Response::error('Time slot not found or inactive', 404);
+
+            // Check blackout
+            $blackout = $db->prepare('SELECT 1 FROM schedule_blackout_dates WHERE outlet_id=? AND blackout_date=?');
+            $blackout->execute([$slotData['outlet_id'], $bookingDate]);
+            if ($blackout->fetch()) Response::error('Date is not available (blackout)', 422);
+
+            // Check capacity
+            $available = $db->prepare('SELECT check_slot_availability(?,?) as available');
+            $available->execute([$slotId, $bookingDate]);
+            $avail = (int)$available->fetchColumn();
+
+            if ($avail <= 0) Response::error('Time slot is fully booked', 422);
+
+            Response::json(['available' => $avail, 'slot' => $slotData]);
+        }
     
     if ($path === 'admin/schedule/slots' && $method === 'GET') {
         $u=Auth::require(['admin']);
@@ -908,9 +996,7 @@ try {
     Response::error('Endpoint not found',404);
 } catch (PDOException $e) {
     if ($e->getCode()==='23000') Response::error('Data sudah ada atau tidak valid',422);
-    error_log($e->getMessage());
-    Response::error('Database tidak dapat dihubungi.',503);
+    Response::error('Database error: ' . $e->getMessage(),503);
 } catch (Throwable $e) {
-    error_log($e->getMessage());
     Response::error('Terjadi kesalahan server.',500);
 }

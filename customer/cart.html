@@ -24,14 +24,12 @@
         </button>
         
         <ul class="navbar-menu" id="nav-menu">
-            <li><a href="home.html#home" class="navbar-link">Home</a></li>
-            <li><a href="home.html#menu" class="navbar-link">Menu</a></li>
-            <li><a href="find-jagoan.html" class="navbar-link">Find Jagoan</a></li>
-            <li><a href="cart.html" class="navbar-link active">Keranjang <span id="cart-badge" class="navbar-badge">(0)</span></a></li>
-            <li><a href="wishlist.html" class="navbar-link">Wishlist</a></li>
-            <li><a href="orders.html" class="navbar-link">Pesanan</a></li>
-            <li><a href="jago-party.html" class="navbar-link">Jago Party</a></li>
-        </ul>
+                    <li><a href="#home" class="navbar-link active">Home</a></li>
+                    <li><a href="#menu" class="navbar-link">Menu</a></li>
+                    <li><a href="cart.html" class="navbar-link">Keranjang <span id="cart-badge" class="navbar-badge">(0)</span></a></li>
+                    <li><a href="wishlist.html" class="navbar-link">Wishlist</a></li>
+                    <li><a href="orders.html" class="navbar-link">Pesanan</a></li>
+                </ul>
         
         <div class="navbar-account" id="account-area"></div>
     </nav>
@@ -42,6 +40,10 @@
             <h1 class="page-title">Keranjang Belanja</h1>
             
             <div id="cart-container"></div>
+            
+            <div id="cart-actions" style="margin-top: 20px; text-align: center;">
+                <button id="btn-go-checkout" class="btn btn-primary" onclick="goToCheckout()">Lanjut ke Checkout</button>
+            </div>
         </div>
     </main>
 
@@ -54,13 +56,11 @@
             </div>
             
             <div class="footer-col">
-                <h4>Menu</h4>
-                <ul class="footer-links">
-                    <li><a href="home.html#home">Home</a></li>
-                    <li><a href="home.html#menu">Menu</a></li>
-                    <li><a href="find-jagoan.html">Find Jagoan</a></li>
-                    <li><a href="jago-party.html">Jago Party</a></li>
-                </ul>
+                            <h4>Menu</h4>
+                            <ul class="footer-links">
+                                <li><a href="home.html#home">Home</a></li>
+                                <li><a href="home.html#menu">Menu</a></li>
+                            </ul>
             </div>
             
             <div class="footer-col">

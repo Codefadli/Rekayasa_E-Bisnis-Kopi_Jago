@@ -17,7 +17,7 @@ let cartItems = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('[Cart] Initializing...');
-    
+
     // Check authentication
     if (!KJAuth.isAuthenticated()) {
         const confirmed = await KJModal.confirm(
@@ -25,15 +25,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             'Login Required'
         );
         if (confirmed) {
-            window.location.href = '../login.html';
+            window.location.href = '/login.html';
         } else {
             window.location.href = 'home.html';
         }
         return;
     }
-    
+
     // Load cart
     await loadCart();
+    updateCartBadge();
 });
 
 // ============================================================
@@ -283,7 +284,7 @@ function goToCheckout() {
         return;
     }
     
-    window.location.href = 'checkout.html';
+    window.location.href = '/customer/checkout.html';
 }
 
 // Make functions globally accessible

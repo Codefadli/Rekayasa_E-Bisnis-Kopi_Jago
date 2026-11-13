@@ -28,11 +28,9 @@
         <ul class="navbar-menu" id="nav-menu">
             <li><a href="#home" class="navbar-link active">Home</a></li>
             <li><a href="#menu" class="navbar-link">Menu</a></li>
-            <li><a href="find-jagoan.html" class="navbar-link">Find Jagoan</a></li>
             <li><a href="cart.html" class="navbar-link">Keranjang <span id="cart-badge" class="navbar-badge">(0)</span></a></li>
             <li><a href="wishlist.html" class="navbar-link">Wishlist</a></li>
             <li><a href="orders.html" class="navbar-link">Pesanan</a></li>
-            <li><a href="jago-party.html" class="navbar-link">Jago Party</a></li>
         </ul>
         
         <div class="navbar-account" id="account-area"></div>
@@ -49,7 +47,7 @@
             <p class="hero-tagline">Kopi berkualitas premium, diantar langsung ke tempatmu.<br>Cepat, segar, dan terjangkau.</p>
             <div class="hero-actions">
                 <a href="#menu" class="hero-btn hero-btn-primary">Pesan Sekarang</a>
-                <a href="find-jagoan.html" class="hero-btn hero-btn-secondary">Find Jagoan</a>
+                <a href="home.html#menu" class="hero-btn hero-btn-secondary">Browse Menu</a>
             </div>
         </div>
     </section>
@@ -72,17 +70,15 @@
                 <p class="section-subtitle">GET YOURS NOW!</p>
             </div>
 
-            <!-- Featured Menu -->
-            <div class="menu-featured mb-xl">
-                <h3 class="menu-section-title text-center">Menu Favorit</h3>
-                <div id="featured-menu" class="product-grid"></div>
+            <!-- Product Grid - dikelompokkan Kopi & Non Kopi -->
+            <div class="menu-group">
+                <h3 class="menu-section-title text-center">Kopi</h3>
+                <div class="product-grid" id="products-kopi"></div>
             </div>
 
-            <!-- All Menu -->
-            <div class="menu-all">
-                <h3 class="menu-section-title text-center">Semua Menu</h3>
-                <div id="category-filter" class="category-filter"></div>
-                <div id="menu-grid" class="product-grid"></div>
+            <div class="menu-group" style="margin-top:48px">
+                <h3 class="menu-section-title text-center">Non Kopi</h3>
+                <div class="product-grid" id="products-non-kopi"></div>
             </div>
         </div>
     </section>
@@ -118,8 +114,7 @@
             <h2 class="section-title">Ready To Get Your Jago Coffee?</h2>
             <p class="cta-subtitle">Find your nearest Jagoan or browse our menu to order now!</p>
             <div class="cta-actions">
-                <a href="find-jagoan.html" class="btn btn-primary">Find Jagoan</a>
-                <a href="#menu" class="btn btn-secondary">Browse Menu</a>
+                <a href="#menu" class="btn btn-primary">Browse Menu</a>
             </div>
         </div>
     </section>
@@ -137,8 +132,6 @@
                 <ul class="footer-links">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#menu">Menu</a></li>
-                    <li><a href="find-jagoan.html">Find Jagoan</a></li>
-                    <li><a href="jago-party.html">Jago Party</a></li>
                 </ul>
             </div>
             

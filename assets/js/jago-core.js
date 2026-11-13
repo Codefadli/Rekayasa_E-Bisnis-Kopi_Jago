@@ -10,13 +10,17 @@
 
 function kjApplicationRoot() {
     const path = window.location.pathname;
-    const marker = path.match(/^(.+?)\/(?:frontend|customer|admin|seller|backend)(?:\/|$)/);
+    // App served at document root: /customer/checkout.html -> root is ''
+    if (/^\/(?:frontend|customer|admin|seller|backend)(?:\/|$)/.test(path)) return '';
+    // Otherwise look for subdirectory in path
+    const marker = path.match(/^(.+?)\/(?:frontend|customer|admin|seller|backend)\//);
     if (marker) return marker[1];
     const slash = path.lastIndexOf('/');
     return path.slice(0, slash) || '';
 }
 
-const KJ_API_BASE = `${kjApplicationRoot()}/backend/api`;
+// API Base matches router path (/backend/api/)
+const KJ_API_BASE = '/backend/api';
 
 // ============================================================
 // TOKEN MANAGEMENT
@@ -65,7 +69,7 @@ const KJAuth = {
     
     logout() {
         this.clearToken();
-        window.location.href = `${kjApplicationRoot()}/login.html`;
+        window.location.href = '/login.html';
     }
 };
 
@@ -122,7 +126,7 @@ async function kjRequest(path, options = {}) {
     if (response.status === 401) {
         KJAuth.clearToken();
         if (!window.location.pathname.endsWith('/login.html')) {
-            window.location.assign(`${kjApplicationRoot()}/login.html`);
+            window.location.assign('/login.html');
         }
         throw new Error('Sesi Anda telah berakhir. Silakan login kembali.');
     }
@@ -360,14 +364,23 @@ async function updateCartBadge() {
 
 const PRODUCT_IMAGES = {
     'Kopi Jago Signature': '../kopsu%20jago.jfif',
-    'Kopi Susu Vanilla': '../Salted%20Caramel%20Latte.png',
+    'Kopi Susu Vanilla': '../kopsu%20jago.jfif',
+    'Kopi Susu': '../kopsu%20jago.jfif',
     'Americano': '../americano%20koja.jfif',
+    'Jago Americano': '../americano%20koja.jfif',
     'Chocolate Latte': '../jago%20coklat.jfif',
+    'Chocolate': '../jago%20coklat.jfif',
+    'Jago Chocolate': '../jago%20coklat.jfif',
+    'Red Velvet Latte': '../jago%20coklat.jfif',
+    'Pink Coco': '../pink%20coco.jfif',
     'Pink Latte': '../pink%20coco.jfif',
     'Hazelnut Latte': '../mont%20blanck%20kopi.jfif',
-    'Red Velvet Latte': '../jago%20coklat.jfif',
+    'Mont Blanc Shake': '../mont%20blanck%20kopi.jfif',
     'Matcha Green Tea Latte': '../macha%20latte.jfif',
-    'Citrus Cold Brew': '../citrus%20cold.jfif'
+    'Matcha Latte': '../macha%20latte.jfif',
+    'Citrus Cold Brew': '../citrus%20cold.jfif',
+    'Kopi Susu Jago':       '../kopsu%20jago.jfif',
+    'Salted Caramel Latte': '../Salted%20Caramel%20Latte.png'
 };
 
 function getProductImage(productName) {

@@ -3,14 +3,21 @@
 
 let order = null;
 let paymentMethods = {
-    qris: { name: 'QRIS', icon: '📱' },
+    qris: { name: 'QRIS', icon: '📱', description: 'Scan QR Code dengan aplikasi e-wallet/banking' },
     bank_transfer: { 
         name: 'Transfer Bank', 
         icon: '🏦',
-        banks: ['bca', 'bni', 'bri', 'mandiri', 'permata', 'cimb', 'bsi']
-    },
-    gopay: { name: 'GoPay', icon: '💳' },
-    shopeepay: { name: 'ShopeePay', icon: '🛍️' }
+        description: 'Transfer via Virtual Account',
+        banks: [
+            { code: 'bca', name: 'BCA', icon: '🏦', color: '#0072C6' },
+            { code: 'bni', name: 'BNI', icon: '🏦', color: '#1D3A7B' },
+            { code: 'bri', name: 'BRI', icon: '🏦', color: '#006DAB' },
+            { code: 'mandiri', name: 'Mandiri', icon: '🏦', color: '#E61E26' },
+            { code: 'permata', name: 'Permata Bank', icon: '🏦', color: '#0066CC' },
+            { code: 'cimb', name: 'CIMB Niaga', icon: '🏦', color: '#FF6600' },
+            { code: 'bsi', name: 'Bank Syariah Indonesia', icon: '🏦', color: '#008000' }
+        ]
+    }
 };
 let selectedMethod = 'qris';
 let selectedBank = 'bca';
@@ -107,24 +114,18 @@ function renderPaymentMethods() {
             <span class="method-icon">🏦</span>
             <span class="method-name">Transfer Bank</span>
         </div>
-        <div class="method-card" data-method="gopay" onclick="selectMethod('gopay')">
-            <span class="method-icon">💳</span>
-            <span class="method-name">GoPay</span>
-        </div>
-        <div class="method-card" data-method="shopeepay" onclick="selectMethod('shopeepay')">
-            <span class="method-icon">🛍️</span>
-            <span class="method-name">ShopeePay</span>
-        </div>
     `;
     
     document.getElementById('bank-selector').innerHTML = `
         <p class="form-label">Pilih Bank</p>
         <div class="bank-grid">
             ${paymentMethods.bank_transfer.banks.map(bank => `
-                <button class="bank-btn ${bank === selectedBank ? 'selected' : ''}" 
-                        data-bank="${bank}" 
-                        onclick="selectBank('${bank}')">
-                    ${bank.toUpperCase()}
+                <button class="bank-btn ${bank.code === selectedBank ? 'selected' : ''}" 
+                        data-bank="${bank.code}" 
+                        onclick="selectBank('${bank.code}')"
+                        style="border-left: 4px solid ${bank.color};">
+                    <div style="font-size:20px; margin-bottom: 4px;">${bank.icon}</div>
+                    <div style="font-size:11px; font-weight:600;">${bank.name}</div>
                 </button>
             `).join('')}
         </div>

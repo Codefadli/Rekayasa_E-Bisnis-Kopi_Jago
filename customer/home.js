@@ -73,7 +73,7 @@ async function toggleWishlist(menuId, button) {
             'Login Required'
         );
         if (confirmed) {
-            window.location.href = '../login.html';
+            window.location.href = '/login.html';
         }
         return;
     }
@@ -108,61 +108,39 @@ async function toggleWishlist(menuId, button) {
 // ============================================================
 
 async function loadMenu() {
-    const featuredContainer = document.getElementById('featured-menu');
-    const menuContainer = document.getElementById('menu-grid');
-    
-    // Show loading
-    showLoading(featuredContainer);
-    showLoading(menuContainer);
-    
+    const kopiContainer = document.getElementById('products-kopi');
+    const nonKopiContainer = document.getElementById('products-non-kopi');
+
+    showLoading(kopiContainer);
+    showLoading(nonKopiContainer);
+
     try {
         allMenuItems = await kjApi('menu');
-        
+
         console.log('[Menu] Loaded:', allMenuItems.length, 'items');
-        
-        hideLoading(featuredContainer);
-        hideLoading(menuContainer);
-        
+
+        hideLoading(kopiContainer);
+        hideLoading(nonKopiContainer);
+
         if (allMenuItems.length === 0) {
-            showEmptyState(menuContainer, {
+            showEmptyState(kopiContainer, {
                 icon: '☕',
                 title: 'Menu Tidak Tersedia',
                 message: 'Saat ini belum ada menu yang tersedia. Silakan cek lagi nanti.'
             });
             return;
         }
-        
-        renderFeaturedMenu();
-        renderCategories();
-        renderAllMenu();
+
+        renderGroupedMenu();
     } catch (error) {
         console.error('[Menu] Load error:', error);
-        
-        hideLoading(featuredContainer);
-        hideLoading(menuContainer);
-        
-        showErrorState(menuContainer, 'Gagal memuat menu: ' + error.message, loadMenu);
+
+        hideLoading(kopiContainer);
+        hideLoading(nonKopiContainer);
+
+        showErrorState(kopiContainer, 'Gagal memuat menu: ' + error.message, loadMenu);
         KJToast.error('Gagal memuat menu');
     }
-}
-
-// ============================================================
-// RENDER FEATURED MENU
-// ============================================================
-
-function renderFeaturedMenu() {
-    const featured = allMenuItems.filter(item => Number(item.is_featured) === 1);
-    const container = document.getElementById('featured-menu');
-    
-    if (!container) return;
-    
-    if (featured.length === 0) {
-        container.innerHTML = '<p class="text-center text-gray">Belum ada menu favorit</p>';
-        return;
-    }
-    
-    container.innerHTML = featured.slice(0, 4).map(item => renderProductCard(item)).join('');
-    attachCardEvents(container);
 }
 
 // ============================================================
@@ -193,34 +171,47 @@ function renderCategories() {
 }
 
 // ============================================================
-// RENDER ALL MENU
+// DEDUPLIKASI THEMATIC IMAGE
 // ============================================================
+// Fungsi ini menghapus produk duplikat berdasarkan file gambarnya,
+// sehingga 1 gambar = 1 nama produk (user request)
+function dedupeByImage(items) {
+    const seenImages = new Set();
+    return items.filter(item => {
+        const image = getProductImage(item.name);
+        if (seenImages.has(image)) {
+            return false; // gambar sudah pernah tampil, lewati produk ini
+        }
+        seenImages.add(image);
+        return true;
+    });
+}
 
-function renderAllMenu() {
-    const container = document.getElementById('menu-grid');
-    if (!container) return;
-    
-    const filtered = selectedCategory === 'all' 
-        ? allMenuItems 
-        : allMenuItems.filter(item => item.category === selectedCategory);
-    
-    if (filtered.length === 0) {
-        showEmptyState(container, {
-            icon: '🔍',
-            title: 'Tidak Ada Menu',
-            message: 'Tidak ada menu dalam kategori ini.',
-            actionText: 'Lihat Semua',
-            onAction: () => {
-                selectedCategory = 'all';
-                renderCategories();
-                renderAllMenu();
-            }
-        });
-        return;
+function renderGroupedMenu() {
+    const kopiItems = dedupeByImage(allMenuItems.filter(item => item.category === 'Kopi'));
+    const nonKopiItems = dedupeByImage(allMenuItems.filter(item => item.category === 'Non Kopi'));
+
+    const kopiContainer = document.getElementById('products-kopi');
+    const nonKopiContainer = document.getElementById('products-non-kopi');
+
+    if (!kopiContainer || !nonKopiContainer) return;
+
+    // Render Kopi
+    if (kopiItems.length === 0) {
+        kopiContainer.innerHTML = '<p class="text-center text-gray">Belum ada menu kopi</p>';
+    } else {
+        kopiContainer.innerHTML = kopiItems.map(item => renderProductCard(item)).join('');
     }
-    
-    container.innerHTML = filtered.map(item => renderProductCard(item)).join('');
-    attachCardEvents(container);
+
+    // Render Non Kopi
+    if (nonKopiItems.length === 0) {
+        nonKopiContainer.innerHTML = '<p class="text-center text-gray">Belum ada menu non kopi</p>';
+    } else {
+        nonKopiContainer.innerHTML = nonKopiItems.map(item => renderProductCard(item)).join('');
+    }
+
+    attachCardEvents(kopiContainer);
+    attachCardEvents(nonKopiContainer);
 }
 
 // ============================================================

@@ -151,7 +151,7 @@ async function removeCartItem(menuId, size) {
 }
 
 function goToCheckout() {
-    window.location.href = 'checkout.html';
+    window.location.href = '/customer/checkout.html';
 }
 
 // Init
